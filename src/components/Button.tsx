@@ -36,8 +36,8 @@ export const Button: React.FC<ButtonProps> = ({
     styles.button,
     styles[`${variant}Button`],
     styles[`${size}Button`],
-    fullWidth && styles.fullWidth,
-    disabled && styles.disabled,
+    fullWidth ? styles.fullWidth : {},
+    disabled ? styles.disabled : {},
     style as ViewStyle,
   ];
 
@@ -45,7 +45,7 @@ export const Button: React.FC<ButtonProps> = ({
     styles.text,
     styles[`${variant}Text`],
     styles[`${size}Text`],
-    disabled && styles.disabledText,
+    disabled ? styles.disabledText : {},
   ];
 
   return (

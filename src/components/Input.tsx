@@ -26,13 +26,15 @@ export const Input: React.FC<InputProps> = ({
   style,
   ...props
 }) => {
+  const inputError = error ? styles.inputError : {};
+  
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View style={[styles.inputContainer, error && styles.inputError]}>
+      <View style={[styles.inputContainer, inputError]}>
         {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
         <TextInput
-          style={[styles.input, leftIcon && styles.inputWithLeftIcon, style]}
+          style={[styles.input, leftIcon ? styles.inputWithLeftIcon : {}, style]}
           placeholderTextColor={COLORS.textLight}
           {...props}
         />
