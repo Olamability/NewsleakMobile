@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
@@ -84,7 +84,26 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           </View>
           <Text style={styles.userName}>{user.full_name || 'User'}</Text>
           <Text style={styles.userEmail}>{user.email}</Text>
+          {user.is_admin && (
+            <View style={styles.adminBadge}>
+              <Text style={styles.adminBadgeText}>👑 Admin</Text>
+            </View>
+          )}
         </View>
+
+        {user.is_admin && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Administration</Text>
+            
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('AdminDashboard')}
+            >
+              <Text style={styles.menuItemText}>⚙️ Admin Dashboard</Text>
+              <Text style={styles.menuItemArrow}>›</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
@@ -209,6 +228,18 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: FONT_SIZES.md,
     color: COLORS.textSecondary,
+  },
+  adminBadge: {
+    backgroundColor: '#FFD700',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.sm,
+    marginTop: SPACING.sm,
+  },
+  adminBadgeText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    color: '#000',
   },
   section: {
     marginBottom: SPACING.xl,

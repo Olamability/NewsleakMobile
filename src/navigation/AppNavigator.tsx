@@ -14,6 +14,10 @@ import { ArticleDetailScreen } from '../screens/ArticleDetailScreen';
 import { ArticleWebViewScreen } from '../screens/ArticleWebViewScreen';
 import { SignInScreen } from '../screens/SignInScreen';
 import { SignUpScreen } from '../screens/SignUpScreen';
+import { AdminDashboardScreen } from '../screens/AdminDashboardScreen';
+import { ManageSourcesScreen } from '../screens/ManageSourcesScreen';
+import { ManageArticlesScreen } from '../screens/ManageArticlesScreen';
+import { IngestionLogsScreen } from '../screens/IngestionLogsScreen';
 import { COLORS, FONT_SIZES } from '../constants/theme';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -173,6 +177,38 @@ export const AppNavigator = () => {
           options={{
             title: 'Sign Up',
             presentation: 'modal',
+          }}
+        />
+        <Stack.Screen
+          name="AdminDashboard"
+          component={AdminDashboardScreen}
+          options={{
+            title: 'Admin Dashboard',
+            headerBackTitle: 'Back',
+          }}
+        />
+        <Stack.Screen
+          name="ManageSources"
+          component={ManageSourcesScreen}
+          options={{
+            title: 'Manage Sources',
+            headerBackTitle: 'Back',
+          }}
+        />
+        <Stack.Screen
+          name="ManageArticles"
+          component={ManageArticlesScreen}
+          options={{
+            title: 'Manage Articles',
+            headerBackTitle: 'Back',
+          }}
+        />
+        <Stack.Screen
+          name="IngestionLogs"
+          component={IngestionLogsScreen}
+          options={{
+            title: 'Ingestion Logs',
+            headerBackTitle: 'Back',
           }}
         />
       </Stack.Navigator>

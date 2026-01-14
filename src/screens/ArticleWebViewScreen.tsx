@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { WebView } from 'react-native-webview';
-import { View, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/theme';
 
 interface ArticleWebViewScreenProps {
