@@ -63,7 +63,7 @@ export const Button: React.FC<ButtonProps> = ({
         />
       ) : (
         <>
-          {icon && <View style={{ marginRight: SPACING.sm }}>{icon}</View>}
+          {icon && <View style={styles.iconContainer}>{icon}</View>}
           <Text style={textStyle}>{title}</Text>
         </>
       )}
@@ -78,6 +78,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: BORDER_RADIUS.md,
     paddingHorizontal: SPACING.lg,
+  },
+  iconContainer: {
+    marginRight: SPACING.sm,
   },
   fullWidth: {
     width: '100%',
