@@ -81,7 +81,6 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({
             source={{ uri: article.image_url }}
             style={[styles.image, { height: imageHeight }]}
             resizeMode="cover"
-            defaultSource={require('../../assets/icon.png')}
           />
         ) : (
           <View style={[styles.imagePlaceholder, { height: imageHeight }]}>

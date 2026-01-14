@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   useWindowDimensions,
 } from 'react-native';
 import { NewsArticle } from '../types';
@@ -68,7 +67,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             source={{ uri: article.image_url }}
             style={[styles.image, { width: imageWidth, height: imageHeight }]}
             resizeMode="cover"
-            defaultSource={require('../../assets/icon.png')}
           />
         ) : (
           <View style={[styles.imagePlaceholder, { width: imageWidth, height: imageHeight }]}>
