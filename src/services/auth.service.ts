@@ -30,6 +30,7 @@ export class AuthService {
           id: data.user.id,
           email: data.user.email!,
           full_name: credentials.full_name,
+          is_admin: false, // New users are not admins by default
           created_at: data.user.created_at,
         },
       };
@@ -62,6 +63,7 @@ export class AuthService {
           email: data.user.email!,
           full_name: data.user.user_metadata?.full_name,
           avatar_url: data.user.user_metadata?.avatar_url,
+          is_admin: data.user.user_metadata?.is_admin || false,
           created_at: data.user.created_at,
         },
       };
@@ -103,6 +105,7 @@ export class AuthService {
         email: user.email!,
         full_name: user.user_metadata?.full_name,
         avatar_url: user.user_metadata?.avatar_url,
+        is_admin: user.user_metadata?.is_admin || false,
         created_at: user.created_at,
       };
     } catch (error) {
@@ -170,6 +173,7 @@ export class AuthService {
           email: data.user.email!,
           full_name: data.user.user_metadata?.full_name,
           avatar_url: data.user.user_metadata?.avatar_url,
+          is_admin: data.user.user_metadata?.is_admin || false,
           created_at: data.user.created_at,
         },
       };

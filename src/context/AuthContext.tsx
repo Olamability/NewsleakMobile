@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             email: session.user.email!,
             full_name: session.user.user_metadata?.full_name,
             avatar_url: session.user.user_metadata?.avatar_url,
+            is_admin: session.user.user_metadata?.is_admin || false,
             created_at: session.user.created_at,
           });
         } else if (event === 'SIGNED_OUT') {

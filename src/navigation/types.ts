@@ -7,6 +7,10 @@ export type RootStackParamList = {
   Auth: undefined;
   SignIn: undefined;
   SignUp: undefined;
+  AdminDashboard: undefined;
+  ManageSources: undefined;
+  ManageArticles: undefined;
+  IngestionLogs: undefined;
 };
 
 export type MainTabParamList = {
