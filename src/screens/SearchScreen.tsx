@@ -4,9 +4,9 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '../components/Input';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';

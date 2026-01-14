@@ -6,11 +6,11 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Share,
   useWindowDimensions,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NewsArticle } from '../types';
 import { NewsService } from '../services/news.service';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
