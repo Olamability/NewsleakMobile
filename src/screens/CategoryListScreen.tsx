@@ -37,8 +37,8 @@ export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({ navigati
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Categories</Text>
-        <Text style={styles.headerSubtitle}>Explore news by topic</Text>
+        <Text style={styles.headerTitle}>News Categories</Text>
+        <Text style={styles.headerSubtitle}>Browse news by topic</Text>
       </View>
       <FlatList
         data={CATEGORIES}
@@ -58,35 +58,33 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    padding: SPACING.md,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.primary,
   },
   headerTitle: {
     fontSize: FONT_SIZES.xxl,
     fontWeight: '700',
-    color: COLORS.text,
+    color: COLORS.background,
     marginBottom: SPACING.xs,
   },
   headerSubtitle: {
     fontSize: FONT_SIZES.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.background,
+    opacity: 0.9,
   },
   listContent: {
     padding: SPACING.md,
   },
   card: {
     width: CARD_WIDTH,
-    height: 140,
+    height: 120,
     margin: SPACING.xs,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
     justifyContent: 'center',
     alignItems: 'center',
-    ...SHADOWS.md,
   },
   icon: {
-    fontSize: 48,
+    fontSize: 40,
     marginBottom: SPACING.sm,
   },
   categoryName: {

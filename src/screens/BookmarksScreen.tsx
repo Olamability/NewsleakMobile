@@ -82,7 +82,7 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>🔖 Bookmarks</Text>
+          <Text style={styles.headerTitle}>Saved Articles</Text>
         </View>
         <EmptyState
           icon="🔐"
@@ -103,11 +103,11 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>🔖 Bookmarks</Text>
+          <Text style={styles.headerTitle}>Saved Articles</Text>
         </View>
         <EmptyState
           icon="📑"
-          title="No Bookmarks Yet"
+          title="No Saved Articles"
           message="Save articles to read them later"
           actionLabel="Explore News"
           onAction={() => navigation.navigate('Home')}
@@ -119,9 +119,9 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>🔖 Bookmarks</Text>
+        <Text style={styles.headerTitle}>Saved Articles</Text>
         <Text style={styles.headerSubtitle}>
-          {bookmarks.length} {bookmarks.length === 1 ? 'article' : 'articles'} saved
+          {bookmarks.length} {bookmarks.length === 1 ? 'article' : 'articles'}
         </Text>
       </View>
       <FlatList
@@ -148,22 +148,21 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    padding: SPACING.md,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.primary,
   },
   headerTitle: {
     fontSize: FONT_SIZES.xxl,
     fontWeight: '700',
-    color: COLORS.text,
+    color: COLORS.background,
   },
   headerSubtitle: {
     fontSize: FONT_SIZES.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.background,
     marginTop: SPACING.xs,
+    opacity: 0.9,
   },
   listContent: {
-    padding: SPACING.md,
+    padding: SPACING.lg,
   },
 });

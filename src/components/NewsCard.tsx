@@ -12,7 +12,9 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constant
 import { getCategoryColor } from '../constants/categories';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - SPACING.md * 2;
+const CARD_WIDTH = width - SPACING.lg * 2;
+const IMAGE_WIDTH = 110;
+const IMAGE_HEIGHT = 85;
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -59,39 +61,40 @@ export const NewsCard: React.FC<NewsCardProps> = ({
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <Image
-        source={{ uri: article.image_url }}
-        style={styles.image}
-        resizeMode="cover"
-      />
-      
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
-            <Text style={styles.categoryText}>{article.category}</Text>
+      <View style={styles.cardContent}>
+        <Image
+          source={{ uri: article.image_url }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        
+        <View style={styles.textContent}>
+          <View style={styles.categoryRow}>
+            <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
+              <Text style={styles.categoryText}>{article.category}</Text>
+            </View>
           </View>
-          {onBookmarkPress && (
-            <TouchableOpacity onPress={onBookmarkPress} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Text style={styles.bookmarkIcon}>{isBookmarked ? '🔖' : '📑'}</Text>
-            </TouchableOpacity>
-          )}
-        </View>
 
-        <Text style={styles.title} numberOfLines={2}>
-          {article.title}
-        </Text>
+          <Text style={styles.title} numberOfLines={3}>
+            {article.title}
+          </Text>
 
-        <Text style={styles.summary} numberOfLines={3}>
-          {article.summary}
-        </Text>
-
-        <View style={styles.footer}>
-          <View style={styles.sourceContainer}>
-            <Text style={styles.sourceName}>{article.source_name}</Text>
+          <View style={styles.footer}>
+            <Text style={styles.sourceName} numberOfLines={1}>{article.source_name}</Text>
             <Text style={styles.dot}>•</Text>
             <Text style={styles.time}>{formatDate(article.published_at)}</Text>
           </View>
         </View>
+
+        {onBookmarkPress && (
+          <TouchableOpacity 
+            onPress={onBookmarkPress} 
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.bookmarkButton}
+          >
+            <Text style={styles.bookmarkIcon}>{isBookmarked ? '🔖' : '📑'}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -101,65 +104,60 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     backgroundColor: COLORS.card,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
     marginBottom: SPACING.md,
     overflow: 'hidden',
-    ...SHADOWS.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
-  image: {
-    width: '100%',
-    height: 200,
-    backgroundColor: COLORS.backgroundSecondary,
-  },
-  content: {
+  cardContent: {
+    flexDirection: 'row',
     padding: SPACING.md,
   },
-  header: {
-    flexDirection: 'row',
+  image: {
+    width: IMAGE_WIDTH,
+    height: IMAGE_HEIGHT,
+    borderRadius: BORDER_RADIUS.sm,
+    backgroundColor: COLORS.backgroundSecondary,
+  },
+  textContent: {
+    flex: 1,
+    marginLeft: SPACING.md,
     justifyContent: 'space-between',
+  },
+  categoryRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   categoryBadge: {
     paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs / 2,
+    paddingVertical: 2,
     borderRadius: BORDER_RADIUS.sm,
   },
   categoryText: {
     color: COLORS.background,
     fontSize: FONT_SIZES.xs,
     fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  bookmarkIcon: {
-    fontSize: 20,
+    textTransform: 'uppercase',
   },
   title: {
-    fontSize: FONT_SIZES.lg,
+    fontSize: FONT_SIZES.md,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.sm,
-    lineHeight: 24,
-  },
-  summary: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textSecondary,
     lineHeight: 20,
-    marginBottom: SPACING.sm,
+    flex: 1,
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  sourceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: SPACING.xs,
   },
   sourceName: {
     fontSize: FONT_SIZES.xs,
-    color: COLORS.primary,
-    fontWeight: '600',
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+    flex: 1,
   },
   dot: {
     fontSize: FONT_SIZES.xs,
@@ -169,5 +167,17 @@ const styles = StyleSheet.create({
   time: {
     fontSize: FONT_SIZES.xs,
     color: COLORS.textLight,
+  },
+  bookmarkButton: {
+    position: 'absolute',
+    top: SPACING.sm,
+    right: SPACING.sm,
+    backgroundColor: COLORS.background,
+    borderRadius: BORDER_RADIUS.round,
+    padding: SPACING.xs,
+    ...SHADOWS.sm,
+  },
+  bookmarkIcon: {
+    fontSize: 16,
   },
 });

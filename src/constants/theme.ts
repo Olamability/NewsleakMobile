@@ -1,43 +1,43 @@
-// Theme constants for consistent UI across the app
+// Theme constants for consistent UI across the app - Opera News Style
 
 export const COLORS = {
-  primary: '#2563eb', // Blue
-  primaryDark: '#1e40af',
-  primaryLight: '#3b82f6',
-  secondary: '#10b981', // Green
-  accent: '#f59e0b', // Amber
+  primary: '#E81E24', // Opera News Red
+  primaryDark: '#C41519',
+  primaryLight: '#FF3B41',
+  secondary: '#1A1A1A', // Dark Gray
+  accent: '#FFD700', // Gold for highlights
   
   // Text colors
-  text: '#1f2937',
-  textSecondary: '#6b7280',
-  textLight: '#9ca3af',
+  text: '#1A1A1A',
+  textSecondary: '#666666',
+  textLight: '#999999',
   
   // Background colors
-  background: '#ffffff',
-  backgroundSecondary: '#f9fafb',
-  backgroundDark: '#111827',
+  background: '#FFFFFF',
+  backgroundSecondary: '#F5F5F5',
+  backgroundDark: '#1A1A1A',
   
   // UI colors
-  border: '#e5e7eb',
-  borderDark: '#d1d5db',
-  card: '#ffffff',
+  border: '#E0E0E0',
+  borderDark: '#CCCCCC',
+  card: '#FFFFFF',
   shadow: '#000000',
   
   // Status colors
-  success: '#10b981',
-  error: '#ef4444',
-  warning: '#f59e0b',
-  info: '#3b82f6',
+  success: '#4CAF50',
+  error: '#E81E24',
+  warning: '#FFA726',
+  info: '#2196F3',
   
   // Social/Category colors
-  politics: '#dc2626',
-  sports: '#059669',
-  business: '#7c3aed',
-  technology: '#0284c7',
-  entertainment: '#db2777',
-  health: '#16a34a',
-  lifestyle: '#ea580c',
-  breaking: '#ef4444',
+  politics: '#E81E24',
+  sports: '#4CAF50',
+  business: '#2196F3',
+  technology: '#9C27B0',
+  entertainment: '#FF5722',
+  health: '#00BCD4',
+  lifestyle: '#FF9800',
+  breaking: '#E81E24',
 };
 
 export const FONTS = {
@@ -48,29 +48,29 @@ export const FONTS = {
 };
 
 export const FONT_SIZES = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 18,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
+  xs: 11,
+  sm: 13,
+  md: 15,
+  lg: 17,
+  xl: 19,
+  xxl: 22,
+  xxxl: 28,
 };
 
 export const SPACING = {
   xs: 4,
   sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
 };
 
 export const BORDER_RADIUS = {
   sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
+  md: 6,
+  lg: 8,
+  xl: 12,
   round: 999,
 };
 
@@ -78,23 +78,23 @@ export const SHADOWS = {
   sm: {
     shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOpacity: 0.03,
+    shadowRadius: 1,
+    elevation: 1,
   },
   md: {
     shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
   },
   lg: {
     shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
 };
 

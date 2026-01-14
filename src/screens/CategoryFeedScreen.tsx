@@ -169,11 +169,6 @@ export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          {categoryData?.icon} {categoryName}
-        </Text>
-      </View>
       <FlatList
         data={articles}
         renderItem={renderItem}
@@ -200,19 +195,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  header: {
-    padding: SPACING.md,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
   listContent: {
-    padding: SPACING.md,
+    padding: SPACING.lg,
   },
   footer: {
     paddingVertical: SPACING.lg,

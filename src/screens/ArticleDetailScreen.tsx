@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   categoryText: {
     color: COLORS.background,
     fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
-    textTransform: 'capitalize',
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   title: {
     fontSize: FONT_SIZES.xxxl,
@@ -186,18 +186,18 @@ const styles = StyleSheet.create({
   readButton: {
     backgroundColor: COLORS.primary,
     paddingVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
   },
   readButtonText: {
     color: COLORS.background,
-    fontSize: FONT_SIZES.lg,
+    fontSize: FONT_SIZES.md,
     fontWeight: '700',
   },
   shareButton: {
-    backgroundColor: COLORS.backgroundSecondary,
-    paddingVertical: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
+    backgroundColor: COLORS.background,
+    paddingVertical: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
