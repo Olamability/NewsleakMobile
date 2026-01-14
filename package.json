@@ -1,12 +1,36 @@
 {
-  "name": "newsleaktemp",
+  "name": "spazr-news",
   "version": "1.0.0",
+  "description": "A modern news aggregator mobile app built with React Native Expo and Supabase",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
+    "start:clear": "expo start --clear",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'No linter configured yet'",
+    "format": "echo 'No formatter configured yet'",
+    "test": "echo 'No tests configured yet'"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "news",
+    "aggregator",
+    "supabase",
+    "mobile",
+    "typescript"
+  ],
+  "author": "Olamability",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Olamability/NewsleakMobile.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Olamability/NewsleakMobile/issues"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
