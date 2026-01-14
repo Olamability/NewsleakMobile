@@ -14,7 +14,7 @@ import { EmptyState } from '../components/EmptyState';
 import { NewsService } from '../services/news.service';
 import { BookmarkService } from '../services/bookmark.service';
 import { NewsArticle } from '../types';
-import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
+import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 
 interface SearchScreenProps {
