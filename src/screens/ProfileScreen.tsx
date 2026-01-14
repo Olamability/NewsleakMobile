@@ -145,15 +145,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    padding: SPACING.md,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.primary,
   },
   headerTitle: {
     fontSize: FONT_SIZES.xxl,
     fontWeight: '700',
-    color: COLORS.text,
+    color: COLORS.background,
   },
   content: {
     padding: SPACING.lg,
@@ -228,7 +226,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: COLORS.backgroundSecondary,
-    padding: SPACING.md,
+    padding: SPACING.lg,
     borderRadius: BORDER_RADIUS.md,
     marginBottom: SPACING.sm,
   },

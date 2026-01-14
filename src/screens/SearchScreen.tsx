@@ -91,7 +91,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>🔍 Search News</Text>
+        <Text style={styles.headerTitle}>Search News</Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -105,7 +105,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           autoCorrect={false}
         />
         <TouchableOpacity
-          style={styles.searchButton}
+          style={[styles.searchButton, !searchQuery.trim() && styles.searchButtonDisabled]}
           onPress={handleSearch}
           disabled={!searchQuery.trim()}
         >
@@ -146,32 +146,34 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    padding: SPACING.md,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.primary,
   },
   headerTitle: {
     fontSize: FONT_SIZES.xxl,
     fontWeight: '700',
-    color: COLORS.text,
+    color: COLORS.background,
   },
   searchContainer: {
-    padding: SPACING.md,
+    padding: SPACING.lg,
   },
   searchButton: {
     backgroundColor: COLORS.primary,
     padding: SPACING.md,
-    borderRadius: 8,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
     marginTop: SPACING.sm,
+  },
+  searchButtonDisabled: {
+    backgroundColor: COLORS.textLight,
+    opacity: 0.5,
   },
   searchButtonText: {
     color: COLORS.background,
     fontSize: FONT_SIZES.md,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   listContent: {
-    padding: SPACING.md,
+    padding: SPACING.lg,
   },
 });

@@ -44,8 +44,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         ]}
       >
         <Text style={styles.logo}>📰</Text>
-        <Text style={styles.appName}>Spazr News</Text>
-        <Text style={styles.tagline}>Your Gateway to Trusted News</Text>
+        <Text style={styles.appName}>Opera News</Text>
+        <Text style={styles.tagline}>Your World, Your News</Text>
       </Animated.View>
     </View>
   );
