@@ -5,16 +5,11 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import { NewsArticle } from '../types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { getCategoryColor } from '../constants/categories';
-
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - SPACING.lg * 2;
-const IMAGE_WIDTH = 110;
-const IMAGE_HEIGHT = 85;
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -29,6 +24,11 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   onBookmarkPress,
   isBookmarked = false,
 }) => {
+  const { width: windowWidth } = useWindowDimensions();
+  const cardWidth = windowWidth - SPACING.lg * 2;
+  const imageWidth = Math.min(120, windowWidth * 0.3);
+  const imageHeight = imageWidth * 0.75;
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -57,16 +57,22 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, { width: cardWidth }]}
       onPress={onPress}
       activeOpacity={0.7}
     >
       <View style={styles.cardContent}>
-        <Image
-          source={{ uri: article.image_url }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        {article.image_url ? (
+          <Image
+            source={{ uri: article.image_url }}
+            style={[styles.image, { width: imageWidth, height: imageHeight }]}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.imagePlaceholder, { width: imageWidth, height: imageHeight }]}>
+            <Text style={styles.placeholderText}>📰</Text>
+          </View>
+        )}
         
         <View style={styles.textContent}>
           <View style={styles.categoryRow}>
@@ -102,7 +108,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    width: CARD_WIDTH,
     backgroundColor: COLORS.card,
     borderRadius: BORDER_RADIUS.md,
     marginBottom: SPACING.md,
@@ -115,10 +120,18 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
   },
   image: {
-    width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
     borderRadius: BORDER_RADIUS.sm,
     backgroundColor: COLORS.backgroundSecondary,
+  },
+  imagePlaceholder: {
+    borderRadius: BORDER_RADIUS.sm,
+    backgroundColor: COLORS.backgroundSecondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 32,
+    opacity: 0.5,
   },
   textContent: {
     flex: 1,
