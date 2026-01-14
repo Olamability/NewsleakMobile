@@ -6,8 +6,6 @@ import {
   StyleSheet,
   Text,
   SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
 } from 'react-native';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -16,9 +14,8 @@ import { ErrorState } from '../components/ErrorState';
 import { NewsService } from '../services/news.service';
 import { BookmarkService } from '../services/bookmark.service';
 import { NewsArticle } from '../types';
-import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
+import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
-import { CATEGORIES } from '../constants/categories';
 
 interface HomeScreenProps {
   navigation: any;
@@ -34,14 +31,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     loadArticles();
     if (isAuthenticated) {
       loadBookmarks();
     }
-  }, [isAuthenticated, selectedCategory]);
+  }, [isAuthenticated]);
 
   const loadArticles = async (pageNum: number = 1, isRefresh: boolean = false) => {
     try {
@@ -50,9 +46,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       }
       setError(null);
 
-      const response = selectedCategory === 'all' 
-        ? await NewsService.getArticles(pageNum, 20)
-        : await NewsService.getArticlesByCategory(selectedCategory, pageNum, 20);
+      const response = await NewsService.getArticles(pageNum, 20);
 
       if (pageNum === 1) {
         setArticles(response.data);
@@ -84,7 +78,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
     loadArticles(1, true);
-  }, [selectedCategory]);
+  }, []);
 
   const handleLoadMore = useCallback(() => {
     if (!isLoadingMore && hasMore && !isLoading) {
@@ -131,21 +125,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     />
   );
 
-  const renderCategoryTab = ({ item }: any) => {
-    const isSelected = selectedCategory === item.slug;
-    return (
-      <TouchableOpacity
-        style={[styles.categoryTab, isSelected && styles.categoryTabSelected]}
-        onPress={() => setSelectedCategory(item.slug)}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.categoryTabText, isSelected && styles.categoryTabTextSelected]}>
-          {item.name}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
   const renderFooter = () => {
     if (!isLoadingMore) return null;
     return (
@@ -182,19 +161,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.logo}>Opera News</Text>
+        <Text style={styles.logo}>News Arena</Text>
+        <Text style={styles.subtitle}>Latest News from Multiple Sources</Text>
       </View>
-      
-      {/* Horizontal Category Tabs */}
-      <FlatList
-        data={[{ id: 'all', name: 'All', slug: 'all' }, ...CATEGORIES]}
-        renderItem={renderCategoryTab}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoryContainer}
-        style={styles.categoryList}
-      />
 
       <FlatList
         data={articles}
@@ -232,32 +201,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.background,
   },
-  categoryList: {
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  categoryContainer: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-  },
-  categoryTab: {
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    marginRight: SPACING.sm,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.backgroundSecondary,
-  },
-  categoryTabSelected: {
-    backgroundColor: COLORS.primary,
-  },
-  categoryTabText: {
+  subtitle: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
-    color: COLORS.text,
-  },
-  categoryTabTextSelected: {
     color: COLORS.background,
+    opacity: 0.9,
+    marginTop: SPACING.xs,
   },
   listContent: {
     padding: SPACING.lg,

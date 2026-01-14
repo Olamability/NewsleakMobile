@@ -186,6 +186,17 @@ export class NewsService {
   }
 
   /**
+   * Get articles by category
+   */
+  static async getArticlesByCategory(
+    category: string,
+    page: number = 1,
+    limit: number = ITEMS_PER_PAGE
+  ): Promise<PaginatedResponse<NewsArticle>> {
+    return this.getArticles(page, limit, category);
+  }
+
+  /**
    * Generate article URL with UTM parameters
    */
   static generateTrackingUrl(articleUrl: string): string {
