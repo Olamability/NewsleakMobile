@@ -180,7 +180,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'column',
-    gap: SPACING.md,
     marginBottom: SPACING.xl,
   },
   readButton: {
@@ -188,6 +187,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.lg,
     borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
+    marginBottom: SPACING.md,
   },
   readButtonText: {
     color: COLORS.background,

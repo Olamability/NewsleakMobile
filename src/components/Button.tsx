@@ -7,6 +7,7 @@ import {
   TouchableOpacityProps,
   ViewStyle,
   TextStyle,
+  View,
 } from 'react-native';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
@@ -62,7 +63,7 @@ export const Button: React.FC<ButtonProps> = ({
         />
       ) : (
         <>
-          {icon}
+          {icon && <View style={styles.iconContainer}>{icon}</View>}
           <Text style={textStyle}>{title}</Text>
         </>
       )}
@@ -77,7 +78,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: BORDER_RADIUS.md,
     paddingHorizontal: SPACING.lg,
-    gap: SPACING.sm,
+  },
+  iconContainer: {
+    marginRight: SPACING.sm,
   },
   fullWidth: {
     width: '100%',
