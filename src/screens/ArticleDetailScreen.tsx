@@ -50,10 +50,15 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({
       if (supported) {
         await Linking.openURL(trackingUrl);
       } else {
-        console.error("Cannot open URL:", trackingUrl);
+        console.error("Cannot open URL - unsupported URL format:", trackingUrl);
+        // Fallback to WebView navigation
+        navigation.navigate('ArticleWebView', {
+          url: trackingUrl,
+          title: article.title,
+        });
       }
     } catch (error) {
-      console.error('Error opening URL:', error);
+      console.error('Error opening URL, falling back to WebView:', error);
       // Fallback to WebView navigation
       navigation.navigate('ArticleWebView', {
         url: trackingUrl,
