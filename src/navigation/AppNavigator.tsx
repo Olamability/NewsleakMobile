@@ -73,8 +73,8 @@ const MainTabNavigator = () => {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>🏠</Text>
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, color }}>🏠</Text>
           ),
           tabBarLabel: 'Home',
         }}
@@ -83,8 +83,8 @@ const MainTabNavigator = () => {
         name="Categories"
         component={CategoryNavigator}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>📂</Text>
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, color }}>📂</Text>
           ),
           tabBarLabel: 'Categories',
         }}
@@ -93,8 +93,8 @@ const MainTabNavigator = () => {
         name="Search"
         component={SearchScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>🔍</Text>
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, color }}>🔍</Text>
           ),
           tabBarLabel: 'Search',
         }}
@@ -103,8 +103,8 @@ const MainTabNavigator = () => {
         name="Bookmarks"
         component={BookmarksScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>🔖</Text>
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, color }}>🔖</Text>
           ),
           tabBarLabel: 'Saved',
         }}
@@ -113,8 +113,8 @@ const MainTabNavigator = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>👤</Text>
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 20, color }}>👤</Text>
           ),
           tabBarLabel: 'Profile',
         }}
