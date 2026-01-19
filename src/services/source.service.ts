@@ -76,8 +76,9 @@ export class SourceService {
       }
 
       return { data };
-    } catch (error: any) {
-      return { error: error.message || 'Failed to add source' };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to add source';
+      return { error: message };
     }
   }
 
@@ -101,8 +102,9 @@ export class SourceService {
       }
 
       return { data };
-    } catch (error: any) {
-      return { error: error.message || 'Failed to update source' };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update source';
+      return { error: message };
     }
   }
 
@@ -121,8 +123,9 @@ export class SourceService {
       }
 
       return { message: 'Source deleted successfully' };
-    } catch (error: any) {
-      return { error: error.message || 'Failed to delete source' };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to delete source';
+      return { error: message };
     }
   }
 

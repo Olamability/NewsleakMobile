@@ -297,7 +297,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               showsHorizontalScrollIndicator={false}
               onScroll={handleFeaturedScroll}
               scrollEventThrottle={16}
-              snapToInterval={SCREEN_WIDTH - SPACING.lg}
+              snapToInterval={CARD_WIDTH + SPACING.lg}
               decelerationRate="fast"
               contentContainerStyle={styles.featuredScrollContent}
             >

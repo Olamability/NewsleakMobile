@@ -35,7 +35,32 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
 
     // Basic URL validation
     try {
-      new URL(rssUrl.trim());
+      const rssUrlObj = new URL(rssUrl.trim());
+      // Check if URL looks like an RSS feed
+      const rssUrlLower = rssUrl.toLowerCase();
+      const isLikelyRssFeed = 
+        rssUrlLower.includes('/rss') || 
+        rssUrlLower.includes('/feed') || 
+        rssUrlLower.endsWith('.xml') ||
+        rssUrlLower.endsWith('.rss') ||
+        rssUrlLower.includes('rss.xml') ||
+        rssUrlLower.includes('feed.xml');
+      
+      if (!isLikelyRssFeed) {
+        Alert.alert(
+          'Warning',
+          'The URL does not appear to be an RSS feed. RSS URLs typically contain "/rss", "/feed", or end with ".xml". Do you want to continue?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+              text: 'Continue', 
+              onPress: async () => await addSource()
+            }
+          ]
+        );
+        return;
+      }
+
       if (websiteUrl.trim()) {
         new URL(websiteUrl.trim());
       }
@@ -44,6 +69,10 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
       return;
     }
 
+    await addSource();
+  };
+
+  const addSource = async () => {
     try {
       setIsLoading(true);
       await onAdd(name.trim(), rssUrl.trim(), websiteUrl.trim());
