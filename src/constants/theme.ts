@@ -41,11 +41,12 @@ export const COLORS = {
   politics: '#E81E24',
   sports: '#4CAF50',
   business: '#2196F3',
-  technology: '#9C27B0',
+  technology: '#44B8FF',
   entertainment: '#FF5722',
   health: '#00BCD4',
   lifestyle: '#FF9800',
   breaking: '#E81E24',
+  environment: '#44B8FF',
   
   // Icon colors
   iconGray: '#8F9BB3',
