@@ -1,4 +1,4 @@
-// Theme constants for consistent UI across the app - Opera News Style
+// Theme constants for consistent UI across the app - Based on UI Reference Designs
 
 export const COLORS = {
   primary: '#E81E24', // Opera News Red
@@ -7,19 +7,27 @@ export const COLORS = {
   secondary: '#1A1A1A', // Dark Gray
   accent: '#FFD700', // Gold for highlights
   
+  // Button colors (from UI reference)
+  buttonGray: '#7A8A99', // Gray button from Sign-In screen
+  buttonGrayDark: '#5F6F7D',
+  
   // Text colors
   text: '#1A1A1A',
   textSecondary: '#666666',
   textLight: '#999999',
+  textPlaceholder: '#B0B0B0',
   
   // Background colors
   background: '#FFFFFF',
   backgroundSecondary: '#F5F5F5',
   backgroundDark: '#1A1A1A',
+  searchBackground: '#F0F4F8', // Light blue-gray for search inputs
+  filterActive: '#D4E9FC', // Light blue for active filter chips
   
   // UI colors
   border: '#E0E0E0',
   borderDark: '#CCCCCC',
+  borderLight: '#F0F0F0',
   card: '#FFFFFF',
   shadow: '#000000',
   
@@ -38,6 +46,10 @@ export const COLORS = {
   health: '#00BCD4',
   lifestyle: '#FF9800',
   breaking: '#E81E24',
+  
+  // Icon colors
+  iconGray: '#8F9BB3',
+  iconActive: '#222B45',
 };
 
 export const FONTS = {

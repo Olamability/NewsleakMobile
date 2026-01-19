@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '../components/Input';
@@ -74,48 +75,77 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.logo}>📰</Text>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to continue</Text>
+            <Text style={styles.title}>Sign In</Text>
+            <Text style={styles.subtitle}>
+              Stay informed effortlessly. Sign in and explore a world{'\n'}of news
+            </Text>
           </View>
 
           <View style={styles.form}>
             <Input
-              label="Email"
-              placeholder="Enter your email"
+              placeholder="Email"
               value={email}
               onChangeText={setEmail}
               error={errors.email}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              leftIcon={<Text style={styles.inputIcon}>✉️</Text>}
             />
 
             <Input
-              label="Password"
-              placeholder="Enter your password"
+              placeholder="Password"
               value={password}
               onChangeText={setPassword}
               error={errors.password}
-              secureTextEntry
+              showPasswordToggle
               autoCapitalize="none"
+              leftIcon={<Text style={styles.inputIcon}>🔒</Text>}
             />
 
+            <TouchableOpacity style={styles.forgotPassword}>
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity>
+
             <Button
-              title="Sign In"
+              title="Sign in"
               onPress={handleSignIn}
               isLoading={isLoading}
               fullWidth
               size="large"
+              variant="gray"
+            />
+
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <Button
+              title="Sign in with Google"
+              onPress={() => Alert.alert('Google Sign In', 'Coming soon')}
+              variant="social"
+              fullWidth
+              size="large"
+              icon={<Text style={styles.socialIcon}>🔍</Text>}
+            />
+
+            <Button
+              title="Sign in with Facebook"
+              onPress={() => Alert.alert('Facebook Sign In', 'Coming soon')}
+              variant="social"
+              fullWidth
+              size="large"
+              icon={<Text style={styles.socialIcon}>📘</Text>}
+              style={styles.socialButtonSpacing}
             />
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>Don't have an account? </Text>
-              <Button
-                title="Sign Up"
-                onPress={() => navigation.navigate('SignUp')}
-                variant="text"
-              />
+              <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                <Text style={styles.signUpText}>Sign up</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
@@ -134,38 +164,73 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
     padding: SPACING.xl,
+    paddingTop: SPACING.xxl * 2,
   },
   header: {
-    alignItems: 'center',
     marginBottom: SPACING.xxl,
-  },
-  logo: {
-    fontSize: 80,
-    marginBottom: SPACING.md,
   },
   title: {
     fontSize: FONT_SIZES.xxxl,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.xs,
+    marginBottom: SPACING.md,
   },
   subtitle: {
     fontSize: FONT_SIZES.md,
     color: COLORS.textSecondary,
+    lineHeight: 22,
   },
   form: {
     width: '100%',
+  },
+  inputIcon: {
+    fontSize: 18,
+    color: COLORS.iconGray,
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: SPACING.lg,
+    marginTop: -SPACING.xs,
+  },
+  forgotPasswordText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: SPACING.xl,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.border,
+  },
+  dividerText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
+    marginHorizontal: SPACING.md,
+  },
+  socialIcon: {
+    fontSize: 20,
+  },
+  socialButtonSpacing: {
+    marginTop: SPACING.md,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: SPACING.lg,
+    marginTop: SPACING.xl,
   },
   footerText: {
     fontSize: FONT_SIZES.md,
     color: COLORS.textSecondary,
+  },
+  signUpText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.text,
+    fontWeight: '700',
   },
 });

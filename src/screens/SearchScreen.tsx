@@ -28,6 +28,8 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<'news' | 'publishers'>('news');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -90,28 +92,62 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Search News</Text>
+      <View style={styles.searchHeader}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backIcon}>←</Text>
+        </TouchableOpacity>
+        <View style={styles.searchInputWrapper}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <Input
+            placeholder="Search "News""
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+            returnKeyType="search"
+            autoCapitalize="none"
+            autoCorrect={false}
+            variant="search"
+            containerStyle={styles.searchInput}
+          />
+        </View>
       </View>
 
-      <View style={styles.searchContainer}>
-        <Input
-          placeholder="Search for news..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={handleSearch}
-          returnKeyType="search"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <TouchableOpacity
-          style={[styles.searchButton, !searchQuery.trim() && styles.searchButtonDisabled]}
-          onPress={handleSearch}
-          disabled={!searchQuery.trim()}
-        >
-          <Text style={styles.searchButtonText}>Search</Text>
+      <View style={styles.filterSection}>
+        <TouchableOpacity style={styles.addFilterButton}>
+          <Text style={styles.addFilterText}>Add Filter</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.tabContainer}>
+        <TouchableOpacity 
+          style={[styles.tab, activeTab === 'news' && styles.activeTab]}
+          onPress={() => setActiveTab('news')}
+        >
+          <Text style={[styles.tabText, activeTab === 'news' && styles.activeTabText]}>
+            News
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.tab, activeTab === 'publishers' && styles.activeTab]}
+          onPress={() => setActiveTab('publishers')}
+        >
+          <Text style={[styles.tabText, activeTab === 'publishers' && styles.activeTabText]}>
+            Publishers
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {hasSearched && articles.length > 0 && (
+        <View style={styles.resultsHeader}>
+          <Text style={styles.resultCount}>{articles.length} Results found:</Text>
+          <TouchableOpacity style={styles.sortButton}>
+            <Text style={styles.sortText}>Sort by: Latest ▼</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {isLoading ? (
         <LoadingSpinner fullScreen />
@@ -122,11 +158,12 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           message={`No articles found for "${searchQuery}"`}
         />
       ) : !hasSearched ? (
-        <EmptyState
-          icon="🔍"
-          title="Search for News"
-          message="Enter keywords to find articles"
-        />
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyTitle}>Recents</Text>
+          <Text style={styles.emptyMessage}>
+            Your recent searches will appear here once{'\n'}you start discovering
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={articles}
@@ -145,35 +182,116 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  header: {
-    padding: SPACING.lg,
-    backgroundColor: COLORS.primary,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: '700',
-    color: COLORS.background,
-  },
-  searchContainer: {
-    padding: SPACING.lg,
-  },
-  searchButton: {
-    backgroundColor: COLORS.primary,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
+  searchHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
   },
-  searchButtonDisabled: {
-    backgroundColor: COLORS.textLight,
-    opacity: 0.5,
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: SPACING.sm,
   },
-  searchButtonText: {
-    color: COLORS.background,
+  backIcon: {
+    fontSize: 24,
+    color: COLORS.text,
+  },
+  searchInputWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.searchBackground,
+    borderRadius: BORDER_RADIUS.lg,
+    paddingLeft: SPACING.md,
+  },
+  searchIcon: {
+    fontSize: 18,
+    marginRight: SPACING.xs,
+  },
+  searchInput: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  filterSection: {
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.md,
+  },
+  addFilterButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.filterActive,
+    borderRadius: BORDER_RADIUS.md,
+  },
+  addFilterText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.info,
+    fontWeight: '600',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: SPACING.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    marginBottom: SPACING.md,
+  },
+  tab: {
+    paddingVertical: SPACING.md,
+    marginRight: SPACING.xl,
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.text,
+  },
+  tabText: {
     fontSize: FONT_SIZES.md,
+    fontWeight: '600',
+    color: COLORS.textLight,
+  },
+  activeTabText: {
+    color: COLORS.text,
+  },
+  resultsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.md,
+  },
+  resultCount: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
+  },
+  sortButton: {
+    paddingVertical: SPACING.xs,
+  },
+  sortText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.text,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.xl,
+  },
+  emptyTitle: {
+    fontSize: FONT_SIZES.lg,
     fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: SPACING.md,
+  },
+  emptyMessage: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   listContent: {
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
   },
 });
