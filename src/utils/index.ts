@@ -5,16 +5,18 @@
 /**
  * Format a date string into a relative time string
  * @param dateString - ISO date string
- * @returns Relative time string (e.g., "5m ago", "2h ago", "3d ago")
+ * @returns Relative time string (e.g., "now", "5m", "2h", "3d")
  */
 export const formatRelativeTime = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInMs = now.getTime() - date.getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
 
-  if (diffInHours < 1) {
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  if (diffInMinutes <= 0) {
+    return 'now';
+  } else if (diffInHours < 1) {
     return `${diffInMinutes}m`;
   } else if (diffInHours < 24) {
     return `${diffInHours}h`;

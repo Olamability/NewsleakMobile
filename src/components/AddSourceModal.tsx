@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { isValidUrl, isLikelyRssFeed } from '../utils';
 
 // Common RSS feed URL patterns
 const RSS_FEED_PATTERNS = [
@@ -43,35 +44,33 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
       return;
     }
 
-    // Basic URL validation
-    try {
-      const rssUrlObj = new URL(rssUrl.trim());
-      // Check if URL looks like an RSS feed
-      const rssUrlLower = rssUrl.toLowerCase();
-      const isLikelyRssFeed = RSS_FEED_PATTERNS.some(pattern => 
-        rssUrlLower.includes(pattern)
-      );
-      
-      if (!isLikelyRssFeed) {
-        Alert.alert(
-          'Warning',
-          `The URL does not appear to be an RSS feed. RSS URLs typically contain ${RSS_FEED_PATTERNS.slice(0, 2).join(', ')} or end with ${RSS_FEED_PATTERNS[2]}. Do you want to continue?`,
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { 
-              text: 'Continue', 
-              onPress: async () => await addSource()
-            }
-          ]
-        );
-        return;
-      }
+    // Validate URLs
+    const trimmedRssUrl = rssUrl.trim();
+    const trimmedWebsiteUrl = websiteUrl.trim();
 
-      if (websiteUrl.trim()) {
-        new URL(websiteUrl.trim());
-      }
-    } catch (urlError) {
-      Alert.alert('Error', 'Please enter valid URLs');
+    if (!isValidUrl(trimmedRssUrl)) {
+      Alert.alert('Error', 'Please enter a valid RSS feed URL');
+      return;
+    }
+
+    if (trimmedWebsiteUrl && !isValidUrl(trimmedWebsiteUrl)) {
+      Alert.alert('Error', 'Please enter a valid website URL');
+      return;
+    }
+
+    // Check if URL looks like an RSS feed
+    if (!isLikelyRssFeed(trimmedRssUrl)) {
+      Alert.alert(
+        'Warning',
+        `The URL does not appear to be an RSS feed. RSS URLs typically contain ${RSS_FEED_PATTERNS.slice(0, 2).join(', ')} or end with ${RSS_FEED_PATTERNS[2]}. Do you want to continue?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Continue', 
+            onPress: async () => await addSource()
+          }
+        ]
+      );
       return;
     }
 
