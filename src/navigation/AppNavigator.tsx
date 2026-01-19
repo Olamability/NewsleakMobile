@@ -51,8 +51,8 @@ const MainTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.textLight,
+        tabBarActiveTintColor: COLORS.text,
+        tabBarInactiveTintColor: COLORS.iconGray,
         tabBarStyle: {
           backgroundColor: COLORS.background,
           borderTopColor: COLORS.border,
@@ -74,7 +74,7 @@ const MainTabNavigator = () => {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>🏠</Text>
+            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>🏠</Text>
           ),
           tabBarLabel: 'Home',
         }}
@@ -84,7 +84,7 @@ const MainTabNavigator = () => {
         component={CategoryNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>📂</Text>
+            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>📂</Text>
           ),
           tabBarLabel: 'Categories',
         }}
@@ -94,7 +94,7 @@ const MainTabNavigator = () => {
         component={SearchScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>🔍</Text>
+            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>🔍</Text>
           ),
           tabBarLabel: 'Search',
         }}
@@ -104,7 +104,7 @@ const MainTabNavigator = () => {
         component={BookmarksScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>🔖</Text>
+            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>🔖</Text>
           ),
           tabBarLabel: 'Saved',
         }}
@@ -114,7 +114,7 @@ const MainTabNavigator = () => {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>👤</Text>
+            <Text style={{ fontSize: 20, color: focused ? COLORS.text : COLORS.iconGray }}>👤</Text>
           ),
           tabBarLabel: 'Profile',
         }}
