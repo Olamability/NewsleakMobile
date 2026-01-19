@@ -102,7 +102,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
         <View style={styles.searchInputWrapper}>
           <Text style={styles.searchIcon}>🔍</Text>
           <Input
-            placeholder="Search "News""
+            placeholder='Search "News"'
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearch}

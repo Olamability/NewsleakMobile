@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '../components/Input';
@@ -100,67 +101,92 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.logo}>📰</Text>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join us to get personalized news</Text>
+            <Text style={styles.title}>Sign Up</Text>
+            <Text style={styles.subtitle}>
+              Create an account to get personalized news{'\n'}and stay updated
+            </Text>
           </View>
 
           <View style={styles.form}>
             <Input
-              label="Full Name"
-              placeholder="Enter your full name"
+              placeholder="Full Name"
               value={fullName}
               onChangeText={setFullName}
               error={errors.fullName}
               autoCapitalize="words"
+              leftIcon={<Text style={styles.inputIcon}>👤</Text>}
             />
 
             <Input
-              label="Email"
-              placeholder="Enter your email"
+              placeholder="Email"
               value={email}
               onChangeText={setEmail}
               error={errors.email}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              leftIcon={<Text style={styles.inputIcon}>✉️</Text>}
             />
 
             <Input
-              label="Password"
-              placeholder="Enter your password"
+              placeholder="Password"
               value={password}
               onChangeText={setPassword}
               error={errors.password}
-              secureTextEntry
+              showPasswordToggle
               autoCapitalize="none"
+              leftIcon={<Text style={styles.inputIcon}>🔒</Text>}
             />
 
             <Input
-              label="Confirm Password"
-              placeholder="Confirm your password"
+              placeholder="Confirm Password"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               error={errors.confirmPassword}
-              secureTextEntry
+              showPasswordToggle
               autoCapitalize="none"
+              leftIcon={<Text style={styles.inputIcon}>🔒</Text>}
             />
 
             <Button
-              title="Sign Up"
+              title="Sign up"
               onPress={handleSignUp}
               isLoading={isLoading}
               fullWidth
               size="large"
+              variant="gray"
+            />
+
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <Button
+              title="Sign up with Google"
+              onPress={() => Alert.alert('Google Sign Up', 'Coming soon')}
+              variant="social"
+              fullWidth
+              size="large"
+              icon={<Text style={styles.socialIcon}>🔍</Text>}
+            />
+
+            <Button
+              title="Sign up with Facebook"
+              onPress={() => Alert.alert('Facebook Sign Up', 'Coming soon')}
+              variant="social"
+              fullWidth
+              size="large"
+              icon={<Text style={styles.socialIcon}>📘</Text>}
+              style={styles.socialButtonSpacing}
             />
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>Already have an account? </Text>
-              <Button
-                title="Sign In"
-                onPress={() => navigation.navigate('SignIn')}
-                variant="text"
-              />
+              <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                <Text style={styles.signInText}>Sign in</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
@@ -179,38 +205,64 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
     padding: SPACING.xl,
+    paddingTop: SPACING.xxl * 2,
   },
   header: {
-    alignItems: 'center',
     marginBottom: SPACING.xxl,
-  },
-  logo: {
-    fontSize: 80,
-    marginBottom: SPACING.md,
   },
   title: {
     fontSize: FONT_SIZES.xxxl,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.xs,
+    marginBottom: SPACING.md,
   },
   subtitle: {
     fontSize: FONT_SIZES.md,
     color: COLORS.textSecondary,
+    lineHeight: 22,
   },
   form: {
     width: '100%',
+  },
+  inputIcon: {
+    fontSize: 18,
+    color: COLORS.iconGray,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: SPACING.xl,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.border,
+  },
+  dividerText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
+    marginHorizontal: SPACING.md,
+  },
+  socialIcon: {
+    fontSize: 20,
+  },
+  socialButtonSpacing: {
+    marginTop: SPACING.md,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: SPACING.lg,
+    marginTop: SPACING.xl,
   },
   footerText: {
     fontSize: FONT_SIZES.md,
     color: COLORS.textSecondary,
+  },
+  signInText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.text,
+    fontWeight: '700',
   },
 });
