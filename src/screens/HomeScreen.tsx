@@ -5,6 +5,7 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NewsCard } from '../components/NewsCard';
@@ -22,7 +23,7 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -31,6 +32,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+
+  // Extract first name from user email or use default
+  const getGreeting = () => {
+    if (user?.email) {
+      const name = user.email.split('@')[0];
+      const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+      return `Welcome back, ${capitalizedName}!`;
+    }
+    return 'Welcome back!';
+  };
 
   useEffect(() => {
     loadArticles();
@@ -159,10 +170,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.logo}>News Arena</Text>
-        <Text style={styles.subtitle}>Latest News from Multiple Sources</Text>
+        <View style={styles.headerTop}>
+          <TouchableOpacity style={styles.menuButton}>
+            <Text style={styles.menuIcon}>☰</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.notificationButton}>
+            <Text style={styles.notificationIcon}>🔔</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.greeting}>{getGreeting()}</Text>
+        <Text style={styles.headerSubtitle}>Discover a world of news that matters to you</Text>
+      </View>
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Trending news</Text>
+        <TouchableOpacity>
+          <Text style={styles.seeAllText}>See all</Text>
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -192,23 +218,66 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   header: {
-    padding: SPACING.lg,
-    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.lg,
+    backgroundColor: COLORS.background,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  logo: {
+  menuIcon: {
+    fontSize: 24,
+    color: COLORS.text,
+  },
+  notificationButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationIcon: {
+    fontSize: 24,
+  },
+  greeting: {
     fontSize: FONT_SIZES.xxl,
     fontWeight: '700',
-    color: COLORS.background,
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
   },
-  subtitle: {
+  headerSubtitle: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.md,
+  },
+  sectionTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  seeAllText: {
     fontSize: FONT_SIZES.sm,
-    color: COLORS.background,
-    opacity: 0.9,
-    marginTop: SPACING.xs,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
   listContent: {
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
   },
   footer: {
     paddingVertical: SPACING.lg,

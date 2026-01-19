@@ -14,11 +14,12 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'text';
+  variant?: 'primary' | 'secondary' | 'outline' | 'text' | 'gray' | 'social';
   size?: 'small' | 'medium' | 'large';
   isLoading?: boolean;
   fullWidth?: boolean;
   icon?: React.ReactNode;
+  loadingColor?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -31,6 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   disabled,
   style,
+  loadingColor,
   ...props
 }) => {
   const buttonStyle: ViewStyle[] = [
@@ -49,6 +51,13 @@ export const Button: React.FC<ButtonProps> = ({
     disabled ? styles.disabledText : {},
   ];
 
+  const getLoadingColor = () => {
+    if (loadingColor) return loadingColor;
+    if (variant === 'outline' || variant === 'text') return COLORS.primary;
+    if (variant === 'gray') return COLORS.background;
+    return COLORS.background;
+  };
+
   return (
     <TouchableOpacity
       style={buttonStyle}
@@ -58,9 +67,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {isLoading ? (
-        <ActivityIndicator
-          color={variant === 'outline' || variant === 'text' ? COLORS.primary : COLORS.background}
-        />
+        <ActivityIndicator color={getLoadingColor()} />
       ) : (
         <>
           {icon && <View style={styles.iconContainer}>{icon}</View>}
@@ -104,6 +111,14 @@ const styles = StyleSheet.create({
   textButton: {
     backgroundColor: 'transparent',
   },
+  grayButton: {
+    backgroundColor: COLORS.buttonGray,
+  },
+  socialButton: {
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+  },
 
   // Sizes
   smallButton: {
@@ -132,6 +147,12 @@ const styles = StyleSheet.create({
   },
   textText: {
     color: COLORS.primary,
+  },
+  grayText: {
+    color: COLORS.background,
+  },
+  socialText: {
+    color: COLORS.text,
   },
   disabledText: {
     opacity: 0.5,
