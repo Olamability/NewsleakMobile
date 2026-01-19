@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NewsCard } from '../components/NewsCard';
@@ -15,7 +16,7 @@ import { ErrorState } from '../components/ErrorState';
 import { NewsService } from '../services/news.service';
 import { BookmarkService } from '../services/bookmark.service';
 import { NewsArticle } from '../types';
-import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
+import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 
 interface HomeScreenProps {
@@ -32,6 +33,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  const [selectedSource, setSelectedSource] = useState<string>('all');
+
+  // Popular news sources
+  const newsSources = [
+    { id: 'all', name: 'All', icon: '📰' },
+    { id: 'bbc', name: 'BBC News', icon: '🌐' },
+    { id: 'cnn', name: 'CNN', icon: '📺' },
+    { id: 'reuters', name: 'Reuters', icon: '📡' },
+    { id: 'ap', name: 'AP News', icon: '📰' },
+    { id: 'guardian', name: 'The Guardian', icon: '📰' },
+    { id: 'nyt', name: 'NY Times', icon: '📰' },
+  ];
 
   // Extract first name from user email or use default
   const getGreeting = () => {
@@ -184,6 +197,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Text style={styles.headerSubtitle}>Discover a world of news that matters to you</Text>
       </View>
 
+      {/* Horizontal News Sources Scroller */}
+      <View style={styles.sourcesContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.sourcesScrollContent}
+        >
+          {newsSources.map((source) => (
+            <TouchableOpacity
+              key={source.id}
+              style={[
+                styles.sourceChip,
+                selectedSource === source.id && styles.sourceChipActive,
+              ]}
+              onPress={() => setSelectedSource(source.id)}
+            >
+              <Text style={styles.sourceIcon}>{source.icon}</Text>
+              <Text
+                style={[
+                  styles.sourceText,
+                  selectedSource === source.id && styles.sourceTextActive,
+                ]}
+              >
+                {source.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Trending news</Text>
         <TouchableOpacity>
@@ -273,7 +316,7 @@ const styles = StyleSheet.create({
   },
   seeAllText: {
     fontSize: FONT_SIZES.sm,
-    color: COLORS.primary,
+    color: COLORS.textSecondary,
     fontWeight: '600',
   },
   listContent: {
@@ -282,5 +325,41 @@ const styles = StyleSheet.create({
   footer: {
     paddingVertical: SPACING.lg,
     alignItems: 'center',
+  },
+  sourcesContainer: {
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  sourcesScrollContent: {
+    paddingHorizontal: SPACING.lg,
+    gap: SPACING.sm,
+  },
+  sourceChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.backgroundSecondary,
+    borderRadius: BORDER_RADIUS.round,
+    marginRight: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  sourceChipActive: {
+    backgroundColor: COLORS.text,
+    borderColor: COLORS.text,
+  },
+  sourceIcon: {
+    fontSize: 16,
+    marginRight: SPACING.xs,
+  },
+  sourceText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  sourceTextActive: {
+    color: COLORS.background,
   },
 });

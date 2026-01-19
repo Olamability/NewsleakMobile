@@ -48,7 +48,7 @@ export const CATEGORIES: Category[] = [
     id: '6',
     name: 'Technology',
     slug: 'technology',
-    color: '#9C27B0',
+    color: '#44B8FF',
     icon: '💻',
   },
   {
@@ -71,6 +71,13 @@ export const CATEGORIES: Category[] = [
     slug: 'lifestyle',
     color: '#FF9800',
     icon: '✨',
+  },
+  {
+    id: '10',
+    name: 'Environment',
+    slug: 'environment',
+    color: '#44B8FF',
+    icon: '🌍',
   },
 ];
 
