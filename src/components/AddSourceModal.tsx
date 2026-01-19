@@ -11,6 +11,16 @@ import {
 } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
+// Common RSS feed URL patterns
+const RSS_FEED_PATTERNS = [
+  '/rss',
+  '/feed',
+  '.xml',
+  '.rss',
+  'rss.xml',
+  'feed.xml',
+];
+
 interface AddSourceModalProps {
   visible: boolean;
   onClose: () => void;
@@ -38,18 +48,14 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
       const rssUrlObj = new URL(rssUrl.trim());
       // Check if URL looks like an RSS feed
       const rssUrlLower = rssUrl.toLowerCase();
-      const isLikelyRssFeed = 
-        rssUrlLower.includes('/rss') || 
-        rssUrlLower.includes('/feed') || 
-        rssUrlLower.endsWith('.xml') ||
-        rssUrlLower.endsWith('.rss') ||
-        rssUrlLower.includes('rss.xml') ||
-        rssUrlLower.includes('feed.xml');
+      const isLikelyRssFeed = RSS_FEED_PATTERNS.some(pattern => 
+        rssUrlLower.includes(pattern)
+      );
       
       if (!isLikelyRssFeed) {
         Alert.alert(
           'Warning',
-          'The URL does not appear to be an RSS feed. RSS URLs typically contain "/rss", "/feed", or end with ".xml". Do you want to continue?',
+          `The URL does not appear to be an RSS feed. RSS URLs typically contain ${RSS_FEED_PATTERNS.slice(0, 2).join(', ')} or end with ${RSS_FEED_PATTERNS[2]}. Do you want to continue?`,
           [
             { text: 'Cancel', style: 'cancel' },
             { 

@@ -49,6 +49,11 @@ export class SourceService {
 
   /**
    * Add a new news source
+   * @param name - Display name of the news source
+   * @param rssUrl - RSS feed URL for the source
+   * @param websiteUrl - Website URL of the source
+   * @param logoUrl - Optional logo URL for the source
+   * @returns Promise resolving to ApiResponse with the created source or error
    */
   static async addSource(
     name: string,
@@ -84,6 +89,9 @@ export class SourceService {
 
   /**
    * Update a news source
+   * @param id - ID of the source to update
+   * @param updates - Partial source object with fields to update
+   * @returns Promise resolving to ApiResponse with the updated source or error
    */
   static async updateSource(
     id: string,
@@ -110,6 +118,8 @@ export class SourceService {
 
   /**
    * Delete a news source
+   * @param id - ID of the source to delete
+   * @returns Promise resolving to ApiResponse with success message or error
    */
   static async deleteSource(id: string): Promise<ApiResponse<void>> {
     try {
@@ -131,6 +141,9 @@ export class SourceService {
 
   /**
    * Toggle source active status
+   * @param id - ID of the source to toggle
+   * @param isActive - New active status
+   * @returns Promise resolving to ApiResponse with the updated source or error
    */
   static async toggleSource(id: string, isActive: boolean): Promise<ApiResponse<NewsSource>> {
     return this.updateSource(id, { is_active: isActive });

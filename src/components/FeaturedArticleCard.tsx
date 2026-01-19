@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { NewsArticle } from '../types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { formatRelativeTime } from '../utils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - SPACING.lg * 2;
@@ -24,23 +25,6 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
   onPress,
 }) => {
   const [imageError, setImageError] = useState(false);
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-
-    if (diffInHours < 1) {
-      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-      return `${diffInMinutes}m`;
-    } else if (diffInHours < 24) {
-      return `${diffInHours}h`;
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays}d`;
-    }
-  };
 
   return (
     <TouchableOpacity
@@ -67,7 +51,7 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
           <Text style={styles.badgeText}> LIVE</Text>
         </View>
         <View style={styles.timeContainer}>
-          <Text style={styles.timeText}>{formatTime(article.published_at)}</Text>
+          <Text style={styles.timeText}>{formatRelativeTime(article.published_at)}</Text>
         </View>
         <Text style={styles.title} numberOfLines={2}>
           {article.title}

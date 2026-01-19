@@ -1,0 +1,50 @@
+/**
+ * Utility functions for the NewsleakMobile app
+ */
+
+/**
+ * Format a date string into a relative time string
+ * @param dateString - ISO date string
+ * @returns Relative time string (e.g., "5m ago", "2h ago", "3d ago")
+ */
+export const formatRelativeTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+
+  if (diffInHours < 1) {
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    return `${diffInMinutes}m`;
+  } else if (diffInHours < 24) {
+    return `${diffInHours}h`;
+  } else {
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d`;
+  }
+};
+
+/**
+ * Validate if a URL string is a valid URL
+ * @param urlString - URL string to validate
+ * @returns true if valid URL, false otherwise
+ */
+export const isValidUrl = (urlString: string): boolean => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Check if a URL looks like an RSS feed
+ * @param url - URL string to check
+ * @returns true if URL contains common RSS patterns
+ */
+export const isLikelyRssFeed = (url: string): boolean => {
+  const RSS_PATTERNS = ['/rss', '/feed', '.xml', '.rss', 'rss.xml', 'feed.xml'];
+  const urlLower = url.toLowerCase();
+  return RSS_PATTERNS.some(pattern => urlLower.includes(pattern));
+};
