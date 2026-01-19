@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -23,6 +23,8 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
   article,
   onPress,
 }) => {
+  const [imageError, setImageError] = useState(false);
+
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -46,11 +48,18 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
       onPress={onPress}
       activeOpacity={0.9}
     >
-      <Image
-        source={{ uri: article.image_url }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      {!imageError && article.image_url ? (
+        <Image
+          source={{ uri: article.image_url }}
+          style={styles.image}
+          resizeMode="cover"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <View style={[styles.image, styles.imagePlaceholder]}>
+          <Text style={styles.placeholderText}>📰</Text>
+        </View>
+      )}
       <View style={styles.overlay} />
       <View style={styles.content}>
         <View style={styles.badge}>
@@ -81,6 +90,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
+  },
+  imagePlaceholder: {
+    backgroundColor: COLORS.backgroundSecondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 64,
+    opacity: 0.3,
   },
   overlay: {
     position: 'absolute',

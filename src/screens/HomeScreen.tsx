@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NewsCard } from '../components/NewsCard';
@@ -25,6 +27,7 @@ import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CARD_WIDTH = SCREEN_WIDTH - SPACING.lg * 2;
 
 interface HomeScreenProps {
   navigation: any;
@@ -145,9 +148,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setNewsSources(sources);
   };
 
-  const handleFeaturedScroll = (event: any) => {
+  const handleFeaturedScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffset = event.nativeEvent.contentOffset.x;
-    const index = Math.round(contentOffset / (SCREEN_WIDTH - SPACING.lg * 2 + SPACING.lg));
+    const index = Math.round(contentOffset / (CARD_WIDTH + SPACING.lg));
     setCurrentFeaturedIndex(index);
   };
 

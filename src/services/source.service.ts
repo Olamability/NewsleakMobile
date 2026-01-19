@@ -4,6 +4,7 @@ import { NewsSource, ApiResponse } from '../types';
 export class SourceService {
   /**
    * Get all news sources
+   * @returns Array of news sources. Returns empty array on error.
    */
   static async getSources(): Promise<NewsSource[]> {
     try {
@@ -17,7 +18,7 @@ export class SourceService {
       }
 
       return data || [];
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching sources:', error);
       return [];
     }
@@ -25,6 +26,7 @@ export class SourceService {
 
   /**
    * Get active news sources
+   * @returns Array of active news sources. Returns empty array on error.
    */
   static async getActiveSources(): Promise<NewsSource[]> {
     try {
@@ -39,7 +41,7 @@ export class SourceService {
       }
 
       return data || [];
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching active sources:', error);
       return [];
     }

@@ -33,6 +33,17 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
       return;
     }
 
+    // Basic URL validation
+    try {
+      new URL(rssUrl.trim());
+      if (websiteUrl.trim()) {
+        new URL(websiteUrl.trim());
+      }
+    } catch (urlError) {
+      Alert.alert('Error', 'Please enter valid URLs');
+      return;
+    }
+
     try {
       setIsLoading(true);
       await onAdd(name.trim(), rssUrl.trim(), websiteUrl.trim());
@@ -41,7 +52,8 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
       setWebsiteUrl('');
       onClose();
     } catch (error) {
-      Alert.alert('Error', 'Failed to add news source');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add news source';
+      Alert.alert('Error', errorMessage);
     } finally {
       setIsLoading(false);
     }
