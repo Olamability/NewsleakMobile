@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   },
   seeAllText: {
     fontSize: FONT_SIZES.sm,
-    color: COLORS.primary,
+    color: COLORS.textSecondary,
     fontWeight: '600',
   },
   listContent: {
