@@ -62,6 +62,29 @@ export const NewsCard: React.FC<NewsCardProps> = ({
       activeOpacity={0.7}
     >
       <View style={styles.cardContent}>
+        <View style={styles.textContent}>
+          <View style={styles.headerRow}>
+            <Text style={styles.sourceName} numberOfLines={1}>{article.source_name}</Text>
+            <Text style={styles.dot}>•</Text>
+            <Text style={styles.time}>{formatDate(article.published_at)}</Text>
+          </View>
+
+          <Text style={styles.title} numberOfLines={3}>
+            {article.title}
+          </Text>
+
+          <View style={styles.actionsRow}>
+            <TouchableOpacity style={styles.actionButton} hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}>
+              <Text style={styles.actionIcon}>👍</Text>
+              <Text style={styles.actionText}>Like</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton} hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}>
+              <Text style={styles.actionIcon}>👎</Text>
+              <Text style={styles.actionText}>Dislike</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
         {article.image_url ? (
           <Image
             source={{ uri: article.image_url }}
@@ -73,24 +96,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             <Text style={styles.placeholderText}>📰</Text>
           </View>
         )}
-        
-        <View style={styles.textContent}>
-          <View style={styles.categoryRow}>
-            <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
-              <Text style={styles.categoryText}>{article.category}</Text>
-            </View>
-          </View>
-
-          <Text style={styles.title} numberOfLines={3}>
-            {article.title}
-          </Text>
-
-          <View style={styles.footer}>
-            <Text style={styles.sourceName} numberOfLines={1}>{article.source_name}</Text>
-            <Text style={styles.dot}>•</Text>
-            <Text style={styles.time}>{formatDate(article.published_at)}</Text>
-          </View>
-        </View>
 
         {onBookmarkPress && (
           <TouchableOpacity 
@@ -122,12 +127,14 @@ const styles = StyleSheet.create({
   image: {
     borderRadius: BORDER_RADIUS.sm,
     backgroundColor: COLORS.backgroundSecondary,
+    marginLeft: SPACING.md,
   },
   imagePlaceholder: {
     borderRadius: BORDER_RADIUS.sm,
     backgroundColor: COLORS.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: SPACING.md,
   },
   placeholderText: {
     fontSize: 32,
@@ -135,8 +142,12 @@ const styles = StyleSheet.create({
   },
   textContent: {
     flex: 1,
-    marginLeft: SPACING.md,
     justifyContent: 'space-between',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
   },
   categoryRow: {
     flexDirection: 'row',
@@ -160,6 +171,7 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     lineHeight: 20,
     flex: 1,
+    marginBottom: SPACING.sm,
   },
   footer: {
     flexDirection: 'row',
@@ -168,9 +180,8 @@ const styles = StyleSheet.create({
   },
   sourceName: {
     fontSize: FONT_SIZES.xs,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-    flex: 1,
+    color: COLORS.text,
+    fontWeight: '600',
   },
   dot: {
     fontSize: FONT_SIZES.xs,
@@ -180,6 +191,25 @@ const styles = StyleSheet.create({
   time: {
     fontSize: FONT_SIZES.xs,
     color: COLORS.textLight,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SPACING.xs,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: SPACING.lg,
+  },
+  actionIcon: {
+    fontSize: 16,
+    marginRight: SPACING.xs,
+  },
+  actionText: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
   },
   bookmarkButton: {
     position: 'absolute',
