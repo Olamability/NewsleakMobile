@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
+import { AdminService } from '../services/admin.service';
 import { NewsArticle } from '../types';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 
@@ -22,6 +23,8 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     loadArticles();
@@ -32,11 +35,20 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
       if (!isRefresh) {
         setIsLoading(true);
       }
-      // TODO: Implement actual API call to fetch articles
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setArticles([]);
+      
+      const response = await AdminService.getAllArticles(isRefresh ? 1 : page);
+      
+      if (isRefresh) {
+        setArticles(response.data);
+        setPage(1);
+      } else {
+        setArticles(response.data);
+      }
+      
+      setHasMore(response.hasMore);
     } catch (error) {
       console.error('Error loading articles:', error);
+      Alert.alert('Error', 'Failed to load articles. Please try again.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -55,14 +67,27 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
           text: 'Confirm',
           onPress: async () => {
             try {
-              // TODO: Implement actual API call to feature/unfeature article
+              const newFeaturedStatus = !isFeatured;
+              const response = await AdminService.toggleArticleFeaturedStatus(
+                articleId,
+                newFeaturedStatus
+              );
+              
+              if (response.error) {
+                Alert.alert('Error', response.error);
+                return;
+              }
+
               setArticles((prevArticles) =>
                 prevArticles.map((article) =>
-                  article.id === articleId ? { ...article, is_featured: !isFeatured } : article
+                  article.id === articleId
+                    ? { ...article, is_featured: newFeaturedStatus }
+                    : article
                 )
               );
             } catch (error) {
               console.error('Error toggling featured status:', error);
+              Alert.alert('Error', 'Failed to update article. Please try again.');
             }
           },
         },
@@ -81,12 +106,21 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
           style: 'destructive',
           onPress: async () => {
             try {
-              // TODO: Implement actual API call to remove article
+              const response = await AdminService.deleteArticle(articleId);
+              
+              if (response.error) {
+                Alert.alert('Error', response.error);
+                return;
+              }
+
               setArticles((prevArticles) =>
                 prevArticles.filter((article) => article.id !== articleId)
               );
+              
+              Alert.alert('Success', 'Article removed successfully');
             } catch (error) {
               console.error('Error removing article:', error);
+              Alert.alert('Error', 'Failed to remove article. Please try again.');
             }
           },
         },
