@@ -89,3 +89,55 @@ export interface AuthCredentials {
 export interface SignUpCredentials extends AuthCredentials {
   full_name?: string;
 }
+
+export type ArticleStatus = 'draft' | 'pending_approval' | 'approved' | 'rejected' | 'published';
+
+export interface IngestionLog {
+  id: string;
+  source_id?: string;
+  source_name: string;
+  status: 'success' | 'error' | 'in_progress';
+  articles_fetched: number;
+  articles_processed: number;
+  articles_duplicates: number;
+  error_message?: string;
+  started_at: string;
+  completed_at?: string;
+  created_at: string;
+}
+
+export interface RawArticle {
+  title: string;
+  description?: string;
+  link: string;
+  pubDate?: string;
+  creator?: string;
+  content?: string;
+  contentSnippet?: string;
+  guid?: string;
+  categories?: string[];
+  isoDate?: string;
+  enclosure?: {
+    url?: string;
+    type?: string;
+    length?: string;
+  };
+}
+
+export interface ProcessedArticle {
+  title: string;
+  slug: string;
+  summary: string;
+  content_snippet?: string;
+  image_url: string;
+  article_url: string;
+  canonical_url: string;
+  source_name: string;
+  source_url: string;
+  category: string;
+  tags?: string[];
+  language?: string;
+  published_at: string;
+  content_hash: string;
+  status: ArticleStatus;
+}
