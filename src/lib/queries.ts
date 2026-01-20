@@ -193,8 +193,6 @@ export const useRecentSearches = (userId?: string) => {
 };
 
 export const useTrackEvent = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({
       eventType,
@@ -207,8 +205,8 @@ export const useTrackEvent = () => {
     }) => {
       const { error } = await supabase.from('analytics_events').insert({
         event_type: eventType,
-        article_id: articleId,
-        metadata,
+        article_id: articleId || null,
+        metadata: metadata || null,
       });
 
       if (error) throw error;
@@ -223,7 +221,7 @@ export const useSaveSearch = () => {
     mutationFn: async ({ query, userId }: { query: string; userId?: string }) => {
       const { error } = await supabase.from('recent_searches').insert({
         query,
-        user_id: userId,
+        user_id: userId || null,
       });
 
       if (error) throw error;

@@ -54,11 +54,11 @@ async function saveTokenToDatabase(token: string) {
     const { error } = await supabase
       .from('user_devices')
       .upsert(
-        {
+        [{
           expo_push_token: token,
           platform: Platform.OS,
           is_active: true,
-        },
+        }],
         {
           onConflict: 'expo_push_token',
         }

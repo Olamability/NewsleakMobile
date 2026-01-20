@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "News Arena",
-    "slug": "news-arena",
+    "name": "Spazr News",
+    "slug": "spazr-news",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,25 +10,31 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2563eb"
+      "backgroundColor": "#1E40AF"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.newsarena.app"
+      "bundleIdentifier": "com.spazr.news"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2563eb"
+        "backgroundColor": "#1E40AF"
       },
-      "package": "com.newsarena.app",
-      "permissions": ["INTERNET"],
+      "package": "com.spazr.news",
+      "permissions": [
+        "INTERNET",
+        "NOTIFICATIONS"
+      ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      "expo-notifications"
+    ],
     "extra": {
       "eas": {
         "projectId": "your-project-id"

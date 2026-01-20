@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as WebBrowser from 'expo-web-browser';
 import { Ionicons } from '@expo/vector-icons';
-import { NewsArticle } from '../types/news';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
-import { formatFullDate, extractDomain } from '../utils/helpers';
-import { Button } from '../components/Button';
-import { useTrackEvent } from '../lib/queries';
+import { timeAgo } from '../lib/helpers';
+import { useArticle, useTrackEvent } from '../lib/queries';
 import { RootStackParamList } from '../navigation/types';
 
 type ArticleDetailScreenNavigationProp = NativeStackNavigationProp<
@@ -24,17 +22,43 @@ interface ArticleDetailScreenProps {
 }
 
 export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ navigation, route }) => {
-  const { article } = route.params;
+  const { articleId } = route.params;
+  const { data: article, isLoading, error } = useArticle(articleId);
   const [imageError, setImageError] = useState(false);
   const { mutate: trackEvent } = useTrackEvent();
 
   useEffect(() => {
-    trackEvent({
-      eventType: 'article_view',
-      articleId: article.id,
-      metadata: { source: article.news_sources?.name },
-    });
-  }, [article.id, trackEvent]);
+    if (article) {
+      trackEvent({
+        eventType: 'article_view',
+        articleId: article.id,
+        metadata: { source: article.news_sources?.name },
+      });
+    }
+  }, [article?.id]);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !article) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Failed to load article</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handleReadFullStory = async () => {
     try {
@@ -80,7 +104,7 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
               <View style={styles.sourceRow}>
                 <Text style={styles.sourceName}>{article.news_sources.name}</Text>
                 <Text style={styles.dot}>•</Text>
-                <Text style={styles.publishedTime}>{formatFullDate(article.published_at)}</Text>
+                <Text style={styles.publishedTime}>{timeAgo(article.published_at)} ago</Text>
               </View>
             )}
           </View>
@@ -95,11 +119,16 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
 
           {/* Read Full Story Button */}
           <View style={styles.actionContainer}>
-            <Button
-              title={`Read Full Story at ${article.news_sources?.name || extractDomain(article.original_url)}`}
+            <TouchableOpacity
+              style={styles.readButton}
               onPress={handleReadFullStory}
-              variant="primary"
-            />
+              activeOpacity={0.8}
+            >
+              <Text style={styles.readButtonText}>
+                Read Full Story at {article.news_sources?.name || 'Source'}
+              </Text>
+              <Ionicons name="open-outline" size={20} color={COLORS.background} style={{ marginLeft: 8 }} />
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -111,6 +140,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.lg,
+  },
+  errorText: {
+    fontSize: FONT_SIZES.lg,
+    color: COLORS.error,
+    marginBottom: SPACING.md,
+  },
+  backButtonText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
   scrollView: {
     flex: 1,
@@ -185,5 +235,19 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     marginTop: SPACING.lg,
+  },
+  readButton: {
+    backgroundColor: COLORS.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: BORDER_RADIUS.lg,
+  },
+  readButtonText: {
+    fontSize: FONT_SIZES.md,
+    fontWeight: '600',
+    color: COLORS.background,
   },
 });

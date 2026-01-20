@@ -85,7 +85,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
 
   const handleArticlePress = (article: NewsArticle) => {
     trackEvent({ eventType: 'article_view', articleId: article.id });
-    navigation.navigate('ArticleDetail', { article });
+    navigation.navigate('ArticleDetail', { articleId: article.id });
   };
 
   const renderContent = () => {

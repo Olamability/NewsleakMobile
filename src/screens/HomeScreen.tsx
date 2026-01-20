@@ -96,7 +96,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const handleArticlePress = useCallback(
     (article: NewsArticle) => {
       trackEvent({ eventType: 'article_view', articleId: article.id });
-      navigation.navigate('ArticleDetail', { article });
+      navigation.navigate('ArticleDetail', { articleId: article.id });
     },
     [navigation, trackEvent]
   );

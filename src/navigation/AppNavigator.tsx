@@ -2,69 +2,35 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
-import { RootStackParamList, MainTabParamList, CategoryStackParamList } from './types';
+import { Ionicons } from '@expo/vector-icons';
+import { RootStackParamList, MainTabParamList } from './types';
 import { HomeScreen } from '../screens/HomeScreen';
-import { CategoryListScreen } from '../screens/CategoryListScreen';
-import { CategoryFeedScreen } from '../screens/CategoryFeedScreen';
 import { SearchScreen } from '../screens/SearchScreen';
-import { BookmarksScreen } from '../screens/BookmarksScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 import { ArticleDetailScreen } from '../screens/ArticleDetailScreen';
-import { ArticleWebViewScreen } from '../screens/ArticleWebViewScreen';
-import { SignInScreen } from '../screens/SignInScreen';
-import { SignUpScreen } from '../screens/SignUpScreen';
-import { AdminDashboardScreen } from '../screens/AdminDashboardScreen';
-import { ManageSourcesScreen } from '../screens/ManageSourcesScreen';
-import { ManageArticlesScreen } from '../screens/ManageArticlesScreen';
-import { IngestionLogsScreen } from '../screens/IngestionLogsScreen';
 import { COLORS, FONT_SIZES } from '../constants/theme';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
-const CategoryStack = createStackNavigator<CategoryStackParamList>();
 
-// Category Stack Navigator
-const CategoryNavigator = () => {
-  return (
-    <CategoryStack.Navigator>
-      <CategoryStack.Screen
-        name="CategoryList"
-        component={CategoryListScreen}
-        options={{ headerShown: false }}
-      />
-      <CategoryStack.Screen
-        name="CategoryFeed"
-        component={CategoryFeedScreen}
-        options={({ route }) => ({
-          title: route.params.categoryName,
-          headerStyle: { backgroundColor: COLORS.background },
-          headerTintColor: COLORS.text,
-        })}
-      />
-    </CategoryStack.Navigator>
-  );
-};
-
-// Bottom Tab Navigator
 const MainTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: COLORS.text,
+        tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.iconGray,
         tabBarStyle: {
           backgroundColor: COLORS.background,
           borderTopColor: COLORS.border,
           borderTopWidth: 1,
-          height: 56,
-          paddingBottom: 6,
-          paddingTop: 6,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: FONT_SIZES.xs,
           fontWeight: '600',
-          marginTop: -4,
         },
         headerShown: false,
       }}
@@ -73,47 +39,38 @@ const MainTabNavigator = () => {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🏠</Text>,
+          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
           tabBarLabel: 'Home',
-        }}
-      />
-      <Tab.Screen
-        name="Categories"
-        component={CategoryNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>📂</Text>,
-          tabBarLabel: 'Categories',
         }}
       />
       <Tab.Screen
         name="Search"
         component={SearchScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🔍</Text>,
+          tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,
           tabBarLabel: 'Search',
         }}
       />
       <Tab.Screen
-        name="Bookmarks"
-        component={BookmarksScreen}
+        name="Notifications"
+        component={NotificationsScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🔖</Text>,
-          tabBarLabel: 'Saved',
+          tabBarIcon: ({ color, size }) => <Ionicons name="notifications" size={size} color={color} />,
+          tabBarLabel: 'Notifications',
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="Settings"
+        component={SettingsScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>👤</Text>,
-          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} />,
+          tabBarLabel: 'Settings',
         }}
       />
     </Tab.Navigator>
   );
 };
 
-// Root Stack Navigator
 export const AppNavigator = () => {
   return (
     <NavigationContainer>
@@ -129,72 +86,7 @@ export const AppNavigator = () => {
           name="ArticleDetail"
           component={ArticleDetailScreen}
           options={{
-            title: 'Article',
-            headerBackTitle: 'Back',
-          }}
-        />
-        <Stack.Screen
-          name="ArticleWebView"
-          component={ArticleWebViewScreen}
-          options={{
-            title: 'Article',
-            headerBackTitle: 'Back',
-          }}
-        />
-        <Stack.Screen
-          name="Auth"
-          component={SignInScreen}
-          options={{
-            title: 'Sign In',
-            presentation: 'modal',
-          }}
-        />
-        <Stack.Screen
-          name="SignIn"
-          component={SignInScreen}
-          options={{
-            title: 'Sign In',
-            presentation: 'modal',
-          }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{
-            title: 'Sign Up',
-            presentation: 'modal',
-          }}
-        />
-        <Stack.Screen
-          name="AdminDashboard"
-          component={AdminDashboardScreen}
-          options={{
-            title: 'Admin Dashboard',
-            headerBackTitle: 'Back',
-          }}
-        />
-        <Stack.Screen
-          name="ManageSources"
-          component={ManageSourcesScreen}
-          options={{
-            title: 'Manage Sources',
-            headerBackTitle: 'Back',
-          }}
-        />
-        <Stack.Screen
-          name="ManageArticles"
-          component={ManageArticlesScreen}
-          options={{
-            title: 'Manage Articles',
-            headerBackTitle: 'Back',
-          }}
-        />
-        <Stack.Screen
-          name="IngestionLogs"
-          component={IngestionLogsScreen}
-          options={{
-            title: 'Ingestion Logs',
-            headerBackTitle: 'Back',
+            headerShown: false,
           }}
         />
       </Stack.Navigator>
