@@ -85,6 +85,7 @@ src/
 - Supabase (PostgreSQL)
 - Supabase Auth
 - Supabase Storage
+- Supabase Edge Functions (RSS Parsing)
 
 **Key Libraries:**
 - `@supabase/supabase-js` - Supabase client
@@ -201,6 +202,35 @@ CREATE POLICY "Users can create own bookmarks" ON bookmarks
 CREATE POLICY "Users can delete own bookmarks" ON bookmarks
   FOR DELETE USING (auth.uid() = user_id);
 ```
+
+#### 3. Deploy RSS Parser Edge Function
+
+The app uses a Supabase Edge Function to parse RSS feeds on the backend for improved performance and reduced mobile app bundle size.
+
+**Install Supabase CLI:**
+```bash
+npm install -g supabase
+```
+
+**Link your project:**
+```bash
+supabase link --project-ref your-project-ref
+```
+
+**Deploy the RSS parser function:**
+```bash
+supabase functions deploy parse-rss
+```
+
+**Verify deployment:**
+```bash
+curl -X POST https://your-project.supabase.co/functions/v1/parse-rss \
+  -H "Content-Type: application/json" \
+  -H "apikey: your-anon-key" \
+  -d '{"feedUrl": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"}'
+```
+
+For more details, see [BACKEND_RSS_IMPLEMENTATION.md](./BACKEND_RSS_IMPLEMENTATION.md).
 
 ### Running the App
 
