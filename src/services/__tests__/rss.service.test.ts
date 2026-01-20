@@ -1,11 +1,17 @@
 import { RSSService } from '../rss.service';
 import { RawArticle } from '../../types';
+import axios from 'axios';
+
+// Mock axios
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('RSSService', () => {
   let rssService: RSSService;
 
   beforeEach(() => {
     rssService = new RSSService();
+    jest.clearAllMocks();
   });
 
   describe('isValidFeedUrl', () => {
@@ -168,10 +174,17 @@ describe('RSSService', () => {
           </channel>
         </rss>`;
 
-      // Mock parseFeedString to return metadata
-      const originalParseString = rssService['parser'].parseString.bind(rssService['parser']);
-      jest.spyOn(rssService['parser'], 'parseURL').mockImplementation(async () => {
-        return originalParseString(rssFeed);
+      // Mock axios.get to return the RSS feed
+      mockedAxios.get.mockResolvedValueOnce({
+        data: rssFeed,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {
+          url: 'https://example.com/feed.xml',
+          method: 'get',
+          headers: {},
+        },
       });
 
       const metadata = await rssService.getFeedMetadata('https://example.com/feed.xml');
