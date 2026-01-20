@@ -92,7 +92,7 @@ INSERT INTO news_articles (
   (SELECT id FROM news_sources WHERE name = 'ESPN' LIMIT 1),
   (SELECT id FROM categories WHERE slug = 'sports' LIMIT 1),
   'Tennis Star Wins Historic Grand Slam Tournament',
-  'A rising tennis star has claimed their first Grand Slam title in an impressive display of skill and determination. The victory marks a significant milestone in the young athlete\'s career.',
+  'A rising tennis star has claimed their first Grand Slam title in an impressive display of skill and determination. The victory marks a significant milestone in the young athlete''s career.',
   'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&h=400&fit=crop',
   'https://espn.com/2026/01/tennis-grand-slam-win',
   NOW() - INTERVAL '8 hours',
@@ -160,7 +160,7 @@ INSERT INTO news_articles (
   (SELECT id FROM news_sources WHERE name = 'CNN' LIMIT 1),
   (SELECT id FROM categories WHERE slug = 'business' LIMIT 1),
   'Major Merger Announced in Pharmaceutical Industry',
-  'Two pharmaceutical giants have announced a merger that will create one of the world\'s largest drug manufacturers. The $75 billion deal is expected to close by the end of the year pending regulatory approval.',
+  'Two pharmaceutical giants have announced a merger that will create one of the world''s largest drug manufacturers. The $75 billion deal is expected to close by the end of the year pending regulatory approval.',
   'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=800&h=400&fit=crop',
   'https://cnn.com/business/2026/01/pharma-merger-announcement',
   NOW() - INTERVAL '9 hours',
@@ -260,16 +260,7 @@ INSERT INTO news_articles (
   0.94
 );
 
--- Update some articles to have better quality scores and vary published times
+-- Update some articles to have better quality scores
 UPDATE news_articles 
 SET quality_score = 0.98 
 WHERE is_breaking = true;
-
--- Add view counts to simulate article popularity
-UPDATE news_articles 
-SET view_count = floor(random() * 10000)::int
-WHERE published_at < NOW() - INTERVAL '6 hours';
-
-UPDATE news_articles 
-SET view_count = floor(random() * 5000)::int
-WHERE published_at >= NOW() - INTERVAL '6 hours';
