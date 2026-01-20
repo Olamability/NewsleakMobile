@@ -1,140 +1,134 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Share,
-  useWindowDimensions,
-  Linking,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { NewsArticle } from '../types';
-import { NewsService } from '../services/news.service';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
-import { getCategoryColor } from '../constants/categories';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import * as WebBrowser from 'expo-web-browser';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
+import { timeAgo } from '../lib/helpers';
+import { useArticle, useTrackEvent } from '../lib/queries';
+import { RootStackParamList } from '../navigation/types';
+
+type ArticleDetailScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'ArticleDetail'
+>;
+type ArticleDetailScreenRouteProp = RouteProp<RootStackParamList, 'ArticleDetail'>;
 
 interface ArticleDetailScreenProps {
-  route: any;
-  navigation: any;
+  navigation: ArticleDetailScreenNavigationProp;
+  route: ArticleDetailScreenRouteProp;
 }
 
-export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ route, navigation }) => {
-  const { article } = route.params as { article: NewsArticle };
-  const categoryColor = getCategoryColor(article.category);
-  const { width: windowWidth } = useWindowDimensions();
-  const imageHeight = Math.min(300, windowWidth * 0.6);
+export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ navigation, route }) => {
+  const { articleId } = route.params;
+  const { data: article, isLoading, error } = useArticle(articleId);
+  const [imageError, setImageError] = useState(false);
+  const { mutate: trackEvent } = useTrackEvent();
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const handleReadFullArticle = async () => {
-    const trackingUrl = NewsService.generateTrackingUrl(article.article_url);
-    NewsService.incrementViewCount(article.id);
-
-    try {
-      const supported = await Linking.canOpenURL(trackingUrl);
-      if (supported) {
-        await Linking.openURL(trackingUrl);
-      } else {
-        console.error('Cannot open URL - unsupported URL format:', trackingUrl);
-        // Fallback to WebView navigation
-        navigation.navigate('ArticleWebView', {
-          url: trackingUrl,
-          title: article.title,
-        });
-      }
-    } catch (error) {
-      console.error('Error opening URL, falling back to WebView:', error);
-      // Fallback to WebView navigation
-      navigation.navigate('ArticleWebView', {
-        url: trackingUrl,
-        title: article.title,
+  useEffect(() => {
+    if (article) {
+      trackEvent({
+        eventType: 'article_view',
+        articleId: article.id,
+        metadata: { source: article.news_sources?.name },
       });
     }
-  };
+  }, [article?.id]);
 
-  const handleShare = async () => {
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !article) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Failed to load article</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const handleReadFullStory = async () => {
     try {
-      await Share.share({
-        message: `${article.title}\n\n${article.article_url}`,
-        url: article.article_url,
+      trackEvent({
+        eventType: 'article_external_view',
+        articleId: article.id,
       });
+      await WebBrowser.openBrowserAsync(article.original_url);
     } catch (error) {
-      console.error('Error sharing:', error);
+      console.error('Error opening browser:', error);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {article.image_url ? (
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Header with back button */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Article Image */}
+        {!imageError && article.image_url ? (
           <Image
             source={{ uri: article.image_url }}
-            style={[styles.image, { height: imageHeight }]}
+            style={styles.image}
             resizeMode="cover"
+            onError={() => setImageError(true)}
           />
         ) : (
-          <View style={[styles.imagePlaceholder, { height: imageHeight }]}>
-            <Text style={styles.placeholderIcon}>📰</Text>
+          <View style={[styles.image, styles.imagePlaceholder]}>
+            <Ionicons name="newspaper-outline" size={80} color={COLORS.textLight} />
           </View>
         )}
 
+        {/* Article Content */}
         <View style={styles.content}>
-          <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
-            <Text style={styles.categoryText}>{article.category}</Text>
+          {/* Source & Time */}
+          <View style={styles.metaContainer}>
+            {article.news_sources && (
+              <View style={styles.sourceRow}>
+                <Text style={styles.sourceName}>{article.news_sources.name}</Text>
+                <Text style={styles.dot}>•</Text>
+                <Text style={styles.publishedTime}>{timeAgo(article.published_at)} ago</Text>
+              </View>
+            )}
           </View>
 
+          {/* Title */}
           <Text style={styles.title}>{article.title}</Text>
 
-          <View style={styles.metadata}>
-            <Text style={styles.source}>{article.source_name}</Text>
-            <Text style={styles.dot}>•</Text>
-            <Text style={styles.date}>{formatDate(article.published_at)}</Text>
-          </View>
-
-          <View style={styles.summaryCard}>
+          {/* Summary */}
+          {article.summary && (
             <Text style={styles.summary}>{article.summary}</Text>
-          </View>
-
-          {article.content_snippet && (
-            <View style={styles.contentCard}>
-              <Text style={styles.contentLabel}>News Preview</Text>
-              <Text style={styles.snippet}>{article.content_snippet}</Text>
-
-              <TouchableOpacity style={styles.readFullLink} onPress={handleReadFullArticle}>
-                <Text style={styles.readFullLinkText}>
-                  📖 Read Full Article at {article.source_name} →
-                </Text>
-              </TouchableOpacity>
-            </View>
           )}
 
-          {!article.content_snippet && (
-            <TouchableOpacity style={styles.readButton} onPress={handleReadFullArticle}>
-              <Text style={styles.readButtonText}>📖 Read Full Article</Text>
+          {/* Read Full Story Button */}
+          <View style={styles.actionContainer}>
+            <TouchableOpacity
+              style={styles.readButton}
+              onPress={handleReadFullStory}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.readButtonText}>
+                Read Full Story at {article.news_sources?.name || 'Source'}
+              </Text>
+              <Ionicons name="open-outline" size={20} color={COLORS.background} style={{ marginLeft: 8 }} />
             </TouchableOpacity>
-          )}
-
-          <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-            <Text style={styles.shareButtonText}>🔗 Share Article</Text>
-          </TouchableOpacity>
-
-          <View style={styles.disclaimer}>
-            <Text style={styles.disclaimerText}>
-              📌 This article is from {article.source_name}. You will be redirected to their website
-              to read the complete article.
-            </Text>
           </View>
         </View>
       </ScrollView>
@@ -147,143 +141,113 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  image: {
-    width: '100%',
-    backgroundColor: COLORS.backgroundSecondary,
-  },
-  imagePlaceholder: {
-    width: '100%',
-    backgroundColor: COLORS.backgroundSecondary,
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  placeholderIcon: {
-    fontSize: 80,
-    opacity: 0.3,
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.lg,
+  },
+  errorText: {
+    fontSize: FONT_SIZES.lg,
+    color: COLORS.error,
+    marginBottom: SPACING.md,
+  },
+  backButtonText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.primary,
+    fontWeight: '600',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  image: {
+    width: '100%',
+    height: 300,
+    backgroundColor: COLORS.backgroundSecondary,
+  },
+  imagePlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     padding: SPACING.lg,
   },
-  categoryBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.md,
+  metaContainer: {
     marginBottom: SPACING.md,
   },
-  categoryText: {
-    color: COLORS.background,
+  sourceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sourceName: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
-    textTransform: 'uppercase',
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  dot: {
+    marginHorizontal: SPACING.xs,
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.sm,
+  },
+  publishedTime: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
   },
   title: {
     fontSize: FONT_SIZES.xxxl,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.md,
     lineHeight: 36,
-  },
-  metadata: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.lg,
-  },
-  source: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.primary,
-    fontWeight: '600',
-  },
-  dot: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textLight,
-    marginHorizontal: SPACING.sm,
-  },
-  date: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textLight,
-  },
-  summaryCard: {
-    backgroundColor: COLORS.backgroundSecondary,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   summary: {
     fontSize: FONT_SIZES.lg,
-    color: COLORS.text,
-    lineHeight: 26,
-    fontWeight: '500',
-  },
-  contentCard: {
-    backgroundColor: COLORS.background,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
+    color: COLORS.textSecondary,
+    lineHeight: 28,
     marginBottom: SPACING.xl,
   },
-  contentLabel: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
-    color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    marginBottom: SPACING.sm,
-  },
-  snippet: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textSecondary,
-    lineHeight: 24,
-    marginBottom: SPACING.md,
-  },
-  readFullLink: {
-    paddingVertical: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    marginTop: SPACING.sm,
-  },
-  readFullLinkText: {
-    color: COLORS.primary,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '700',
-    textAlign: 'center',
+  actionContainer: {
+    marginTop: SPACING.lg,
   },
   readButton: {
     backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.md,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.md,
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: BORDER_RADIUS.lg,
   },
   readButtonText: {
-    color: COLORS.background,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '700',
-  },
-  shareButton: {
-    backgroundColor: COLORS.background,
-    paddingVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: SPACING.xl,
-  },
-  shareButtonText: {
-    color: COLORS.text,
     fontSize: FONT_SIZES.md,
     fontWeight: '600',
-  },
-  disclaimer: {
-    backgroundColor: COLORS.backgroundSecondary,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.primary,
-  },
-  disclaimerText: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
+    color: COLORS.background,
   },
 });

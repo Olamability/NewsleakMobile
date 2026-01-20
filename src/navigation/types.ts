@@ -1,27 +1,13 @@
-import { NewsArticle } from '../types';
+import { NewsArticle } from '../types/news';
 
 export type RootStackParamList = {
   Main: undefined;
-  ArticleDetail: { article: NewsArticle };
-  ArticleWebView: { url: string; title: string };
-  Auth: undefined;
-  SignIn: undefined;
-  SignUp: undefined;
-  AdminDashboard: undefined;
-  ManageSources: undefined;
-  ManageArticles: undefined;
-  IngestionLogs: undefined;
+  ArticleDetail: { articleId: string };
 };
 
 export type MainTabParamList = {
   Home: undefined;
-  Categories: undefined;
   Search: undefined;
-  Bookmarks: undefined;
-  Profile: undefined;
-};
-
-export type CategoryStackParamList = {
-  CategoryList: undefined;
-  CategoryFeed: { category: string; categoryName: string };
+  Notifications: undefined;
+  Settings: undefined;
 };
