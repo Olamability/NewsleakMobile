@@ -9,23 +9,14 @@ interface ErrorStateProps {
   onRetry?: () => void;
 }
 
-export const ErrorState: React.FC<ErrorStateProps> = ({
-  title = 'Oops!',
-  message,
-  onRetry,
-}) => {
+export const ErrorState: React.FC<ErrorStateProps> = ({ title = 'Oops!', message, onRetry }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.icon}>⚠️</Text>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
       {onRetry && (
-        <Button
-          title="Try Again"
-          onPress={onRetry}
-          variant="primary"
-          style={styles.button}
-        />
+        <Button title="Try Again" onPress={onRetry} variant="primary" style={styles.button} />
       )}
     </View>
   );

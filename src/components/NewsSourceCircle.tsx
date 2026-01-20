@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 interface NewsSourceCircleProps {
@@ -22,11 +16,7 @@ export const NewsSourceCircle: React.FC<NewsSourceCircleProps> = ({
   isActive = false,
 }) => {
   return (
-    <TouchableOpacity 
-      style={styles.container} 
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
+    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.circle, isActive && styles.circleActive]}>
         {logoUrl ? (
           <Image source={{ uri: logoUrl }} style={styles.logo} resizeMode="cover" />

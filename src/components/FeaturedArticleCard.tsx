@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { NewsArticle } from '../types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { formatRelativeTime } from '../utils';
@@ -20,18 +13,11 @@ interface FeaturedArticleCardProps {
   onPress: () => void;
 }
 
-export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({
-  article,
-  onPress,
-}) => {
+export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({ article, onPress }) => {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={onPress}
-      activeOpacity={0.9}
-    >
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
       {!imageError && article.image_url ? (
         <Image
           source={{ uri: article.image_url }}

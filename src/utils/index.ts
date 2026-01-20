@@ -48,5 +48,5 @@ export const isValidUrl = (urlString: string): boolean => {
 export const isLikelyRssFeed = (url: string): boolean => {
   const RSS_PATTERNS = ['/rss', '/feed', '.xml', '.rss', 'rss.xml', 'feed.xml'];
   const urlLower = url.toLowerCase();
-  return RSS_PATTERNS.some(pattern => urlLower.includes(pattern));
+  return RSS_PATTERNS.some((pattern) => urlLower.includes(pattern));
 };

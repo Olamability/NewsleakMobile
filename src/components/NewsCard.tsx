@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  useWindowDimensions,
-} from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { NewsArticle } from '../types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { getCategoryColor } from '../constants/categories';
@@ -64,7 +57,9 @@ export const NewsCard: React.FC<NewsCardProps> = ({
       <View style={styles.cardContent}>
         <View style={styles.textContent}>
           <View style={styles.headerRow}>
-            <Text style={styles.sourceName} numberOfLines={1}>{article.source_name}</Text>
+            <Text style={styles.sourceName} numberOfLines={1}>
+              {article.source_name}
+            </Text>
             <Text style={styles.dot}>•</Text>
             <Text style={styles.time}>{formatDate(article.published_at)}</Text>
           </View>
@@ -74,17 +69,23 @@ export const NewsCard: React.FC<NewsCardProps> = ({
           </Text>
 
           <View style={styles.actionsRow}>
-            <TouchableOpacity style={styles.actionButton} hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+            >
               <Text style={styles.actionIcon}>👍</Text>
               <Text style={styles.actionText}>Like</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+            >
               <Text style={styles.actionIcon}>👎</Text>
               <Text style={styles.actionText}>Dislike</Text>
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {article.image_url ? (
           <Image
             source={{ uri: article.image_url }}
@@ -98,8 +99,8 @@ export const NewsCard: React.FC<NewsCardProps> = ({
         )}
 
         {onBookmarkPress && (
-          <TouchableOpacity 
-            onPress={onBookmarkPress} 
+          <TouchableOpacity
+            onPress={onBookmarkPress}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={styles.bookmarkButton}
           >

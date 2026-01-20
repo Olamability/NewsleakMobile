@@ -72,7 +72,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       // Load featured articles, regular articles, and sources in parallel
       const [featuredRes, articlesRes, sourcesRes] = await Promise.all([
         NewsService.getFeaturedArticles(10),
@@ -84,7 +84,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       setArticles(articlesRes.data);
       setHasMore(articlesRes.hasMore);
       setPage(1);
-      
+
       // Add an "Add Source" option to the sources list
       setNewsSources(sourcesRes);
     } catch (err: any) {
@@ -121,7 +121,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
     try {
       const isBookmarked = bookmarkedIds.has(article.id);
-      
+
       if (isBookmarked) {
         await BookmarkService.removeBookmark(article.id);
         setBookmarkedIds((prev) => {
@@ -159,12 +159,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }
 
   if (error && articles.length === 0) {
-    return (
-      <ErrorState
-        message={error}
-        onRetry={() => loadInitialData()}
-      />
-    );
+    return <ErrorState message={error} onRetry={() => loadInitialData()} />;
   }
 
   if (!isLoading && articles.length === 0) {
@@ -197,7 +192,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             <TouchableOpacity style={styles.iconButton}>
               <Text style={styles.iconText}>✎</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.iconButton}
               onPress={() => navigation.navigate('Search')}
             >
@@ -255,12 +250,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               style={styles.tab}
               onPress={() => setSelectedTab(tab.id)}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  selectedTab === tab.id && styles.tabTextActive,
-                ]}
-              >
+              <Text style={[styles.tabText, selectedTab === tab.id && styles.tabTextActive]}>
                 {tab.name}
               </Text>
               {selectedTab === tab.id && <View style={styles.tabIndicator} />}
@@ -314,10 +304,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               {featuredArticles.map((_, index) => (
                 <View
                   key={index}
-                  style={[
-                    styles.dot,
-                    index === currentFeaturedIndex && styles.dotActive,
-                  ]}
+                  style={[styles.dot, index === currentFeaturedIndex && styles.dotActive]}
                 />
               ))}
             </View>

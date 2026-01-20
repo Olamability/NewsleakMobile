@@ -35,11 +35,10 @@ export const Input: React.FC<InputProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const inputError = error ? styles.inputError : {};
   const isSecureEntry = showPasswordToggle ? !isPasswordVisible : secureTextEntry;
-  
-  const containerBackground = variant === 'search' 
-    ? { backgroundColor: COLORS.searchBackground } 
-    : {};
-  
+
+  const containerBackground =
+    variant === 'search' ? { backgroundColor: COLORS.searchBackground } : {};
+
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -52,7 +51,7 @@ export const Input: React.FC<InputProps> = ({
           {...props}
         />
         {showPasswordToggle && (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             style={styles.rightIcon}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

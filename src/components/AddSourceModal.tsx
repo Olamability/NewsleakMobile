@@ -13,14 +13,7 @@ import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constant
 import { isValidUrl, isLikelyRssFeed } from '../utils';
 
 // Common RSS feed URL patterns
-const RSS_FEED_PATTERNS = [
-  '/rss',
-  '/feed',
-  '.xml',
-  '.rss',
-  'rss.xml',
-  'feed.xml',
-];
+const RSS_FEED_PATTERNS = ['/rss', '/feed', '.xml', '.rss', 'rss.xml', 'feed.xml'];
 
 interface AddSourceModalProps {
   visible: boolean;
@@ -28,11 +21,7 @@ interface AddSourceModalProps {
   onAdd: (name: string, rssUrl: string, websiteUrl: string) => Promise<void>;
 }
 
-export const AddSourceModal: React.FC<AddSourceModalProps> = ({
-  visible,
-  onClose,
-  onAdd,
-}) => {
+export const AddSourceModal: React.FC<AddSourceModalProps> = ({ visible, onClose, onAdd }) => {
   const [name, setName] = useState('');
   const [rssUrl, setRssUrl] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -65,10 +54,10 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
         `The URL does not appear to be an RSS feed. RSS URLs typically contain ${RSS_FEED_PATTERNS.slice(0, 2).join(', ')} or end with ${RSS_FEED_PATTERNS[2]}. Do you want to continue?`,
         [
           { text: 'Cancel', style: 'cancel' },
-          { 
-            text: 'Continue', 
-            onPress: async () => await addSource()
-          }
+          {
+            text: 'Continue',
+            onPress: async () => await addSource(),
+          },
         ]
       );
       return;
@@ -94,17 +83,15 @@ export const AddSourceModal: React.FC<AddSourceModalProps> = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.modal}>
           <View style={styles.header}>
             <Text style={styles.title}>Add News Source</Text>
-            <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <TouchableOpacity
+              onPress={onClose}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <Text style={styles.closeIcon}>✕</Text>
             </TouchableOpacity>
           </View>

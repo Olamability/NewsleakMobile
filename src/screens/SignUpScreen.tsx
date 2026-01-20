@@ -14,6 +14,7 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
+import { validateEmail, validatePassword, validateName } from '../utils/validation';
 
 interface SignUpScreenProps {
   navigation: any;
@@ -42,24 +43,21 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       confirmPassword: '',
     };
 
-    if (!fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
+    const nameValidation = validateName(fullName);
+    if (!nameValidation.isValid) {
+      newErrors.fullName = nameValidation.error || 'Full name is invalid';
       isValid = false;
     }
 
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      newErrors.email = emailValidation.error || 'Email is invalid';
       isValid = false;
     }
 
-    if (!password) {
-      newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      newErrors.password = passwordValidation.error || 'Password is invalid';
       isValid = false;
     }
 

@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import { NewsArticle, PaginatedResponse, ApiResponse } from '../types';
+import { sanitizeSearchQuery, validateSearchQuery, sanitizeUrl } from '../utils/validation';
+import { checkRateLimit } from '../utils/security';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -82,6 +84,41 @@ export class NewsService {
     limit: number = ITEMS_PER_PAGE
   ): Promise<PaginatedResponse<NewsArticle>> {
     try {
+      const queryValidation = validateSearchQuery(query);
+      if (!queryValidation.isValid) {
+        console.error('Invalid search query:', queryValidation.error);
+        return {
+          data: [],
+          page,
+          limit,
+          total: 0,
+          hasMore: false,
+        };
+      }
+
+      const rateLimit = checkRateLimit('search_global', 'search');
+      if (!rateLimit.allowed) {
+        console.error('Rate limit exceeded for search');
+        return {
+          data: [],
+          page,
+          limit,
+          total: 0,
+          hasMore: false,
+        };
+      }
+
+      const sanitizedQuery = sanitizeSearchQuery(query);
+      if (!sanitizedQuery) {
+        return {
+          data: [],
+          page,
+          limit,
+          total: 0,
+          hasMore: false,
+        };
+      }
+
       const from = (page - 1) * limit;
       const to = from + limit - 1;
 
@@ -89,7 +126,7 @@ export class NewsService {
       const { data, error, count } = await supabase
         .from('news_articles')
         .select('*', { count: 'exact' })
-        .or(`title.ilike.%${query}%,summary.ilike.%${query}%`)
+        .or(`title.ilike.%${sanitizedQuery}%,summary.ilike.%${sanitizedQuery}%`)
         .order('published_at', { ascending: false })
         .range(from, to);
 
@@ -200,15 +237,24 @@ export class NewsService {
    * Generate article URL with UTM parameters
    */
   static generateTrackingUrl(articleUrl: string): string {
-    const utmSource = process.env.EXPO_PUBLIC_UTM_SOURCE || 'spazr_app';
-    const utmMedium = process.env.EXPO_PUBLIC_UTM_MEDIUM || 'referral';
-    const utmCampaign = process.env.EXPO_PUBLIC_UTM_CAMPAIGN || 'news_aggregation';
+    const sanitized = sanitizeUrl(articleUrl);
+    if (!sanitized) {
+      return articleUrl;
+    }
 
-    const url = new URL(articleUrl);
-    url.searchParams.append('utm_source', utmSource);
-    url.searchParams.append('utm_medium', utmMedium);
-    url.searchParams.append('utm_campaign', utmCampaign);
+    try {
+      const utmSource = process.env.EXPO_PUBLIC_UTM_SOURCE || 'spazr_app';
+      const utmMedium = process.env.EXPO_PUBLIC_UTM_MEDIUM || 'referral';
+      const utmCampaign = process.env.EXPO_PUBLIC_UTM_CAMPAIGN || 'news_aggregation';
 
-    return url.toString();
+      const url = new URL(sanitized);
+      url.searchParams.append('utm_source', utmSource);
+      url.searchParams.append('utm_medium', utmMedium);
+      url.searchParams.append('utm_campaign', utmCampaign);
+
+      return url.toString();
+    } catch {
+      return articleUrl;
+    }
   }
 }

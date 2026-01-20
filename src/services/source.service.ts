@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { NewsSource, ApiResponse } from '../types';
+import { validateUrl, validateRssUrl, sanitizeUrl, validateLength } from '../utils/validation';
 
 export class SourceService {
   /**
@@ -62,14 +63,44 @@ export class SourceService {
     logoUrl?: string
   ): Promise<ApiResponse<NewsSource>> {
     try {
+      const nameValidation = validateLength(name, 1, 100, 'Source name');
+      if (!nameValidation.isValid) {
+        return { error: nameValidation.error };
+      }
+
+      const rssValidation = validateRssUrl(rssUrl);
+      if (!rssValidation.isValid) {
+        return { error: `RSS URL: ${rssValidation.error}` };
+      }
+
+      const websiteValidation = validateUrl(websiteUrl);
+      if (!websiteValidation.isValid) {
+        return { error: `Website URL: ${websiteValidation.error}` };
+      }
+
+      if (logoUrl) {
+        const logoValidation = validateUrl(logoUrl);
+        if (!logoValidation.isValid) {
+          return { error: `Logo URL: ${logoValidation.error}` };
+        }
+      }
+
+      const sanitizedRssUrl = sanitizeUrl(rssUrl);
+      const sanitizedWebsiteUrl = sanitizeUrl(websiteUrl);
+      const sanitizedLogoUrl = logoUrl ? sanitizeUrl(logoUrl) : undefined;
+
+      if (!sanitizedRssUrl || !sanitizedWebsiteUrl) {
+        return { error: 'Invalid URL provided' };
+      }
+
       const { data, error } = await supabase
         .from('news_sources')
         .insert([
           {
-            name,
-            rss_url: rssUrl,
-            website_url: websiteUrl,
-            logo_url: logoUrl,
+            name: name.trim(),
+            rss_url: sanitizedRssUrl,
+            website_url: sanitizedWebsiteUrl,
+            logo_url: sanitizedLogoUrl,
             is_active: true,
           },
         ])
@@ -98,6 +129,50 @@ export class SourceService {
     updates: Partial<NewsSource>
   ): Promise<ApiResponse<NewsSource>> {
     try {
+      if (updates.name) {
+        const nameValidation = validateLength(updates.name, 1, 100, 'Source name');
+        if (!nameValidation.isValid) {
+          return { error: nameValidation.error };
+        }
+        updates.name = updates.name.trim();
+      }
+
+      if (updates.rss_url) {
+        const rssValidation = validateRssUrl(updates.rss_url);
+        if (!rssValidation.isValid) {
+          return { error: `RSS URL: ${rssValidation.error}` };
+        }
+        const sanitized = sanitizeUrl(updates.rss_url);
+        if (!sanitized) {
+          return { error: 'Invalid RSS URL' };
+        }
+        updates.rss_url = sanitized;
+      }
+
+      if (updates.website_url) {
+        const websiteValidation = validateUrl(updates.website_url);
+        if (!websiteValidation.isValid) {
+          return { error: `Website URL: ${websiteValidation.error}` };
+        }
+        const sanitized = sanitizeUrl(updates.website_url);
+        if (!sanitized) {
+          return { error: 'Invalid Website URL' };
+        }
+        updates.website_url = sanitized;
+      }
+
+      if (updates.logo_url) {
+        const logoValidation = validateUrl(updates.logo_url);
+        if (!logoValidation.isValid) {
+          return { error: `Logo URL: ${logoValidation.error}` };
+        }
+        const sanitized = sanitizeUrl(updates.logo_url);
+        if (!sanitized) {
+          return { error: 'Invalid Logo URL' };
+        }
+        updates.logo_url = sanitized;
+      }
+
       const { data, error } = await supabase
         .from('news_sources')
         .update(updates)
@@ -123,10 +198,7 @@ export class SourceService {
    */
   static async deleteSource(id: string): Promise<ApiResponse<void>> {
     try {
-      const { error } = await supabase
-        .from('news_sources')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('news_sources').delete().eq('id', id);
 
       if (error) {
         return { error: error.message };

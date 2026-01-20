@@ -1,11 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { View, FlatList, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '../components/Input';
 import { NewsCard } from '../components/NewsCard';
@@ -64,7 +58,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
 
     try {
       const isBookmarked = bookmarkedIds.has(article.id);
-      
+
       if (isBookmarked) {
         await BookmarkService.removeBookmark(article.id);
         setBookmarkedIds((prev) => {
@@ -93,10 +87,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.searchHeader}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
         <View style={styles.searchInputWrapper}>
@@ -122,15 +113,13 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       </View>
 
       <View style={styles.tabContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.tab, activeTab === 'news' && styles.activeTab]}
           onPress={() => setActiveTab('news')}
         >
-          <Text style={[styles.tabText, activeTab === 'news' && styles.activeTabText]}>
-            News
-          </Text>
+          <Text style={[styles.tabText, activeTab === 'news' && styles.activeTabText]}>News</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.tab, activeTab === 'publishers' && styles.activeTab]}
           onPress={() => setActiveTab('publishers')}
         >

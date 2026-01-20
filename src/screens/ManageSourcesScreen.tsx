@@ -42,7 +42,7 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
       }
       // TODO: Implement actual API call to fetch sources
       // For now, using placeholder data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const mockSources: NewsSource[] = [
         {
           id: '1',
@@ -78,8 +78,8 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
   const handleToggleSource = async (sourceId: string, currentState: boolean) => {
     try {
       // TODO: Implement actual API call to toggle source
-      setSources(prevSources =>
-        prevSources.map(source =>
+      setSources((prevSources) =>
+        prevSources.map((source) =>
           source.id === sourceId ? { ...source, is_active: !currentState } : source
         )
       );

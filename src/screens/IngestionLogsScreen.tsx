@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
-
-interface IngestionLog {
-  id: string;
-  source_name: string;
-  status: 'success' | 'error' | 'in_progress';
-  articles_count: number;
-  timestamp: string;
-  message?: string;
-}
+import { IngestionService } from '../services/ingestion.service';
+import { IngestionLog } from '../types';
 
 interface IngestionLogsScreenProps {
   navigation: any;
@@ -28,6 +15,7 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
   const [logs, setLogs] = useState<IngestionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const ingestionService = new IngestionService();
 
   useEffect(() => {
     loadLogs();
@@ -38,36 +26,9 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
       if (!isRefresh) {
         setIsLoading(true);
       }
-      // TODO: Implement actual API call to fetch ingestion logs
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock data for demonstration
-      const mockLogs: IngestionLog[] = [
-        {
-          id: '1',
-          source_name: 'BBC News',
-          status: 'success',
-          articles_count: 25,
-          timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-        },
-        {
-          id: '2',
-          source_name: 'CNN',
-          status: 'success',
-          articles_count: 18,
-          timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
-        },
-        {
-          id: '3',
-          source_name: 'The Punch',
-          status: 'error',
-          articles_count: 0,
-          timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-          message: 'Failed to fetch RSS feed',
-        },
-      ];
-      
-      setLogs(mockLogs);
+
+      const fetchedLogs = await ingestionService.getIngestionLogs(50);
+      setLogs(fetchedLogs);
     } catch (error) {
       console.error('Error loading logs:', error);
     } finally {
@@ -86,11 +47,11 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
-    
+
     if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins} min ago`;
     if (diffMins < 1440) return `${Math.floor(diffMins / 60)} hours ago`;
-    return date.toLocaleDateString();
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
   const getStatusColor = (status: string) => {
@@ -126,26 +87,36 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
           <Text style={styles.logIcon}>{getStatusIcon(item.status)}</Text>
           <Text style={styles.logSourceName}>{item.source_name}</Text>
         </View>
-        <Text style={styles.logTime}>{formatTime(item.timestamp)}</Text>
+        <Text style={styles.logTime}>{formatTime(item.created_at)}</Text>
       </View>
-      
+
       <View style={styles.logDetails}>
         <View style={styles.logDetailItem}>
           <Text style={styles.logDetailLabel}>Status:</Text>
           <Text style={[styles.logDetailValue, { color: getStatusColor(item.status) }]}>
-            {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+            {item.status.charAt(0).toUpperCase() + item.status.slice(1).replace('_', ' ')}
           </Text>
         </View>
-        
+
         <View style={styles.logDetailItem}>
-          <Text style={styles.logDetailLabel}>Articles:</Text>
-          <Text style={styles.logDetailValue}>{item.articles_count}</Text>
+          <Text style={styles.logDetailLabel}>Fetched:</Text>
+          <Text style={styles.logDetailValue}>{item.articles_fetched}</Text>
         </View>
+
+        <View style={styles.logDetailItem}>
+          <Text style={styles.logDetailLabel}>Processed:</Text>
+          <Text style={styles.logDetailValue}>{item.articles_processed}</Text>
+        </View>
+
+        {item.articles_duplicates > 0 && (
+          <View style={styles.logDetailItem}>
+            <Text style={styles.logDetailLabel}>Dupes:</Text>
+            <Text style={styles.logDetailValue}>{item.articles_duplicates}</Text>
+          </View>
+        )}
       </View>
-      
-      {item.message && (
-        <Text style={styles.logMessage}>{item.message}</Text>
-      )}
+
+      {item.error_message && <Text style={styles.logMessage}>{item.error_message}</Text>}
     </View>
   );
 
@@ -251,7 +222,8 @@ const styles = StyleSheet.create({
   },
   logDetails: {
     flexDirection: 'row',
-    gap: SPACING.lg,
+    flexWrap: 'wrap',
+    gap: SPACING.md,
   },
   logDetailItem: {
     flexDirection: 'row',

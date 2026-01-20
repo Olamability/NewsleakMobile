@@ -33,7 +33,7 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
         setIsLoading(true);
       }
       // TODO: Implement actual API call to fetch articles
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setArticles([]);
     } catch (error) {
       console.error('Error loading articles:', error);
@@ -56,11 +56,9 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
           onPress: async () => {
             try {
               // TODO: Implement actual API call to feature/unfeature article
-              setArticles(prevArticles =>
-                prevArticles.map(article =>
-                  article.id === articleId
-                    ? { ...article, is_featured: !isFeatured }
-                    : article
+              setArticles((prevArticles) =>
+                prevArticles.map((article) =>
+                  article.id === articleId ? { ...article, is_featured: !isFeatured } : article
                 )
               );
             } catch (error) {
@@ -84,8 +82,8 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
           onPress: async () => {
             try {
               // TODO: Implement actual API call to remove article
-              setArticles(prevArticles =>
-                prevArticles.filter(article => article.id !== articleId)
+              setArticles((prevArticles) =>
+                prevArticles.filter((article) => article.id !== articleId)
               );
             } catch (error) {
               console.error('Error removing article:', error);
@@ -115,9 +113,7 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
           style={[styles.actionButton, styles.featureButton]}
           onPress={() => handleFeatureArticle(item.id, item.is_featured || false)}
         >
-          <Text style={styles.actionButtonText}>
-            {item.is_featured ? 'Unfeature' : 'Feature'}
-          </Text>
+          <Text style={styles.actionButtonText}>{item.is_featured ? 'Unfeature' : 'Feature'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionButton, styles.removeButton]}

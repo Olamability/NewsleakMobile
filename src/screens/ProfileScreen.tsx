@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/Button';
@@ -20,21 +13,17 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const { user, isAuthenticated, signOut } = useAuth();
 
   const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            await signOut();
-            navigation.navigate('Home');
-          },
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          await signOut();
+          navigation.navigate('Home');
         },
-      ]
-    );
+      },
+    ]);
   };
 
   if (!isAuthenticated || !user) {
@@ -94,8 +83,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         {user.is_admin && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Administration</Text>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.menuItem}
               onPress={() => navigation.navigate('AdminDashboard')}
             >
@@ -107,7 +96,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
-          
+
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>📧 Email Preferences</Text>
             <Text style={styles.menuItemArrow}>›</Text>
@@ -126,7 +115,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
-          
+
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuItemText}>ℹ️ About Us</Text>
             <Text style={styles.menuItemArrow}>›</Text>
