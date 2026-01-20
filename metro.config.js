@@ -12,7 +12,7 @@ config.resolver = {
     // Since we're using axios for HTTP requests, these aren't needed
     http: require.resolve('stream-http'),
     https: require.resolve('https-browserify'),
-    url: require.resolve('react-native-url-polyfill'),
+    url: require.resolve('url/'),
     stream: require.resolve('readable-stream'),
     buffer: require.resolve('buffer/'),
   },
