@@ -258,11 +258,19 @@ function parseAtomEntry(entry: Element): RawArticle | null {
     content: content || summary,
     contentSnippet: summary,
     guid: getElementText(entry, 'id'),
-    categories: getAllElementTexts(entry, 'category').map(
-      (cat) => getElementAttribute(entry, 'category', 'term') || cat
-    ),
+    categories: getAllCategoryTerms(entry),
     isoDate: getElementText(entry, 'published') || getElementText(entry, 'updated'),
   };
+}
+
+/**
+ * Get all category terms from Atom entry
+ */
+function getAllCategoryTerms(parent: Element): string[] {
+  const categoryElements = parent.querySelectorAll('category');
+  return Array.from(categoryElements)
+    .map((el) => el.getAttribute('term') || el.textContent?.trim())
+    .filter((term) => term) as string[];
 }
 
 /**

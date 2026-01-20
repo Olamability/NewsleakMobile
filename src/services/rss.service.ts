@@ -30,6 +30,10 @@ export class RSSService {
     const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
     const customUrl = process.env.EXPO_PUBLIC_RSS_PARSER_URL;
     
+    if (!customUrl && !supabaseUrl) {
+      throw new Error('EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_RSS_PARSER_URL must be configured');
+    }
+    
     this.RSS_PARSER_URL = customUrl || `${supabaseUrl}/functions/v1/parse-rss`;
   }
 
@@ -42,6 +46,11 @@ export class RSSService {
 
     for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
+        const apiKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+        if (!apiKey) {
+          throw new Error('EXPO_PUBLIC_SUPABASE_ANON_KEY must be configured');
+        }
+
         // Call backend Edge Function to parse RSS
         const response = await axios.post<ParseRSSResponse>(
           this.RSS_PARSER_URL,
@@ -52,7 +61,7 @@ export class RSSService {
           {
             headers: {
               'Content-Type': 'application/json',
-              'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+              'apikey': apiKey,
               ...options?.headers,
             },
             timeout: (options?.timeout || this.DEFAULT_TIMEOUT) + 5000, // Add buffer for network overhead
@@ -90,6 +99,11 @@ export class RSSService {
     language?: string;
   }> {
     try {
+      const apiKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+      if (!apiKey) {
+        throw new Error('EXPO_PUBLIC_SUPABASE_ANON_KEY must be configured');
+      }
+
       // Call backend Edge Function to parse RSS and get metadata
       const response = await axios.post<ParseRSSResponse>(
         this.RSS_PARSER_URL,
@@ -100,7 +114,7 @@ export class RSSService {
         {
           headers: {
             'Content-Type': 'application/json',
-            'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+            'apikey': apiKey,
           },
           timeout: this.DEFAULT_TIMEOUT + 5000,
         }
