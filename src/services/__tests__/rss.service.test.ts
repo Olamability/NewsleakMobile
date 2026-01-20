@@ -6,6 +6,10 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+// Mock environment variables
+process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
+process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+
 describe('RSSService', () => {
   let rssService: RSSService;
 
@@ -75,114 +79,140 @@ describe('RSSService', () => {
     });
   });
 
-  describe('parseFeedString', () => {
-    it('should parse valid RSS 2.0 feed', async () => {
-      const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
-        <rss version="2.0">
-          <channel>
-            <title>Test Feed</title>
-            <item>
-              <title>Test Article</title>
-              <link>https://example.com/article</link>
-              <description>Test description</description>
-              <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
-            </item>
-          </channel>
-        </rss>`;
+  describe('parseFeed', () => {
+    it('should parse RSS feed via backend API', async () => {
+      const mockArticles: RawArticle[] = [
+        {
+          title: 'Test Article',
+          link: 'https://example.com/article',
+          description: 'Test description',
+          pubDate: 'Mon, 01 Jan 2024 00:00:00 GMT',
+        },
+      ];
 
-      const articles = await rssService.parseFeedString(rssFeed);
-      expect(articles).toHaveLength(1);
-      expect(articles[0].title).toBe('Test Article');
-      expect(articles[0].link).toBe('https://example.com/article');
-      expect(articles[0].description).toBe('Test description');
-    });
-
-    it('should parse valid Atom feed', async () => {
-      const atomFeed = `<?xml version="1.0" encoding="UTF-8"?>
-        <feed xmlns="http://www.w3.org/2005/Atom">
-          <title>Test Feed</title>
-          <entry>
-            <title>Test Article</title>
-            <link href="https://example.com/article"/>
-            <summary>Test summary</summary>
-            <updated>2024-01-01T00:00:00Z</updated>
-          </entry>
-        </feed>`;
-
-      const articles = await rssService.parseFeedString(atomFeed);
-      expect(articles).toHaveLength(1);
-      expect(articles[0].title).toBe('Test Article');
-    });
-
-    it('should filter out items without title', async () => {
-      const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
-        <rss version="2.0">
-          <channel>
-            <title>Test Feed</title>
-            <item>
-              <link>https://example.com/article</link>
-              <description>No title</description>
-            </item>
-            <item>
-              <title>Valid Article</title>
-              <link>https://example.com/article2</link>
-            </item>
-          </channel>
-        </rss>`;
-
-      const articles = await rssService.parseFeedString(rssFeed);
-      expect(articles).toHaveLength(1);
-      expect(articles[0].title).toBe('Valid Article');
-    });
-
-    it('should filter out items without link', async () => {
-      const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
-        <rss version="2.0">
-          <channel>
-            <title>Test Feed</title>
-            <item>
-              <title>No Link Article</title>
-              <description>No link</description>
-            </item>
-            <item>
-              <title>Valid Article</title>
-              <link>https://example.com/article</link>
-            </item>
-          </channel>
-        </rss>`;
-
-      const articles = await rssService.parseFeedString(rssFeed);
-      expect(articles).toHaveLength(1);
-      expect(articles[0].title).toBe('Valid Article');
-    });
-
-    it('should throw error for invalid XML', async () => {
-      const invalidXml = 'not valid xml';
-      await expect(rssService.parseFeedString(invalidXml)).rejects.toThrow();
-    });
-  });
-
-  describe('getFeedMetadata', () => {
-    it('should extract feed metadata', async () => {
-      const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
-        <rss version="2.0">
-          <channel>
-            <title>Test Feed Title</title>
-            <description>Test Feed Description</description>
-            <link>https://example.com</link>
-            <language>en</language>
-          </channel>
-        </rss>`;
-
-      // Mock axios.get to return the RSS feed
-      mockedAxios.get.mockResolvedValueOnce({
-        data: rssFeed,
+      // Mock axios.post to return the backend response
+      mockedAxios.post.mockResolvedValueOnce({
+        data: {
+          success: true,
+          articles: mockArticles,
+          feedMetadata: {
+            title: 'Test Feed',
+          },
+        },
         status: 200,
         statusText: 'OK',
         headers: {},
         config: {
-          url: 'https://example.com/feed.xml',
-          method: 'get',
+          url: 'https://test.supabase.co/functions/v1/parse-rss',
+          method: 'post',
+          headers: {},
+        },
+      });
+
+      const articles = await rssService.parseFeed('https://example.com/feed.xml');
+      expect(articles).toHaveLength(1);
+      expect(articles[0].title).toBe('Test Article');
+      expect(articles[0].link).toBe('https://example.com/article');
+      expect(articles[0].description).toBe('Test description');
+      
+      // Verify the backend was called
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        'https://test.supabase.co/functions/v1/parse-rss',
+        expect.objectContaining({
+          feedUrl: 'https://example.com/feed.xml',
+        }),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+            'apikey': 'test-anon-key',
+          }),
+        })
+      );
+    });
+
+    it('should handle backend API errors', async () => {
+      // Mock axios.post to return an error response
+      mockedAxios.post.mockResolvedValueOnce({
+        data: {
+          success: false,
+          articles: [],
+          error: 'Failed to parse RSS feed',
+        },
+        status: 500,
+        statusText: 'Internal Server Error',
+        headers: {},
+        config: {
+          url: 'https://test.supabase.co/functions/v1/parse-rss',
+          method: 'post',
+          headers: {},
+        },
+      });
+
+      await expect(rssService.parseFeed('https://example.com/feed.xml')).rejects.toThrow();
+    }, 10000); // Increase timeout for retry logic
+
+    it('should retry on network errors', async () => {
+      // Mock network error on first attempt, success on second
+      mockedAxios.post
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce({
+          data: {
+            success: true,
+            articles: [
+              {
+                title: 'Test Article',
+                link: 'https://example.com/article',
+              },
+            ],
+          },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: {
+            url: 'https://test.supabase.co/functions/v1/parse-rss',
+            method: 'post',
+            headers: {},
+          },
+        });
+
+      const articles = await rssService.parseFeed('https://example.com/feed.xml');
+      expect(articles).toHaveLength(1);
+      expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+    }, 10000); // Increase timeout for retry logic
+
+    it('should throw error after max retries', async () => {
+      // Mock network error for all attempts
+      mockedAxios.post.mockRejectedValue(new Error('Network error'));
+
+      await expect(rssService.parseFeed('https://example.com/feed.xml')).rejects.toThrow(
+        'Failed to parse RSS feed after 3 attempts'
+      );
+      expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+    }, 15000); // Increase timeout for retry logic (3 retries with delays)
+  });
+
+  describe('getFeedMetadata', () => {
+    it('should extract feed metadata via backend API', async () => {
+      const mockMetadata = {
+        title: 'Test Feed Title',
+        description: 'Test Feed Description',
+        link: 'https://example.com',
+        language: 'en',
+      };
+
+      // Mock axios.post to return the backend response
+      mockedAxios.post.mockResolvedValueOnce({
+        data: {
+          success: true,
+          articles: [],
+          feedMetadata: mockMetadata,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {
+          url: 'https://test.supabase.co/functions/v1/parse-rss',
+          method: 'post',
           headers: {},
         },
       });
@@ -192,6 +222,20 @@ describe('RSSService', () => {
       expect(metadata.description).toBe('Test Feed Description');
       expect(metadata.link).toBe('https://example.com');
       expect(metadata.language).toBe('en');
+      
+      // Verify the backend was called
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        'https://test.supabase.co/functions/v1/parse-rss',
+        expect.objectContaining({
+          feedUrl: 'https://example.com/feed.xml',
+        }),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+            'apikey': 'test-anon-key',
+          }),
+        })
+      );
     });
   });
 });

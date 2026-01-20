@@ -1,4 +1,3 @@
-import Parser from 'rss-parser';
 import axios from 'axios';
 import { RawArticle } from '../types';
 
@@ -8,49 +7,63 @@ interface RSSParserOptions {
   headers?: Record<string, string>;
 }
 
+interface ParseRSSResponse {
+  success: boolean;
+  articles: RawArticle[];
+  error?: string;
+  feedMetadata?: {
+    title?: string;
+    description?: string;
+    link?: string;
+    language?: string;
+  };
+}
+
 export class RSSService {
-  private parser: Parser;
   private readonly DEFAULT_TIMEOUT = 10000;
   private readonly MAX_RETRIES = 3;
   private readonly RETRY_DELAY = 2000;
+  private readonly RSS_PARSER_URL: string;
 
   constructor() {
-    this.parser = new Parser({
-      timeout: this.DEFAULT_TIMEOUT,
-      customFields: {
-        item: [
-          ['media:content', 'media:content'],
-          ['media:thumbnail', 'media:thumbnail'],
-          ['content:encoded', 'content:encoded'],
-          ['dc:creator', 'creator'],
-        ],
-      },
-    });
+    // Use custom RSS parser URL if provided, otherwise use Supabase Edge Function
+    const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    const customUrl = process.env.EXPO_PUBLIC_RSS_PARSER_URL;
+    
+    this.RSS_PARSER_URL = customUrl || `${supabaseUrl}/functions/v1/parse-rss`;
   }
 
   /**
    * Parse RSS/Atom feed from URL with retry logic
+   * Now uses backend Edge Function for parsing
    */
   async parseFeed(feedUrl: string, options?: RSSParserOptions): Promise<RawArticle[]> {
     let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
-        // Fetch RSS feed content using axios (React Native compatible)
-        const response = await axios.get(feedUrl, {
-          timeout: options?.timeout || this.DEFAULT_TIMEOUT,
-          maxRedirects: options?.maxRedirects || 5,
-          headers: {
-            'User-Agent': 'NewsArena/1.0 (News Aggregator Mobile App)',
-            'Accept': 'application/rss+xml',
-            ...options?.headers,
+        // Call backend Edge Function to parse RSS
+        const response = await axios.post<ParseRSSResponse>(
+          this.RSS_PARSER_URL,
+          {
+            feedUrl,
+            timeout: options?.timeout || this.DEFAULT_TIMEOUT,
           },
-          responseType: 'text',
-        });
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+              ...options?.headers,
+            },
+            timeout: (options?.timeout || this.DEFAULT_TIMEOUT) + 5000, // Add buffer for network overhead
+          }
+        );
 
-        // Parse the RSS feed string
-        const feed = await this.parser.parseString(response.data);
-        return this.normalizeFeedItems(feed.items);
+        if (!response.data.success) {
+          throw new Error(response.data.error || 'Failed to parse RSS feed');
+        }
+
+        return response.data.articles;
       } catch (error) {
         lastError = error as Error;
         console.error(`RSS parse attempt ${attempt} failed for ${feedUrl}:`, error);
@@ -67,226 +80,40 @@ export class RSSService {
   }
 
   /**
-   * Parse RSS feed from string content
+   * Get feed metadata without fetching all items
+   * Now uses backend Edge Function for parsing
    */
-  async parseFeedString(feedContent: string): Promise<RawArticle[]> {
+  async getFeedMetadata(feedUrl: string): Promise<{
+    title?: string;
+    description?: string;
+    link?: string;
+    language?: string;
+  }> {
     try {
-      const feed = await this.parser.parseString(feedContent);
-      return this.normalizeFeedItems(feed.items);
+      // Call backend Edge Function to parse RSS and get metadata
+      const response = await axios.post<ParseRSSResponse>(
+        this.RSS_PARSER_URL,
+        {
+          feedUrl,
+          timeout: this.DEFAULT_TIMEOUT,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+          },
+          timeout: this.DEFAULT_TIMEOUT + 5000,
+        }
+      );
+
+      if (!response.data.success) {
+        throw new Error(response.data.error || 'Failed to get feed metadata');
+      }
+
+      return response.data.feedMetadata || {};
     } catch (error) {
-      throw new Error(`Failed to parse RSS feed string: ${(error as Error).message}`);
+      throw new Error(`Failed to get feed metadata: ${(error as Error).message}`);
     }
-  }
-
-  /**
-   * Normalize feed items to RawArticle format
-   */
-  private normalizeFeedItems(items: any[]): RawArticle[] {
-    return items.map((item) => this.normalizeItem(item)).filter((item) => item !== null);
-  }
-
-  /**
-   * Normalize a single feed item
-   */
-  private normalizeItem(item: any): RawArticle | null {
-    try {
-      // Extract title (required)
-      const title = this.extractTitle(item);
-      if (!title) {
-        console.warn('Skipping item without title');
-        return null;
-      }
-
-      // Extract link (required)
-      const link = this.extractLink(item);
-      if (!link) {
-        console.warn('Skipping item without link:', title);
-        return null;
-      }
-
-      // Extract other fields
-      const description = this.extractDescription(item);
-      const pubDate = this.extractPubDate(item);
-      const creator = this.extractCreator(item);
-      const content = this.extractContent(item);
-      const contentSnippet = this.extractContentSnippet(item);
-      const guid = this.extractGuid(item);
-      const categories = this.extractCategories(item);
-      const isoDate = this.extractIsoDate(item);
-      const enclosure = this.extractEnclosure(item);
-
-      return {
-        title,
-        description: description || undefined,
-        link,
-        pubDate: pubDate || undefined,
-        creator: creator || undefined,
-        content: content || undefined,
-        contentSnippet: contentSnippet || undefined,
-        guid: guid || undefined,
-        categories,
-        isoDate: isoDate || undefined,
-        enclosure,
-      };
-    } catch (error) {
-      console.error('Error normalizing feed item:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Extract title from various formats
-   */
-  private extractTitle(item: any): string | null {
-    return item.title?.trim() || item['rss:title']?.trim() || null;
-  }
-
-  /**
-   * Extract link from various formats
-   */
-  private extractLink(item: any): string | null {
-    const link = item.link || item.guid || item.id;
-    if (!link) return null;
-
-    // Handle link objects
-    if (typeof link === 'object') {
-      return link.$ || link.href || null;
-    }
-
-    return typeof link === 'string' ? link.trim() : null;
-  }
-
-  /**
-   * Extract description
-   */
-  private extractDescription(item: any): string | null {
-    return (
-      item.description?.trim() ||
-      item.summary?.trim() ||
-      item['rss:description']?.trim() ||
-      item.contentSnippet?.trim() ||
-      null
-    );
-  }
-
-  /**
-   * Extract publication date
-   */
-  private extractPubDate(item: any): string | null {
-    return (
-      item.pubDate ||
-      item.published ||
-      item.updated ||
-      item.isoDate ||
-      item['dc:date'] ||
-      item.date ||
-      null
-    );
-  }
-
-  /**
-   * Extract creator/author
-   */
-  private extractCreator(item: any): string | null {
-    return (
-      item.creator ||
-      item.author ||
-      item['dc:creator'] ||
-      item['itunes:author'] ||
-      (typeof item.creator === 'object' ? item.creator.name : null) ||
-      null
-    );
-  }
-
-  /**
-   * Extract full content
-   */
-  private extractContent(item: any): string | null {
-    return (
-      item.content ||
-      item['content:encoded'] ||
-      item['atom:content'] ||
-      item.description ||
-      null
-    );
-  }
-
-  /**
-   * Extract content snippet
-   */
-  private extractContentSnippet(item: any): string | null {
-    return item.contentSnippet || item.summary || null;
-  }
-
-  /**
-   * Extract GUID
-   */
-  private extractGuid(item: any): string | null {
-    const guid = item.guid || item.id;
-    if (!guid) return null;
-
-    // Handle guid objects
-    if (typeof guid === 'object') {
-      return guid._ || guid.value || null;
-    }
-
-    return typeof guid === 'string' ? guid.trim() : null;
-  }
-
-  /**
-   * Extract categories
-   */
-  private extractCategories(item: any): string[] {
-    const categories: string[] = [];
-
-    if (Array.isArray(item.categories)) {
-      categories.push(...item.categories.filter((c: any) => typeof c === 'string'));
-    } else if (item.category) {
-      if (Array.isArray(item.category)) {
-        categories.push(...item.category);
-      } else if (typeof item.category === 'string') {
-        categories.push(item.category);
-      }
-    }
-
-    return categories.filter((c) => c && c.trim()).map((c) => c.trim());
-  }
-
-  /**
-   * Extract ISO date
-   */
-  private extractIsoDate(item: any): string | null {
-    return item.isoDate || null;
-  }
-
-  /**
-   * Extract enclosure (media attachments)
-   */
-  private extractEnclosure(item: any): RawArticle['enclosure'] {
-    const enclosure = item.enclosure || item['media:content'] || item['media:thumbnail'];
-
-    if (!enclosure) return undefined;
-
-    // Handle array of enclosures
-    if (Array.isArray(enclosure)) {
-      const firstEnclosure = enclosure[0];
-      return this.normalizeEnclosure(firstEnclosure);
-    }
-
-    return this.normalizeEnclosure(enclosure);
-  }
-
-  /**
-   * Normalize enclosure object
-   */
-  private normalizeEnclosure(enclosure: any): RawArticle['enclosure'] {
-    if (!enclosure) return undefined;
-
-    return {
-      url: enclosure.url || enclosure.$ || enclosure.href || undefined,
-      type: enclosure.type || enclosure.medium || undefined,
-      length: enclosure.length || undefined,
-    };
   }
 
   /**
@@ -326,38 +153,5 @@ export class RSSService {
    */
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  /**
-   * Get feed metadata without fetching all items
-   */
-  async getFeedMetadata(feedUrl: string): Promise<{
-    title?: string;
-    description?: string;
-    link?: string;
-    language?: string;
-  }> {
-    try {
-      // Fetch RSS feed content using axios (React Native compatible)
-      const response = await axios.get(feedUrl, {
-        timeout: this.DEFAULT_TIMEOUT,
-        headers: {
-          'User-Agent': 'NewsArena/1.0 (News Aggregator Mobile App)',
-          'Accept': 'application/rss+xml',
-        },
-        responseType: 'text',
-      });
-
-      // Parse the RSS feed string
-      const feed = await this.parser.parseString(response.data);
-      return {
-        title: feed.title,
-        description: feed.description,
-        link: feed.link,
-        language: feed.language,
-      };
-    } catch (error) {
-      throw new Error(`Failed to get feed metadata: ${(error as Error).message}`);
-    }
   }
 }

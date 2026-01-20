@@ -1,0 +1,10 @@
+{
+  "name": "parse-rss",
+  "version": "1.0.0",
+  "description": "Supabase Edge Function for parsing RSS feeds",
+  "main": "index.ts",
+  "scripts": {},
+  "keywords": ["rss", "parser", "supabase", "edge-function"],
+  "author": "NewsLeak Mobile Team",
+  "license": "MIT"
+}
