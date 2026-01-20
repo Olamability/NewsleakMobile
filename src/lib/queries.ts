@@ -121,7 +121,7 @@ export const useArticle = (id: string) => {
         .single();
 
       if (error) throw error;
-      return data as NewsArticle[];
+      return data as NewsArticle;
     },
   });
 };

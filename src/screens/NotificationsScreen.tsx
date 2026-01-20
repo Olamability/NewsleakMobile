@@ -81,7 +81,10 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ naviga
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <NotificationItem
-              notification={item}
+              title={item.title}
+              body={item.body}
+              timestamp={item.created_at}
+              isRead={item.read}
               onPress={() => handleNotificationPress(item)}
             />
           )}

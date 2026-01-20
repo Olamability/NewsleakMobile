@@ -4,20 +4,19 @@ import { Category } from '../types/news';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
 interface CategoryPillProps {
-  category: Category;
+  label: string;
   isActive?: boolean;
-  onPress: (category: Category) => void;
+  onPress: () => void;
 }
 
-export const CategoryPill: React.FC<CategoryPillProps> = ({ category, isActive = false, onPress }) => {
+export const CategoryPill: React.FC<CategoryPillProps> = ({ label, isActive = false, onPress }) => {
   return (
     <TouchableOpacity
       style={[styles.container, isActive && styles.active]}
-      onPress={() => onPress(category)}
+      onPress={onPress}
       activeOpacity={0.7}
     >
-      <Text style={styles.icon}>{category.icon}</Text>
-      <Text style={[styles.text, isActive && styles.activeText]}>{category.name}</Text>
+      <Text style={[styles.text, isActive && styles.activeText]}>{label}</Text>
     </TouchableOpacity>
   );
 };
@@ -38,6 +37,7 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: FONT_SIZES.md,
     marginRight: SPACING.xs,
+    display: 'none',
   },
   text: {
     fontSize: FONT_SIZES.sm,

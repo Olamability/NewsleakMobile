@@ -4,19 +4,20 @@ import { TrendingTopic } from '../types/news';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
 interface TrendingTopicChipProps {
-  topic: TrendingTopic;
+  topic: string;
+  count?: number;
   onPress: (topic: string) => void;
 }
 
-export const TrendingTopicChip: React.FC<TrendingTopicChipProps> = ({ topic, onPress }) => {
+export const TrendingTopicChip: React.FC<TrendingTopicChipProps> = ({ topic, count, onPress }) => {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => onPress(topic.topic)}
+      onPress={() => onPress(topic)}
       activeOpacity={0.7}
     >
       <Text style={styles.icon}>🔥</Text>
-      <Text style={styles.text}>{topic.topic}</Text>
+      <Text style={styles.text}>{topic}</Text>
     </TouchableOpacity>
   );
 };
