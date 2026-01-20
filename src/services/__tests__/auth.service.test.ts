@@ -1,11 +1,13 @@
 import { AuthService } from '../auth.service';
 import { supabase } from '../supabase';
+import { clearRateLimits } from '../../utils/security';
 
 jest.mock('../supabase');
 
 describe('AuthService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    clearRateLimits();
   });
 
   describe('signUp', () => {
@@ -28,7 +30,7 @@ describe('AuthService', () => {
 
       const credentials = {
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123!',
         full_name: 'Test User',
       };
 
@@ -43,11 +45,11 @@ describe('AuthService', () => {
         created_at: '2024-01-01T00:00:00Z',
       });
       expect(supabase.auth.signUp).toHaveBeenCalledWith({
-        email: credentials.email,
+        email: credentials.email.trim(),
         password: credentials.password,
         options: {
           data: {
-            full_name: credentials.full_name,
+            full_name: credentials.full_name.trim(),
           },
         },
       });
@@ -61,7 +63,7 @@ describe('AuthService', () => {
 
       const result = await AuthService.signUp({
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123!',
         full_name: 'Test User',
       });
 
@@ -77,7 +79,7 @@ describe('AuthService', () => {
 
       const result = await AuthService.signUp({
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123!',
         full_name: 'Test User',
       });
 
@@ -90,7 +92,7 @@ describe('AuthService', () => {
 
       const result = await AuthService.signUp({
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123!',
         full_name: 'Test User',
       });
 
