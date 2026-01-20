@@ -71,12 +71,12 @@ export const SQL_INJECTION_PATTERNS = [
 ] as const;
 
 export const XSS_PATTERNS = [
-  /<script\b[^<]*(?:(?!<\/script\s*>)<[^<]*)*<\/script\s*>/gi,
-  /<iframe\b[^<]*(?:(?!<\/iframe\s*>)<[^<]*)*<\/iframe\s*>/gi,
+  /<script\b[^<]*(?:(?!<\/script[\s>])<[^<]*)*<\/script[\s>]/gi,
+  /<iframe\b[^<]*(?:(?!<\/iframe[\s>])<[^<]*)*<\/iframe[\s>]/gi,
   /on\w+\s*=\s*["'][^"']*["']/gi,
   /javascript:/gi,
   /<embed\b[^>]*>/gi,
-  /<object\b[^<]*(?:(?!<\/object\s*>)<[^<]*)*<\/object\s*>/gi,
+  /<object\b[^<]*(?:(?!<\/object[\s>])<[^<]*)*<\/object[\s>]/gi,
 ] as const;
 
 export const RATE_LIMIT_CONFIG = {
