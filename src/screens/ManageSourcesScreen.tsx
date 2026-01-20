@@ -7,20 +7,14 @@ import {
   TouchableOpacity,
   Switch,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
+import { AdminService } from '../services/admin.service';
+import { NewsSource } from '../types';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
-
-interface NewsSource {
-  id: string;
-  name: string;
-  website_url: string;
-  logo_url?: string;
-  is_active: boolean;
-  created_at: string;
-}
 
 interface ManageSourcesScreenProps {
   navigation: any;
@@ -40,35 +34,11 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
       if (!isRefresh) {
         setIsLoading(true);
       }
-      // TODO: Implement actual API call to fetch sources
-      // For now, using placeholder data
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const mockSources: NewsSource[] = [
-        {
-          id: '1',
-          name: 'BBC News',
-          website_url: 'https://bbc.com',
-          is_active: true,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          name: 'CNN',
-          website_url: 'https://cnn.com',
-          is_active: true,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: '3',
-          name: 'The Punch',
-          website_url: 'https://punchng.com',
-          is_active: false,
-          created_at: new Date().toISOString(),
-        },
-      ];
-      setSources(mockSources);
+      const fetchedSources = await AdminService.getAllSources();
+      setSources(fetchedSources);
     } catch (error) {
       console.error('Error loading sources:', error);
+      Alert.alert('Error', 'Failed to load sources. Please try again.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -77,14 +47,22 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
 
   const handleToggleSource = async (sourceId: string, currentState: boolean) => {
     try {
-      // TODO: Implement actual API call to toggle source
+      const newState = !currentState;
+      const response = await AdminService.toggleSourceStatus(sourceId, newState);
+      
+      if (response.error) {
+        Alert.alert('Error', response.error);
+        return;
+      }
+
       setSources((prevSources) =>
         prevSources.map((source) =>
-          source.id === sourceId ? { ...source, is_active: !currentState } : source
+          source.id === sourceId ? { ...source, is_active: newState } : source
         )
       );
     } catch (error) {
       console.error('Error toggling source:', error);
+      Alert.alert('Error', 'Failed to update source status. Please try again.');
     }
   };
 

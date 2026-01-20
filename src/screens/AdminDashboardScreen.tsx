@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdminService } from '../services/admin.service';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 
 interface AdminDashboardScreenProps {
@@ -8,6 +10,29 @@ interface AdminDashboardScreenProps {
 }
 
 export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navigation }) => {
+  const [stats, setStats] = useState({
+    activeSources: 0,
+    totalArticles: 0,
+    totalUsers: 0,
+    featuredArticles: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadDashboardStats();
+  }, []);
+
+  const loadDashboardStats = async () => {
+    try {
+      const dashboardStats = await AdminService.getDashboardStats();
+      setStats(dashboardStats);
+    } catch (error) {
+      console.error('Error loading dashboard stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const adminMenuItems = [
     {
       id: 'sources',
@@ -30,17 +55,11 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
       description: 'Monitor RSS ingestion',
       onPress: () => navigation.navigate('IngestionLogs'),
     },
-    {
-      id: 'users',
-      title: 'User Management',
-      icon: '👥',
-      description: 'View and manage users',
-      onPress: () => {
-        // Placeholder - to be implemented
-        alert('User management coming soon');
-      },
-    },
   ];
+
+  if (isLoading) {
+    return <LoadingSpinner fullScreen />;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,13 +72,26 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <Text style={styles.statIcon}>📰</Text>
-            <Text style={styles.statValue}>-</Text>
+            <Text style={styles.statValue}>{stats.activeSources}</Text>
             <Text style={styles.statLabel}>Active Sources</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statIcon}>📄</Text>
-            <Text style={styles.statValue}>-</Text>
+            <Text style={styles.statValue}>{stats.totalArticles}</Text>
             <Text style={styles.statLabel}>Total Articles</Text>
+          </View>
+        </View>
+
+        <View style={styles.statsContainer}>
+          <View style={styles.statCard}>
+            <Text style={styles.statIcon}>⭐</Text>
+            <Text style={styles.statValue}>{stats.featuredArticles}</Text>
+            <Text style={styles.statLabel}>Featured</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statIcon}>👥</Text>
+            <Text style={styles.statValue}>{stats.totalUsers || '-'}</Text>
+            <Text style={styles.statLabel}>Users</Text>
           </View>
         </View>
 
