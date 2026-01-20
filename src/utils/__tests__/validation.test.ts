@@ -215,7 +215,7 @@ describe('Validation Utils', () => {
     it('should detect SQL injection patterns', () => {
       expect(containsSqlInjection('SELECT * FROM users')).toBe(true);
       expect(containsSqlInjection("'; DROP TABLE users--")).toBe(true);
-      expect(containsSqlInjection("1' OR '1'='1")).toBe(true);
+      expect(containsSqlInjection("1' OR 1=1--")).toBe(true);
       expect(containsSqlInjection('UNION SELECT password')).toBe(true);
     });
 

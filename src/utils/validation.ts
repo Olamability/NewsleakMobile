@@ -223,10 +223,7 @@ export const sanitizeHtml = (html: string): string => {
 
   let sanitized = html;
 
-  XSS_PATTERNS.forEach((pattern) => {
-    sanitized = sanitized.replace(pattern, '');
-  });
-
+  // First escape HTML entities to prevent injection
   sanitized = sanitized
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -234,6 +231,11 @@ export const sanitizeHtml = (html: string): string => {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;')
     .replace(/\//g, '&#x2F;');
+
+  // Then remove any XSS patterns that might still exist
+  XSS_PATTERNS.forEach((pattern) => {
+    sanitized = sanitized.replace(pattern, '');
+  });
 
   return sanitized;
 };

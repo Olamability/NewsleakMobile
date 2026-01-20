@@ -96,7 +96,7 @@ export class NewsService {
         };
       }
 
-      const rateLimit = checkRateLimit('search', 'search');
+      const rateLimit = checkRateLimit('search_global', 'search');
       if (!rateLimit.allowed) {
         console.error('Rate limit exceeded for search');
         return {

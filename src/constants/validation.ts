@@ -65,7 +65,7 @@ export const SQL_INJECTION_PATTERNS = [
   /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/gi,
   /(\bUNION\b.*\bSELECT\b)/gi,
   /(;|\-\-|\/\*|\*\/)/g,
-  /(\bOR\b.*=.*|1=1|'=')/gi,
+  /(\bOR\b\s+\d+\s*=\s*\d+|\bOR\b\s+['"][^'"]*['"]\s*=\s*['"][^'"]*['"])/gi,
   /(\bEXEC\b|\bEXECUTE\b)/gi,
 ] as const;
 

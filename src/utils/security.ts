@@ -175,9 +175,14 @@ export const isTokenExpired = (token: string): boolean => {
     }
 
     const parts = token.split('.');
-    const payload = JSON.parse(
-      Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString()
-    );
+    const base64Payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+
+    // Validate base64 format
+    if (!/^[A-Za-z0-9+/]*={0,2}$/.test(base64Payload)) {
+      return true;
+    }
+
+    const payload = JSON.parse(Buffer.from(base64Payload, 'base64').toString());
 
     if (!payload.exp) {
       return false;
