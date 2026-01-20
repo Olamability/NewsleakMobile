@@ -95,11 +95,13 @@ src/
 
 ## 🚀 Getting Started
 
+**⚡ Quick Start:** See [GETTING_STARTED.md](./GETTING_STARTED.md) for a detailed step-by-step guide to get the app running with sample data in under 10 minutes.
+
 ### Prerequisites
 - Node.js 16+ and npm
 - Expo CLI (`npm install -g expo-cli`)
 - iOS Simulator (Mac only) or Android Studio
-- Supabase account
+- Supabase account (free tier works fine)
 
 ### Installation
 
@@ -129,7 +131,23 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 #### 1. Create Tables
 
-Run the following SQL in your Supabase SQL editor:
+Run the SQL file in your Supabase SQL editor:
+- Copy contents of `/supabase/schema.sql` and run it
+
+This creates all tables and seeds categories and news sources.
+
+#### 2. Add Sample Articles (Important!)
+
+To see articles immediately without waiting for RSS ingestion:
+- Copy contents of `/supabase/sample-articles.sql` and run it
+
+This adds 20+ sample articles across all categories for testing.
+
+**Note:** Without sample articles, the app will show "No articles found" because the database tables will be empty.
+
+#### 3. Original SQL Reference
+
+For reference, here's the table structure:
 
 ```sql
 -- News Articles Table

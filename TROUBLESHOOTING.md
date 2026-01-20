@@ -3,6 +3,7 @@
 Common issues and their solutions for Spazr News Aggregator.
 
 ## Table of Contents
+- [Data & Content Issues](#data--content-issues)
 - [Installation Issues](#installation-issues)
 - [Development Issues](#development-issues)
 - [Supabase Issues](#supabase-issues)
@@ -10,6 +11,127 @@ Common issues and their solutions for Spazr News Aggregator.
 - [Navigation Issues](#navigation-issues)
 - [Performance Issues](#performance-issues)
 - [Build Issues](#build-issues)
+
+---
+
+## Data & Content Issues
+
+### "No Articles Found" on Home Screen
+
+**Problem:** The app displays "No articles found" even after setting up Supabase
+
+**Root Causes & Solutions:**
+
+#### 1. Sample Articles Not Added
+
+The most common cause - the database has no articles.
+
+**Solution:**
+```sql
+-- In Supabase SQL Editor, run:
+-- First, verify schema.sql was executed
+SELECT COUNT(*) FROM categories;  -- Should return 8
+SELECT COUNT(*) FROM news_sources; -- Should return 5
+
+-- If both return results, add sample articles:
+-- Copy and run the entire contents of /supabase/sample-articles.sql
+
+-- Verify articles were added:
+SELECT COUNT(*) FROM news_articles;  -- Should return 20+
+```
+
+**Quick Fix:**
+1. Go to Supabase SQL Editor
+2. Copy contents of `/supabase/sample-articles.sql`
+3. Paste and click "Run"
+4. Refresh the app (pull down on home screen)
+
+#### 2. Row Level Security (RLS) Blocking Access
+
+**Problem:** RLS policies preventing public read access
+
+**Solution:**
+```sql
+-- Check if policy exists
+SELECT * FROM pg_policies WHERE tablename = 'news_articles';
+
+-- If missing, add the policy:
+ALTER TABLE news_articles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can view articles" ON news_articles
+  FOR SELECT USING (true);
+```
+
+#### 3. Incorrect Category Filtering
+
+**Problem:** Articles exist but not showing in specific category
+
+**Solution:**
+```sql
+-- Check article distribution by category
+SELECT c.name, COUNT(a.id) as article_count
+FROM categories c
+LEFT JOIN news_articles a ON a.category_id = c.id
+GROUP BY c.name;
+
+-- If imbalanced, articles might be in wrong categories
+-- Verify category_id matches between articles and categories
+```
+
+#### 4. Database Connection Issues
+
+**Problem:** App can't connect to Supabase
+
+**Solution:**
+1. Check `.env` file has correct credentials:
+   ```
+   EXPO_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+   EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...
+   ```
+2. Verify Supabase project is active (not paused)
+3. Check browser/app console for connection errors
+4. Test connection in Supabase dashboard
+
+### No Breaking News Showing
+
+**Problem:** Breaking News section is empty
+
+**Solution:**
+```sql
+-- Check for breaking news articles
+SELECT COUNT(*) FROM news_articles WHERE is_breaking = true;
+
+-- If zero, mark some articles as breaking:
+UPDATE news_articles 
+SET is_breaking = true 
+WHERE published_at > NOW() - INTERVAL '3 hours'
+LIMIT 3;
+```
+
+### Search Returns No Results
+
+**Problem:** Searching returns no articles even though they exist
+
+**Solution:**
+1. Verify search query length (minimum 2 characters required)
+2. Check article titles/summaries contain searchable text:
+   ```sql
+   SELECT title, summary 
+   FROM news_articles 
+   WHERE title ILIKE '%tech%' OR summary ILIKE '%tech%';
+   ```
+3. Try simpler search terms (single words work better)
+
+### Articles Not Updating/Refreshing
+
+**Problem:** Pull-to-refresh doesn't fetch new articles
+
+**Solution:**
+1. Check if new articles were actually added to database
+2. Verify published_at timestamps are recent
+3. Clear React Query cache:
+   - Close and reopen the app
+   - Or add new articles with very recent timestamps
 
 ---
 
