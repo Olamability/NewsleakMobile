@@ -1,0 +1,151 @@
+import { supabase } from './supabase';
+import { NewsSource, ApiResponse } from '../types';
+
+export class SourceService {
+  /**
+   * Get all news sources
+   * @returns Array of news sources. Returns empty array on error.
+   */
+  static async getSources(): Promise<NewsSource[]> {
+    try {
+      const { data, error } = await supabase
+        .from('news_sources')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      return data || [];
+    } catch (error: unknown) {
+      console.error('Error fetching sources:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get active news sources
+   * @returns Array of active news sources. Returns empty array on error.
+   */
+  static async getActiveSources(): Promise<NewsSource[]> {
+    try {
+      const { data, error } = await supabase
+        .from('news_sources')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      return data || [];
+    } catch (error: unknown) {
+      console.error('Error fetching active sources:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a new news source
+   * @param name - Display name of the news source
+   * @param rssUrl - RSS feed URL for the source
+   * @param websiteUrl - Website URL of the source
+   * @param logoUrl - Optional logo URL for the source
+   * @returns Promise resolving to ApiResponse with the created source or error
+   */
+  static async addSource(
+    name: string,
+    rssUrl: string,
+    websiteUrl: string,
+    logoUrl?: string
+  ): Promise<ApiResponse<NewsSource>> {
+    try {
+      const { data, error } = await supabase
+        .from('news_sources')
+        .insert([
+          {
+            name,
+            rss_url: rssUrl,
+            website_url: websiteUrl,
+            logo_url: logoUrl,
+            is_active: true,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { data };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to add source';
+      return { error: message };
+    }
+  }
+
+  /**
+   * Update a news source
+   * @param id - ID of the source to update
+   * @param updates - Partial source object with fields to update
+   * @returns Promise resolving to ApiResponse with the updated source or error
+   */
+  static async updateSource(
+    id: string,
+    updates: Partial<NewsSource>
+  ): Promise<ApiResponse<NewsSource>> {
+    try {
+      const { data, error } = await supabase
+        .from('news_sources')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { data };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update source';
+      return { error: message };
+    }
+  }
+
+  /**
+   * Delete a news source
+   * @param id - ID of the source to delete
+   * @returns Promise resolving to ApiResponse with success message or error
+   */
+  static async deleteSource(id: string): Promise<ApiResponse<void>> {
+    try {
+      const { error } = await supabase
+        .from('news_sources')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { message: 'Source deleted successfully' };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to delete source';
+      return { error: message };
+    }
+  }
+
+  /**
+   * Toggle source active status
+   * @param id - ID of the source to toggle
+   * @param isActive - New active status
+   * @returns Promise resolving to ApiResponse with the updated source or error
+   */
+  static async toggleSource(id: string, isActive: boolean): Promise<ApiResponse<NewsSource>> {
+    return this.updateSource(id, { is_active: isActive });
+  }
+}

@@ -4,3 +4,6 @@ export { NewsCard } from './NewsCard';
 export { LoadingSpinner } from './LoadingSpinner';
 export { EmptyState } from './EmptyState';
 export { ErrorState } from './ErrorState';
+export { FeaturedArticleCard } from './FeaturedArticleCard';
+export { NewsSourceCircle } from './NewsSourceCircle';
+export { AddSourceModal } from './AddSourceModal';
