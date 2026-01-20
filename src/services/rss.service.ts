@@ -41,7 +41,7 @@ export class RSSService {
           timeout: options?.timeout || this.DEFAULT_TIMEOUT,
           maxRedirects: options?.maxRedirects || 5,
           headers: {
-            'User-Agent': 'rss-parser',
+            'User-Agent': 'NewsArena/1.0 (News Aggregator Mobile App)',
             'Accept': 'application/rss+xml',
             ...options?.headers,
           },
@@ -342,7 +342,7 @@ export class RSSService {
       const response = await axios.get(feedUrl, {
         timeout: this.DEFAULT_TIMEOUT,
         headers: {
-          'User-Agent': 'rss-parser',
+          'User-Agent': 'NewsArena/1.0 (News Aggregator Mobile App)',
           'Accept': 'application/rss+xml',
         },
         responseType: 'text',

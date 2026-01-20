@@ -180,7 +180,11 @@ describe('RSSService', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: {
+          url: 'https://example.com/feed.xml',
+          method: 'get',
+          headers: {},
+        },
       });
 
       const metadata = await rssService.getFeedMetadata('https://example.com/feed.xml');
