@@ -185,6 +185,8 @@ export const validateUrl = (url: string): ValidationResult => {
 
 /**
  * Validate RSS feed URL
+ * Note: This provides a basic URL validation. Actual RSS feed validation
+ * requires parsing the feed content, which should be done server-side.
  */
 export const validateRssUrl = (url: string): ValidationResult => {
   const urlValidation = validateUrl(url);
@@ -192,21 +194,7 @@ export const validateRssUrl = (url: string): ValidationResult => {
     return urlValidation;
   }
 
-  // Additional RSS-specific validation
-  const lowerUrl = url.toLowerCase();
-  const hasRssIndicator =
-    lowerUrl.includes('/rss') ||
-    lowerUrl.includes('/feed') ||
-    lowerUrl.includes('.xml') ||
-    lowerUrl.includes('.rss') ||
-    lowerUrl.includes('/atom');
-
-  if (!hasRssIndicator) {
-    return {
-      isValid: true,
-    };
-  }
-
+  // RSS URLs are typically valid URLs, actual feed validation requires parsing
   return { isValid: true };
 };
 

@@ -14,7 +14,7 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
-import { validateEmail, validatePassword } from '../utils/validation';
+import { validateEmail } from '../utils/validation';
 
 interface SignInScreenProps {
   navigation: any;
@@ -39,9 +39,6 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
 
     if (!password) {
       newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
       isValid = false;
     }
 
