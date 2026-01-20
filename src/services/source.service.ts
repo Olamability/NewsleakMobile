@@ -123,10 +123,7 @@ export class SourceService {
    */
   static async deleteSource(id: string): Promise<ApiResponse<void>> {
     try {
-      const { error } = await supabase
-        .from('news_sources')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('news_sources').delete().eq('id', id);
 
       if (error) {
         return { error: error.message };

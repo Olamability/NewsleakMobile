@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
@@ -39,8 +33,8 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
         setIsLoading(true);
       }
       // TODO: Implement actual API call to fetch ingestion logs
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Mock data for demonstration
       const mockLogs: IngestionLog[] = [
         {
@@ -66,7 +60,7 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
           message: 'Failed to fetch RSS feed',
         },
       ];
-      
+
       setLogs(mockLogs);
     } catch (error) {
       console.error('Error loading logs:', error);
@@ -86,7 +80,7 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
-    
+
     if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins} min ago`;
     if (diffMins < 1440) return `${Math.floor(diffMins / 60)} hours ago`;
@@ -128,7 +122,7 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
         </View>
         <Text style={styles.logTime}>{formatTime(item.timestamp)}</Text>
       </View>
-      
+
       <View style={styles.logDetails}>
         <View style={styles.logDetailItem}>
           <Text style={styles.logDetailLabel}>Status:</Text>
@@ -136,16 +130,14 @@ export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ naviga
             {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
           </Text>
         </View>
-        
+
         <View style={styles.logDetailItem}>
           <Text style={styles.logDetailLabel}>Articles:</Text>
           <Text style={styles.logDetailValue}>{item.articles_count}</Text>
         </View>
       </View>
-      
-      {item.message && (
-        <Text style={styles.logMessage}>{item.message}</Text>
-      )}
+
+      {item.message && <Text style={styles.logMessage}>{item.message}</Text>}
     </View>
   );
 

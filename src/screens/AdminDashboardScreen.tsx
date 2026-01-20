@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 
@@ -72,11 +66,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Management</Text>
           {adminMenuItems.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.menuItem}
-              onPress={item.onPress}
-            >
+            <TouchableOpacity key={item.id} style={styles.menuItem} onPress={item.onPress}>
               <View style={styles.menuItemLeft}>
                 <Text style={styles.menuIcon}>{item.icon}</Text>
                 <View>

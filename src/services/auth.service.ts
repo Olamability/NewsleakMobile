@@ -94,7 +94,9 @@ export class AuthService {
    */
   static async getCurrentUser(): Promise<User | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return null;
@@ -118,7 +120,9 @@ export class AuthService {
    */
   static async getSession() {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       return session;
     } catch (error) {
       return null;
@@ -153,7 +157,10 @@ export class AuthService {
   /**
    * Update user profile
    */
-  static async updateProfile(updates: { full_name?: string; avatar_url?: string }): Promise<ApiResponse<User>> {
+  static async updateProfile(updates: {
+    full_name?: string;
+    avatar_url?: string;
+  }): Promise<ApiResponse<User>> {
     try {
       const { data, error } = await supabase.auth.updateUser({
         data: updates,

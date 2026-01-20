@@ -21,10 +21,7 @@ interface ArticleDetailScreenProps {
   navigation: any;
 }
 
-export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({
-  route,
-  navigation,
-}) => {
+export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ route, navigation }) => {
   const { article } = route.params as { article: NewsArticle };
   const categoryColor = getCategoryColor(article.category);
   const { width: windowWidth } = useWindowDimensions();
@@ -44,13 +41,13 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({
   const handleReadFullArticle = async () => {
     const trackingUrl = NewsService.generateTrackingUrl(article.article_url);
     NewsService.incrementViewCount(article.id);
-    
+
     try {
       const supported = await Linking.canOpenURL(trackingUrl);
       if (supported) {
         await Linking.openURL(trackingUrl);
       } else {
-        console.error("Cannot open URL - unsupported URL format:", trackingUrl);
+        console.error('Cannot open URL - unsupported URL format:', trackingUrl);
         // Fallback to WebView navigation
         navigation.navigate('ArticleWebView', {
           url: trackingUrl,
@@ -114,11 +111,8 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({
             <View style={styles.contentCard}>
               <Text style={styles.contentLabel}>News Preview</Text>
               <Text style={styles.snippet}>{article.content_snippet}</Text>
-              
-              <TouchableOpacity
-                style={styles.readFullLink}
-                onPress={handleReadFullArticle}
-              >
+
+              <TouchableOpacity style={styles.readFullLink} onPress={handleReadFullArticle}>
                 <Text style={styles.readFullLinkText}>
                   📖 Read Full Article at {article.source_name} →
                 </Text>
@@ -127,24 +121,19 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({
           )}
 
           {!article.content_snippet && (
-            <TouchableOpacity
-              style={styles.readButton}
-              onPress={handleReadFullArticle}
-            >
+            <TouchableOpacity style={styles.readButton} onPress={handleReadFullArticle}>
               <Text style={styles.readButtonText}>📖 Read Full Article</Text>
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity
-            style={styles.shareButton}
-            onPress={handleShare}
-          >
+          <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
             <Text style={styles.shareButtonText}>🔗 Share Article</Text>
           </TouchableOpacity>
 
           <View style={styles.disclaimer}>
             <Text style={styles.disclaimerText}>
-              📌 This article is from {article.source_name}. You will be redirected to their website to read the complete article.
+              📌 This article is from {article.source_name}. You will be redirected to their website
+              to read the complete article.
             </Text>
           </View>
         </View>

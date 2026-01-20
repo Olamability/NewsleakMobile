@@ -7,7 +7,9 @@ export class BookmarkService {
    */
   static async addBookmark(articleId: string): Promise<ApiResponse<Bookmark>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return { error: 'User not authenticated' };
@@ -50,7 +52,9 @@ export class BookmarkService {
    */
   static async removeBookmark(articleId: string): Promise<ApiResponse<null>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return { error: 'User not authenticated' };
@@ -77,7 +81,9 @@ export class BookmarkService {
    */
   static async getBookmarks(): Promise<NewsArticle[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return [];
@@ -85,10 +91,12 @@ export class BookmarkService {
 
       const { data, error } = await supabase
         .from('bookmarks')
-        .select(`
+        .select(
+          `
           *,
           article:news_articles(*)
-        `)
+        `
+        )
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -97,9 +105,7 @@ export class BookmarkService {
       }
 
       // Extract articles from bookmarks
-      return (data || [])
-        .map((bookmark: any) => bookmark.article)
-        .filter(Boolean);
+      return (data || []).map((bookmark: any) => bookmark.article).filter(Boolean);
     } catch (error: any) {
       console.error('Error fetching bookmarks:', error);
       return [];
@@ -111,7 +117,9 @@ export class BookmarkService {
    */
   static async isBookmarked(articleId: string): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return false;
@@ -135,7 +143,9 @@ export class BookmarkService {
    */
   static async getBookmarkCount(): Promise<number> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return 0;

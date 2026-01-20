@@ -68,7 +68,9 @@ export const isValidEmail = (email: string): boolean => {
 /**
  * Validate password strength
  */
-export const validatePassword = (password: string): {
+export const validatePassword = (
+  password: string
+): {
   isValid: boolean;
   message: string;
 } => {
@@ -78,7 +80,7 @@ export const validatePassword = (password: string): {
       message: 'Password must be at least 6 characters',
     };
   }
-  
+
   return {
     isValid: true,
     message: 'Password is valid',
@@ -114,7 +116,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   delay: number
 ): ((...args: Parameters<T>) => void) => {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);

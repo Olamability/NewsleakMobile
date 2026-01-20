@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-} from 'react-native';
+import { View, FlatList, RefreshControl, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -23,10 +17,7 @@ interface CategoryFeedScreenProps {
   navigation: any;
 }
 
-export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({
-  route,
-  navigation,
-}) => {
+export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({ route, navigation }) => {
   const { category, categoryName } = route.params;
   const { isAuthenticated } = useAuth();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -107,7 +98,7 @@ export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({
 
     try {
       const isBookmarked = bookmarkedIds.has(article.id);
-      
+
       if (isBookmarked) {
         await BookmarkService.removeBookmark(article.id);
         setBookmarkedIds((prev) => {
@@ -147,12 +138,7 @@ export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({
   }
 
   if (error && articles.length === 0) {
-    return (
-      <ErrorState
-        message={error}
-        onRetry={() => loadArticles(1)}
-      />
-    );
+    return <ErrorState message={error} onRetry={() => loadArticles(1)} />;
   }
 
   if (!isLoading && articles.length === 0) {
