@@ -77,6 +77,21 @@ killall -9 node
 npm start
 ```
 
+### Metro Config Loading Error on Windows
+
+**Problem:** `Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]` when loading Metro config on Windows
+```
+Error loading Metro config at: C:\Users\...\metro.config.cjs
+Only URLs with a scheme in: file, data, and node are supported by the default ESM loader.
+On Windows, absolute paths must be valid file:// URLs. Received protocol 'c:'
+```
+
+**Solution:**
+This error occurs when Metro tries to load a `.cjs` config file using ESM imports on Windows. The fix is to use `.js` extension instead:
+- Ensure you have `metro.config.js` (not `metro.config.cjs`)
+- The repository already uses `metro.config.js` which resolves this issue
+- If you encounter this error, verify you're using the latest version of the repository
+
 ### Hot Reload Not Working
 
 **Problem:** Changes not reflecting in app
