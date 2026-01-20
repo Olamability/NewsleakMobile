@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import { AuthCredentials, SignUpCredentials, User, ApiResponse } from '../types';
+import { validateEmail, validatePassword, validateName } from '../utils/validation';
+import { checkRateLimit } from '../utils/security';
 
 export class AuthService {
   /**
@@ -7,12 +9,36 @@ export class AuthService {
    */
   static async signUp(credentials: SignUpCredentials): Promise<ApiResponse<User>> {
     try {
+      const emailValidation = validateEmail(credentials.email);
+      if (!emailValidation.isValid) {
+        return { error: emailValidation.error };
+      }
+
+      const passwordValidation = validatePassword(credentials.password);
+      if (!passwordValidation.isValid) {
+        return { error: passwordValidation.error };
+      }
+
+      if (credentials.full_name) {
+        const nameValidation = validateName(credentials.full_name);
+        if (!nameValidation.isValid) {
+          return { error: nameValidation.error };
+        }
+      }
+
+      const rateLimit = checkRateLimit(credentials.email, 'auth');
+      if (!rateLimit.allowed) {
+        return {
+          error: `Too many attempts. Please try again in ${rateLimit.retryAfter} seconds.`,
+        };
+      }
+
       const { data, error } = await supabase.auth.signUp({
-        email: credentials.email,
+        email: credentials.email.trim(),
         password: credentials.password,
         options: {
           data: {
-            full_name: credentials.full_name,
+            full_name: credentials.full_name?.trim(),
           },
         },
       });
@@ -44,8 +70,24 @@ export class AuthService {
    */
   static async signIn(credentials: AuthCredentials): Promise<ApiResponse<User>> {
     try {
+      const emailValidation = validateEmail(credentials.email);
+      if (!emailValidation.isValid) {
+        return { error: emailValidation.error };
+      }
+
+      if (!credentials.password || credentials.password.length === 0) {
+        return { error: 'Password is required' };
+      }
+
+      const rateLimit = checkRateLimit(credentials.email, 'auth');
+      if (!rateLimit.allowed) {
+        return {
+          error: `Too many attempts. Please try again in ${rateLimit.retryAfter} seconds.`,
+        };
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
+        email: credentials.email.trim(),
         password: credentials.password,
       });
 
@@ -142,7 +184,19 @@ export class AuthService {
    */
   static async resetPassword(email: string): Promise<ApiResponse<null>> {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.isValid) {
+        return { error: emailValidation.error };
+      }
+
+      const rateLimit = checkRateLimit(email, 'auth');
+      if (!rateLimit.allowed) {
+        return {
+          error: `Too many attempts. Please try again in ${rateLimit.retryAfter} seconds.`,
+        };
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim());
 
       if (error) {
         return { error: error.message };
@@ -162,6 +216,14 @@ export class AuthService {
     avatar_url?: string;
   }): Promise<ApiResponse<User>> {
     try {
+      if (updates.full_name) {
+        const nameValidation = validateName(updates.full_name);
+        if (!nameValidation.isValid) {
+          return { error: nameValidation.error };
+        }
+        updates.full_name = updates.full_name.trim();
+      }
+
       const { data, error } = await supabase.auth.updateUser({
         data: updates,
       });

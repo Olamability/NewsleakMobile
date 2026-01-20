@@ -14,6 +14,7 @@ import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
+import { validateEmail, validatePassword } from '../utils/validation';
 
 interface SignInScreenProps {
   navigation: any;
@@ -30,11 +31,9 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
     let isValid = true;
     const newErrors = { email: '', password: '' };
 
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      newErrors.email = emailValidation.error || 'Email is invalid';
       isValid = false;
     }
 
