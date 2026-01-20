@@ -1,4 +1,5 @@
 import Parser from 'rss-parser';
+import axios from 'axios';
 import { RawArticle } from '../types';
 
 interface RSSParserOptions {
@@ -35,7 +36,20 @@ export class RSSService {
 
     for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
-        const feed = await this.parser.parseURL(feedUrl);
+        // Fetch RSS feed content using axios (React Native compatible)
+        const response = await axios.get(feedUrl, {
+          timeout: options?.timeout || this.DEFAULT_TIMEOUT,
+          maxRedirects: options?.maxRedirects || 5,
+          headers: {
+            'User-Agent': 'rss-parser',
+            'Accept': 'application/rss+xml',
+            ...options?.headers,
+          },
+          responseType: 'text',
+        });
+
+        // Parse the RSS feed string
+        const feed = await this.parser.parseString(response.data);
         return this.normalizeFeedItems(feed.items);
       } catch (error) {
         lastError = error as Error;
@@ -324,7 +338,18 @@ export class RSSService {
     language?: string;
   }> {
     try {
-      const feed = await this.parser.parseURL(feedUrl);
+      // Fetch RSS feed content using axios (React Native compatible)
+      const response = await axios.get(feedUrl, {
+        timeout: this.DEFAULT_TIMEOUT,
+        headers: {
+          'User-Agent': 'rss-parser',
+          'Accept': 'application/rss+xml',
+        },
+        responseType: 'text',
+      });
+
+      // Parse the RSS feed string
+      const feed = await this.parser.parseString(response.data);
       return {
         title: feed.title,
         description: feed.description,
