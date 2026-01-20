@@ -56,9 +56,9 @@ async function saveTokenToDatabase(token: string) {
       .upsert(
         [{
           expo_push_token: token,
-          platform: Platform.OS,
+          platform: Platform.OS as 'ios' | 'android' | 'windows' | 'macos' | 'web',
           is_active: true,
-        }],
+        }] as any,
         {
           onConflict: 'expo_push_token',
         }

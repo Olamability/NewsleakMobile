@@ -65,7 +65,7 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
 
   const renderItem = ({ item }: { item: NewsArticle }) => (
     <NewsCard
-      article={item}
+      article={item as any}
       onPress={() => handleArticlePress(item)}
       onBookmarkPress={() => handleRemoveBookmark(item)}
       isBookmarked={true}

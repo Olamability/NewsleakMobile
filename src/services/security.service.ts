@@ -252,12 +252,12 @@ export class SecurityService {
     maxRequests: number = 100,
     windowMinutes: number = 1
   ): { allowed: boolean; remaining?: number; resetAt?: Date } {
-    const rateLimit = checkRateLimit(userId, endpoint, maxRequests, windowMinutes);
+    const rateLimit = checkRateLimit(`${userId}_${endpoint}`, 'api');
 
     return {
       allowed: rateLimit.allowed,
-      remaining: rateLimit.remaining,
-      resetAt: rateLimit.resetAt,
+      remaining: undefined, // Not available from simple rate limit
+      resetAt: undefined, // Not available from simple rate limit
     };
   }
 

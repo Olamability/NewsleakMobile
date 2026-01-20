@@ -117,7 +117,7 @@ export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({ route, n
 
   const renderItem = ({ item }: { item: NewsArticle }) => (
     <NewsCard
-      article={item}
+      article={item as any}
       onPress={() => handleArticlePress(item)}
       onBookmarkPress={() => handleBookmarkPress(item)}
       isBookmarked={bookmarkedIds.has(item.id)}

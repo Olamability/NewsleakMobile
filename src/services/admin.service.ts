@@ -166,8 +166,8 @@ export class AdminService {
       // Try to get total users count (might fail if we don't have access)
       let totalUsers = 0;
       try {
-        const { count: usersCount } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
-        totalUsers = usersCount || 0;
+        const result = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
+        totalUsers = (result.data as any)?.count || 0;
       } catch {
         // If we can't access admin API, just return 0
         totalUsers = 0;

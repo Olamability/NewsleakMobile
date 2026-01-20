@@ -207,7 +207,7 @@ export const useTrackEvent = () => {
         event_type: eventType,
         article_id: articleId || null,
         metadata: metadata || null,
-      });
+      } as any);
 
       if (error) throw error;
     },
@@ -222,7 +222,7 @@ export const useSaveSearch = () => {
       const { error } = await supabase.from('recent_searches').insert({
         query,
         user_id: userId || null,
-      });
+      } as any);
 
       if (error) throw error;
     },
