@@ -20,7 +20,7 @@ Instead of using `rss-parser`'s `parseURL()` method (which uses Node.js HTTP), w
 This way, we avoid using the Node.js HTTP functionality while still leveraging rss-parser's excellent XML parsing.
 
 ### 2. Metro Configuration with Polyfills
-Created `metro.config.js` to provide browser-compatible polyfills for Node.js modules:
+Created `metro.config.cjs` to provide browser-compatible polyfills for Node.js modules:
 - `http` → `stream-http`
 - `https` → `https-browserify`
 - `url` → `url`
@@ -37,9 +37,9 @@ This allows the bundler to resolve the imports at the top of `rss-parser`, even 
 - Modified `getFeedMetadata()` to use axios instead of `parser.parseURL()`
 - Kept `parseFeedString()` unchanged (uses `parser.parseString()`)
 
-### `metro.config.js` (new file)
+### `metro.config.cjs` (new file)
 - Configured extraNodeModules with polyfills
-- Uses standard `.js` extension for Expo compatibility
+- Uses `.cjs` extension for CommonJS compatibility on Windows
 
 ### `package.json`
 - Added polyfill dependencies: `stream-http`, `https-browserify`, `url`, `readable-stream`
