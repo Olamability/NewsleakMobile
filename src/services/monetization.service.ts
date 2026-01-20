@@ -250,9 +250,19 @@ export class MonetizationService {
    */
   static async trackSponsoredImpression(contentId: string): Promise<void> {
     try {
-      await supabase.rpc('increment_sponsored_impression', {
-        content_id: contentId,
-      });
+      // Update impression count directly without stored procedure
+      const { data: content } = await supabase
+        .from('sponsored_content')
+        .select('impression_count')
+        .eq('id', contentId)
+        .single();
+
+      if (content) {
+        await supabase
+          .from('sponsored_content')
+          .update({ impression_count: (content.impression_count || 0) + 1 })
+          .eq('id', contentId);
+      }
     } catch (error) {
       console.error('Error tracking sponsored impression:', error);
     }
@@ -263,9 +273,19 @@ export class MonetizationService {
    */
   static async trackSponsoredClick(contentId: string): Promise<void> {
     try {
-      await supabase.rpc('increment_sponsored_click', {
-        content_id: contentId,
-      });
+      // Update click count directly without stored procedure
+      const { data: content } = await supabase
+        .from('sponsored_content')
+        .select('click_count')
+        .eq('id', contentId)
+        .single();
+
+      if (content) {
+        await supabase
+          .from('sponsored_content')
+          .update({ click_count: (content.click_count || 0) + 1 })
+          .eq('id', contentId);
+      }
     } catch (error) {
       console.error('Error tracking sponsored click:', error);
     }

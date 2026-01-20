@@ -192,12 +192,17 @@ export class AdminService {
 
   /**
    * Get all users (requires admin permissions)
+   * 
+   * Note: This method requires proper Supabase admin setup.
+   * For production, this should be moved to a backend service
+   * that uses service role keys, not exposed in the mobile client.
    */
   static async getAllUsers(): Promise<User[]> {
     try {
       // Note: This requires proper Supabase configuration with admin access
       // For now, return empty array as we need to set up proper user management table
-      console.warn('User management requires additional setup');
+      // In production, implement a backend API endpoint that uses service role
+      console.warn('User management requires backend API with service role access');
       return [];
     } catch (error: unknown) {
       console.error('Error fetching users:', error);

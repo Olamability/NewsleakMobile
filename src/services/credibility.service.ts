@@ -258,8 +258,10 @@ export class CredibilityService {
       const scores = await this.getAllSourceCredibility();
 
       // Store in a credibility_scores table if it exists
+      // Note: This table needs to be created in the database schema
       for (const score of scores) {
         try {
+          // Try to upsert, but handle gracefully if table doesn't exist
           await supabase.from('source_credibility').upsert(
             {
               source_id: score.source_id,
@@ -274,8 +276,10 @@ export class CredibilityService {
               onConflict: 'source_id',
             }
           );
-        } catch {
-          // Table might not exist
+        } catch (tableError) {
+          // Table might not exist - log but continue
+          console.warn('source_credibility table not found - scores calculated in-memory only');
+          break; // Exit loop after first error
         }
       }
     } catch (error) {

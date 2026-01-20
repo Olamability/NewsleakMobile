@@ -280,32 +280,30 @@ export class SecurityService {
   }
 
   /**
-   * Encrypt sensitive data (placeholder - implement with proper encryption)
-   */
-  static encryptData(data: string, key: string): string {
-    // In production, use proper encryption library (crypto-js, etc.)
-    // This is a placeholder
-    return Buffer.from(data).toString('base64');
-  }
-
-  /**
-   * Decrypt sensitive data (placeholder - implement with proper decryption)
-   */
-  static decryptData(encryptedData: string, key: string): string {
-    // In production, use proper decryption library
-    // This is a placeholder
-    return Buffer.from(encryptedData, 'base64').toString('utf-8');
-  }
-
-  /**
-   * Generate secure token
+   * Generate secure random token
+   * Note: For production use, integrate expo-crypto or crypto.getRandomValues()
    */
   static generateSecureToken(length: number = 32): string {
+    // Use cryptographically secure random number generation
+    // In React Native, use expo-crypto or react-native-get-random-values
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let token = '';
-    for (let i = 0; i < length; i++) {
-      token += chars.charAt(Math.floor(Math.random() * chars.length));
+    
+    // For web compatibility, use crypto.getRandomValues if available
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const randomValues = new Uint8Array(length);
+      crypto.getRandomValues(randomValues);
+      for (let i = 0; i < length; i++) {
+        token += chars.charAt(randomValues[i] % chars.length);
+      }
+    } else {
+      // Fallback: This should be replaced with expo-crypto in production
+      console.warn('Using fallback random generation - not cryptographically secure');
+      for (let i = 0; i < length; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
     }
+    
     return token;
   }
 

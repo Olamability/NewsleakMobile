@@ -311,13 +311,24 @@ export class AnalyticsService {
         .from('news_articles')
         .select('*')
         .not('id', 'in', `(${readArticleIds.join(',')})`)
-        .or(
-          `category.in.(${topCategories.join(',')}),source_name.in.(${topSources.join(',')})`
-        )
+        .in('category', topCategories)
         .order('published_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
+
+      // If not enough from categories, try sources
+      if (!recommendations || recommendations.length < limit) {
+        const { data: sourceRecs } = await supabase
+          .from('news_articles')
+          .select('*')
+          .not('id', 'in', `(${readArticleIds.join(',')})`)
+          .in('source_name', topSources)
+          .order('published_at', { ascending: false })
+          .limit(limit - (recommendations?.length || 0));
+
+        return [...(recommendations || []), ...(sourceRecs || [])];
+      }
 
       return recommendations || [];
     } catch (error) {
@@ -331,10 +342,22 @@ export class AnalyticsService {
    * Estimate reading time based on content length
    */
   static estimateReadingTime(content: string, wordsPerMinute: number = 200): number {
-    // Remove HTML tags
-    const plainText = content.replace(/<[^>]*>/g, '');
+    // Remove HTML tags more thoroughly to prevent XSS
+    let plainText = content;
+    
+    // First pass: remove script and style tags and their contents
+    plainText = plainText.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    plainText = plainText.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+    
+    // Second pass: remove all remaining HTML tags
+    plainText = plainText.replace(/<[^>]+>/g, '');
+    
+    // Decode HTML entities
+    plainText = plainText.replace(/&[a-z]+;/gi, ' ');
+    
     // Count words
-    const wordCount = plainText.trim().split(/\s+/).length;
+    const wordCount = plainText.trim().split(/\s+/).filter(word => word.length > 0).length;
+    
     // Calculate minutes (minimum 1 minute)
     return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
   }
