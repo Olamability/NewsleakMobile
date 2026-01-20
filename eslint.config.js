@@ -16,7 +16,7 @@ module.exports = [
       'jest.config.js',
       'jest.setup.js',
       'babel.config.js',
-      'metro.config.cjs',
+      'metro.config.js',
       'eslint.config.js',
       '.prettierrc.js',
     ],
