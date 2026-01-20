@@ -81,16 +81,30 @@ npm start
 
 **Problem:** `Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]` when loading Metro config on Windows
 ```
-Error loading Metro config at: C:\Users\...\metro.config.cjs
+Error loading Metro config at: C:\Users\...\metro.config.js
 Only URLs with a scheme in: file, data, and node are supported by the default ESM loader.
 On Windows, absolute paths must be valid file:// URLs. Received protocol 'c:'
 ```
 
 **Solution:**
-This error occurs when Metro tries to load a `.cjs` config file using ESM imports on Windows. The fix is to use `.js` extension instead:
-- Ensure you have `metro.config.js` (not `metro.config.cjs`)
-- The repository already uses `metro.config.js` which resolves this issue
-- If you encounter this error, verify you're using the latest version of the repository
+This error occurs when Metro tries to load a config file using ESM imports on Windows with newer Node.js versions. Windows absolute paths (like `C:\...`) need to be converted to proper `file://` URLs for ESM's dynamic import.
+
+This repository includes a patch for `metro-config` that automatically converts Windows paths to valid file URLs:
+- The fix is applied via `patch-package` which patches the `metro-config` package
+- The patch is stored in `patches/metro-config+0.83.3.patch`
+- The patch is automatically applied after `npm install` via the `postinstall` script
+- No manual configuration or code changes are needed - just run `npm install` and the fix is applied
+
+**Technical Details:**
+The patch modifies `node_modules/metro-config/src/loadConfig.js` to convert Windows paths to `file://` URLs before importing:
+```javascript
+const pathToImport = path.isAbsolute(absolutePath) && process.platform === 'win32'
+  ? require('url').pathToFileURL(absolutePath).href
+  : absolutePath;
+const configModule = await import(pathToImport);
+```
+
+This fix is safe for all platforms as it only applies the conversion on Windows when dealing with absolute paths.
 
 ### Hot Reload Not Working
 

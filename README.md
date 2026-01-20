@@ -295,7 +295,18 @@ All API calls are handled through Supabase client:
 
 ## 🧪 Testing
 
-[Testing infrastructure to be added]
+Run tests with:
+```bash
+npm test                  # Run all tests
+npm run test:watch        # Run tests in watch mode
+npm run test:coverage     # Run tests with coverage
+```
+
+## 🐛 Troubleshooting
+
+For common issues and solutions, see:
+- [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - General troubleshooting guide
+- [WINDOWS_ESM_FIX.md](./WINDOWS_ESM_FIX.md) - Windows-specific Metro ESM URL scheme error fix
 
 ## 📦 Build & Deployment
 
