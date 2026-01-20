@@ -1,140 +1,105 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Share,
-  useWindowDimensions,
-  Linking,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { NewsArticle } from '../types';
-import { NewsService } from '../services/news.service';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
-import { getCategoryColor } from '../constants/categories';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import * as WebBrowser from 'expo-web-browser';
+import { Ionicons } from '@expo/vector-icons';
+import { NewsArticle } from '../types/news';
+import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
+import { formatFullDate, extractDomain } from '../utils/helpers';
+import { Button } from '../components/Button';
+import { useTrackEvent } from '../lib/queries';
+import { RootStackParamList } from '../navigation/types';
+
+type ArticleDetailScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'ArticleDetail'
+>;
+type ArticleDetailScreenRouteProp = RouteProp<RootStackParamList, 'ArticleDetail'>;
 
 interface ArticleDetailScreenProps {
-  route: any;
-  navigation: any;
+  navigation: ArticleDetailScreenNavigationProp;
+  route: ArticleDetailScreenRouteProp;
 }
 
-export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ route, navigation }) => {
-  const { article } = route.params as { article: NewsArticle };
-  const categoryColor = getCategoryColor(article.category);
-  const { width: windowWidth } = useWindowDimensions();
-  const imageHeight = Math.min(300, windowWidth * 0.6);
+export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ navigation, route }) => {
+  const { article } = route.params;
+  const [imageError, setImageError] = useState(false);
+  const { mutate: trackEvent } = useTrackEvent();
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+  useEffect(() => {
+    trackEvent({
+      eventType: 'article_view',
+      articleId: article.id,
+      metadata: { source: article.news_sources?.name },
     });
-  };
+  }, [article.id, trackEvent]);
 
-  const handleReadFullArticle = async () => {
-    const trackingUrl = NewsService.generateTrackingUrl(article.article_url);
-    NewsService.incrementViewCount(article.id);
-
+  const handleReadFullStory = async () => {
     try {
-      const supported = await Linking.canOpenURL(trackingUrl);
-      if (supported) {
-        await Linking.openURL(trackingUrl);
-      } else {
-        console.error('Cannot open URL - unsupported URL format:', trackingUrl);
-        // Fallback to WebView navigation
-        navigation.navigate('ArticleWebView', {
-          url: trackingUrl,
-          title: article.title,
-        });
-      }
-    } catch (error) {
-      console.error('Error opening URL, falling back to WebView:', error);
-      // Fallback to WebView navigation
-      navigation.navigate('ArticleWebView', {
-        url: trackingUrl,
-        title: article.title,
+      trackEvent({
+        eventType: 'article_external_view',
+        articleId: article.id,
       });
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `${article.title}\n\n${article.article_url}`,
-        url: article.article_url,
-      });
+      await WebBrowser.openBrowserAsync(article.original_url);
     } catch (error) {
-      console.error('Error sharing:', error);
+      console.error('Error opening browser:', error);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {article.image_url ? (
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Header with back button */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Article Image */}
+        {!imageError && article.image_url ? (
           <Image
             source={{ uri: article.image_url }}
-            style={[styles.image, { height: imageHeight }]}
+            style={styles.image}
             resizeMode="cover"
+            onError={() => setImageError(true)}
           />
         ) : (
-          <View style={[styles.imagePlaceholder, { height: imageHeight }]}>
-            <Text style={styles.placeholderIcon}>📰</Text>
+          <View style={[styles.image, styles.imagePlaceholder]}>
+            <Ionicons name="newspaper-outline" size={80} color={COLORS.textLight} />
           </View>
         )}
 
+        {/* Article Content */}
         <View style={styles.content}>
-          <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
-            <Text style={styles.categoryText}>{article.category}</Text>
+          {/* Source & Time */}
+          <View style={styles.metaContainer}>
+            {article.news_sources && (
+              <View style={styles.sourceRow}>
+                <Text style={styles.sourceName}>{article.news_sources.name}</Text>
+                <Text style={styles.dot}>•</Text>
+                <Text style={styles.publishedTime}>{formatFullDate(article.published_at)}</Text>
+              </View>
+            )}
           </View>
 
+          {/* Title */}
           <Text style={styles.title}>{article.title}</Text>
 
-          <View style={styles.metadata}>
-            <Text style={styles.source}>{article.source_name}</Text>
-            <Text style={styles.dot}>•</Text>
-            <Text style={styles.date}>{formatDate(article.published_at)}</Text>
-          </View>
-
-          <View style={styles.summaryCard}>
+          {/* Summary */}
+          {article.summary && (
             <Text style={styles.summary}>{article.summary}</Text>
-          </View>
-
-          {article.content_snippet && (
-            <View style={styles.contentCard}>
-              <Text style={styles.contentLabel}>News Preview</Text>
-              <Text style={styles.snippet}>{article.content_snippet}</Text>
-
-              <TouchableOpacity style={styles.readFullLink} onPress={handleReadFullArticle}>
-                <Text style={styles.readFullLinkText}>
-                  📖 Read Full Article at {article.source_name} →
-                </Text>
-              </TouchableOpacity>
-            </View>
           )}
 
-          {!article.content_snippet && (
-            <TouchableOpacity style={styles.readButton} onPress={handleReadFullArticle}>
-              <Text style={styles.readButtonText}>📖 Read Full Article</Text>
-            </TouchableOpacity>
-          )}
-
-          <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-            <Text style={styles.shareButtonText}>🔗 Share Article</Text>
-          </TouchableOpacity>
-
-          <View style={styles.disclaimer}>
-            <Text style={styles.disclaimerText}>
-              📌 This article is from {article.source_name}. You will be redirected to their website
-              to read the complete article.
-            </Text>
+          {/* Read Full Story Button */}
+          <View style={styles.actionContainer}>
+            <Button
+              title={`Read Full Story at ${article.news_sources?.name || extractDomain(article.original_url)}`}
+              onPress={handleReadFullStory}
+              variant="primary"
+            />
           </View>
         </View>
       </ScrollView>
@@ -147,143 +112,78 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   image: {
     width: '100%',
+    height: 300,
     backgroundColor: COLORS.backgroundSecondary,
   },
   imagePlaceholder: {
-    width: '100%',
-    backgroundColor: COLORS.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 80,
-    opacity: 0.3,
   },
   content: {
     padding: SPACING.lg,
   },
-  categoryBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.md,
+  metaContainer: {
     marginBottom: SPACING.md,
   },
-  categoryText: {
-    color: COLORS.background,
+  sourceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sourceName: {
     fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
-    textTransform: 'uppercase',
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  dot: {
+    marginHorizontal: SPACING.xs,
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.sm,
+  },
+  publishedTime: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
   },
   title: {
     fontSize: FONT_SIZES.xxxl,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.md,
     lineHeight: 36,
-  },
-  metadata: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.lg,
-  },
-  source: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.primary,
-    fontWeight: '600',
-  },
-  dot: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textLight,
-    marginHorizontal: SPACING.sm,
-  },
-  date: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textLight,
-  },
-  summaryCard: {
-    backgroundColor: COLORS.backgroundSecondary,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   summary: {
     fontSize: FONT_SIZES.lg,
-    color: COLORS.text,
-    lineHeight: 26,
-    fontWeight: '500',
-  },
-  contentCard: {
-    backgroundColor: COLORS.background,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
+    color: COLORS.textSecondary,
+    lineHeight: 28,
     marginBottom: SPACING.xl,
   },
-  contentLabel: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '700',
-    color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    marginBottom: SPACING.sm,
-  },
-  snippet: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.textSecondary,
-    lineHeight: 24,
-    marginBottom: SPACING.md,
-  },
-  readFullLink: {
-    paddingVertical: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    marginTop: SPACING.sm,
-  },
-  readFullLinkText: {
-    color: COLORS.primary,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  readButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.md,
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
-  readButtonText: {
-    color: COLORS.background,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '700',
-  },
-  shareButton: {
-    backgroundColor: COLORS.background,
-    paddingVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: SPACING.xl,
-  },
-  shareButtonText: {
-    color: COLORS.text,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '600',
-  },
-  disclaimer: {
-    backgroundColor: COLORS.backgroundSecondary,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.primary,
-  },
-  disclaimerText: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
+  actionContainer: {
+    marginTop: SPACING.lg,
   },
 });

@@ -1,56 +1,59 @@
 // Theme constants for consistent UI across the app - Based on UI Reference Designs
 
 export const COLORS = {
-  primary: '#E81E24', // Opera News Red
-  primaryDark: '#C41519',
-  primaryLight: '#FF3B41',
-  secondary: '#1A1A1A', // Dark Gray
-  accent: '#FFD700', // Gold for highlights
+  primary: '#1E40AF', // Spazr Blue
+  primaryDark: '#1E3A8A',
+  primaryLight: '#3B82F6',
+  secondary: '#F59E0B',
+  accent: '#8B5CF6',
 
-  // Button colors (from UI reference)
-  buttonGray: '#7A8A99', // Gray button from Sign-In screen
-  buttonGrayDark: '#5F6F7D',
+  // Button colors
+  buttonGray: '#6B7280',
+  buttonGrayDark: '#4B5563',
 
   // Text colors
-  text: '#1A1A1A',
-  textSecondary: '#666666',
-  textLight: '#999999',
-  textPlaceholder: '#B0B0B0',
+  text: '#111827',
+  textSecondary: '#6B7280',
+  textLight: '#9CA3AF',
+  textPlaceholder: '#D1D5DB',
 
   // Background colors
   background: '#FFFFFF',
-  backgroundSecondary: '#F5F5F5',
-  backgroundDark: '#1A1A1A',
-  searchBackground: '#F0F4F8', // Light blue-gray for search inputs
-  filterActive: '#D4E9FC', // Light blue for active filter chips
+  backgroundSecondary: '#F3F4F6',
+  backgroundDark: '#111827',
+  searchBackground: '#F3F4F6',
+  filterActive: '#DBEAFE',
 
   // UI colors
-  border: '#E0E0E0',
-  borderDark: '#CCCCCC',
-  borderLight: '#F0F0F0',
+  border: '#E5E7EB',
+  borderDark: '#D1D5DB',
+  borderLight: '#F3F4F6',
   card: '#FFFFFF',
   shadow: '#000000',
 
   // Status colors
-  success: '#4CAF50',
-  error: '#E81E24',
-  warning: '#FFA726',
-  info: '#2196F3',
+  success: '#10B981',
+  error: '#EF4444',
+  warning: '#F59E0B',
+  info: '#3B82F6',
 
-  // Social/Category colors
-  politics: '#E81E24',
-  sports: '#4CAF50',
-  business: '#2196F3',
-  technology: '#44B8FF',
-  entertainment: '#FF5722',
-  health: '#00BCD4',
-  lifestyle: '#FF9800',
-  breaking: '#E81E24',
-  environment: '#44B8FF',
+  // Category colors
+  politics: '#DC2626',
+  sports: '#16A34A',
+  business: '#EA580C',
+  technology: '#0891B2',
+  entertainment: '#9333EA',
+  health: '#059669',
+  lifestyle: '#EC4899',
+  breaking: '#DC2626',
+  environment: '#0891B2',
+  
+  // Sponsored color
+  sponsored: '#8B5CF6',
 
   // Icon colors
-  iconGray: '#8F9BB3',
-  iconActive: '#222B45',
+  iconGray: '#9CA3AF',
+  iconActive: '#1E40AF',
 };
 
 export const FONTS = {
