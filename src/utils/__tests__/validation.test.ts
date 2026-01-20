@@ -28,6 +28,8 @@ describe('Validation Utils', () => {
       expect(validateEmail('test@').isValid).toBe(false);
       expect(validateEmail('@example.com').isValid).toBe(false);
       expect(validateEmail('test@example').isValid).toBe(false);
+      expect(validateEmail('test@@example.com').isValid).toBe(false);
+      expect(validateEmail('test@test@example.com').isValid).toBe(false);
     });
 
     it('should reject emails that are too long', () => {

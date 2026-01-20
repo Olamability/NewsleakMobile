@@ -64,9 +64,10 @@ export const VALIDATION_RULES = {
 export const SQL_INJECTION_PATTERNS = [
   /(\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/gi,
   /(\bUNION\b.*\bSELECT\b)/gi,
-  /(;|\-\-|\/\*|\*\/)/g,
   /(\bOR\b\s+\d+\s*=\s*\d+|\bOR\b\s+['"][^'"]*['"]\s*=\s*['"][^'"]*['"])/gi,
   /(\bEXEC\b|\bEXECUTE\b)/gi,
+  /(\bxp_cmdshell\b|\bsp_executesql\b)/gi,
+  /(;\s*\bDROP\b|\bDROP\b.*--)/gi,
 ] as const;
 
 export const XSS_PATTERNS = [

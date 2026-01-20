@@ -38,6 +38,11 @@ export const validateEmail = (email: string): ValidationResult => {
     return { isValid: false, error: VALIDATION_RULES.email.message };
   }
 
+  const atSymbolCount = (trimmedEmail.match(/@/g) || []).length;
+  if (atSymbolCount !== 1) {
+    return { isValid: false, error: 'Email format is invalid' };
+  }
+
   const [localPart, domain] = trimmedEmail.split('@');
   if (localPart.length > 64 || domain.length > 255) {
     return { isValid: false, error: 'Email format is invalid' };
@@ -185,6 +190,21 @@ export const validateRssUrl = (url: string): ValidationResult => {
   const urlValidation = validateUrl(url);
   if (!urlValidation.isValid) {
     return urlValidation;
+  }
+
+  // Additional RSS-specific validation
+  const lowerUrl = url.toLowerCase();
+  const hasRssIndicator =
+    lowerUrl.includes('/rss') ||
+    lowerUrl.includes('/feed') ||
+    lowerUrl.includes('.xml') ||
+    lowerUrl.includes('.rss') ||
+    lowerUrl.includes('/atom');
+
+  if (!hasRssIndicator) {
+    return {
+      isValid: true,
+    };
   }
 
   return { isValid: true };

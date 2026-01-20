@@ -12,6 +12,8 @@ interface ThrottleEntry {
   resetTime: number;
 }
 
+// NOTE: In-memory storage will not persist across app restarts
+// For production use, consider using AsyncStorage or a persistent solution
 const rateLimitStore = new Map<string, RateLimitEntry>();
 const throttleStore = new Map<string, ThrottleEntry>();
 
@@ -167,6 +169,7 @@ export const validateTokenFormat = (token: string): boolean => {
 
 /**
  * Validate token expiration
+ * NOTE: Uses Buffer for base64 decoding which requires react-native-url-polyfill
  */
 export const isTokenExpired = (token: string): boolean => {
   try {
@@ -182,6 +185,7 @@ export const isTokenExpired = (token: string): boolean => {
       return true;
     }
 
+    // Decode base64 payload
     const payload = JSON.parse(Buffer.from(base64Payload, 'base64').toString());
 
     if (!payload.exp) {
