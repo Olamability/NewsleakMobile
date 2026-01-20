@@ -96,14 +96,11 @@ export class ContentService {
   cleanText(text: string): string {
     if (!text) return '';
 
-    return text
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
-      .replace(/&nbsp;/g, ' ') // Replace &nbsp;
-      .replace(/&amp;/g, '&') // Replace &amp;
-      .replace(/&quot;/g, '"') // Replace &quot;
-      .replace(/&apos;/g, "'") // Replace &apos;
-      .replace(/&lt;/g, '<') // Replace &lt;
-      .replace(/&gt;/g, '>') // Replace &gt;
+    // First remove HTML tags using sanitize-html
+    const withoutTags = sanitizeHtml(text, { allowedTags: [], allowedAttributes: {} });
+    
+    // Then normalize whitespace
+    return withoutTags
       .replace(/\s+/g, ' ') // Normalize whitespace
       .trim();
   }
