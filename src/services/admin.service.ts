@@ -26,6 +26,37 @@ export class AdminService {
   }
 
   /**
+   * Add a new news source
+   */
+  static async addSource(
+    name: string,
+    rssUrl: string,
+    websiteUrl?: string
+  ): Promise<ApiResponse<NewsSource>> {
+    try {
+      const { data, error } = await supabase
+        .from('news_sources')
+        .insert({
+          name,
+          rss_url: rssUrl,
+          website_url: websiteUrl || rssUrl,
+          is_active: true,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { data, message: 'Source added successfully' };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to add source';
+      return { error: message };
+    }
+  }
+
+  /**
    * Toggle source active status
    */
   static async toggleSourceStatus(
