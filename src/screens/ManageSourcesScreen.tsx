@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
+import { AddSourceModal } from '../components/AddSourceModal';
 import { AdminService } from '../services/admin.service';
 import { NewsSource } from '../types';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
@@ -24,6 +25,7 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
   const [sources, setSources] = useState<NewsSource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     loadSources();
@@ -43,6 +45,18 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
       setIsLoading(false);
       setIsRefreshing(false);
     }
+  };
+
+  const handleAddSource = async (name: string, rssUrl: string, websiteUrl: string) => {
+    const response = await AdminService.addSource(name, rssUrl, websiteUrl);
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+
+    // Reload sources to show the new one
+    await loadSources();
+    Alert.alert('Success', 'News source added successfully!');
   };
 
   const handleToggleSource = async (sourceId: string, currentState: boolean) => {
@@ -97,41 +111,45 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
     return <LoadingSpinner fullScreen />;
   }
 
-  if (sources.length === 0) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View>
           <Text style={styles.headerTitle}>Manage Sources</Text>
+          <Text style={styles.headerSubtitle}>{sources.length} total sources</Text>
         </View>
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowAddModal(true)}>
+          <Text style={styles.addButtonText}>+ Add Source</Text>
+        </TouchableOpacity>
+      </View>
+
+      {sources.length === 0 ? (
         <EmptyState
           icon="📰"
           title="No Sources Found"
           message="Add news sources to start aggregating content"
         />
-      </SafeAreaView>
-    );
-  }
+      ) : (
+        <FlatList
+          data={sources}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={COLORS.primary}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Manage Sources</Text>
-        <Text style={styles.headerSubtitle}>{sources.length} total sources</Text>
-      </View>
-
-      <FlatList
-        data={sources}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            tintColor={COLORS.primary}
-          />
-        }
-        showsVerticalScrollIndicator={false}
+      <AddSourceModal
+        visible={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onAdd={handleAddSource}
       />
     </SafeAreaView>
   );
@@ -145,6 +163,9 @@ const styles = StyleSheet.create({
   header: {
     padding: SPACING.lg,
     backgroundColor: COLORS.primary,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: FONT_SIZES.xxl,
@@ -156,6 +177,17 @@ const styles = StyleSheet.create({
     color: COLORS.background,
     opacity: 0.9,
     marginTop: SPACING.xs,
+  },
+  addButton: {
+    backgroundColor: COLORS.background,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+  },
+  addButtonText: {
+    color: COLORS.primary,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
   },
   listContent: {
     padding: SPACING.lg,

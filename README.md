@@ -2,6 +2,14 @@
 
 A modern, production-ready React Native Expo news aggregator app with Supabase backend integration. This app curates real-time news from trusted sources and provides a sleek, mobile-first reading experience.
 
+## 📚 Quick Links
+
+- **👤 [USER GUIDE](./USER_GUIDE.md)** - **Start here!** Learn how to access admin features and add RSS feeds
+- **⚡ [Quick Start](./QUICKSTART.md)** - Get the app running in 5 minutes
+- **🚀 [Getting Started](./GETTING_STARTED.md)** - Complete setup with sample data (10 minutes)
+- **📰 [RSS Feeds Guide](./RSS_FEEDS_GUIDE.md)** - Comprehensive RSS feed management
+- **🔧 [Troubleshooting](./TROUBLESHOOTING.md)** - Common issues and solutions
+
 ## 🎯 Features
 
 ### Core Features

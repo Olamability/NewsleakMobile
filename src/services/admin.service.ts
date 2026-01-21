@@ -26,6 +26,50 @@ export class AdminService {
   }
 
   /**
+   * Add a new news source
+   */
+  static async addSource(
+    name: string,
+    rssUrl: string,
+    websiteUrl?: string
+  ): Promise<ApiResponse<NewsSource>> {
+    try {
+      // Extract base domain from RSS URL if website URL not provided
+      let finalWebsiteUrl = websiteUrl;
+      if (!websiteUrl && rssUrl) {
+        try {
+          const url = new URL(rssUrl);
+          // Use the base domain as website URL (e.g., https://example.com)
+          finalWebsiteUrl = `${url.protocol}//${url.host}`;
+        } catch {
+          // Last resort: use RSS URL itself (not ideal but prevents empty field)
+          finalWebsiteUrl = rssUrl;
+        }
+      }
+
+      const { data, error } = await supabase
+        .from('news_sources')
+        .insert({
+          name,
+          rss_url: rssUrl,
+          website_url: finalWebsiteUrl!,
+          is_active: true,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { data, message: 'Source added successfully' };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to add source';
+      return { error: message };
+    }
+  }
+
+  /**
    * Toggle source active status
    */
   static async toggleSourceStatus(

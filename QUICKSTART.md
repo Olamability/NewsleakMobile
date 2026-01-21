@@ -2,6 +2,8 @@
 
 Get up and running with Spazr News Aggregator in 5 minutes!
 
+> **📌 Want to add RSS feeds or access admin features?** Check out the [USER_GUIDE.md](./USER_GUIDE.md) for step-by-step instructions.
+
 ## Prerequisites
 
 - **Node.js 16+** installed ([Download](https://nodejs.org/))
