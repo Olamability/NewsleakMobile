@@ -1,14 +1,38 @@
 # Admin Dashboard Access Guide
 
 ## Overview
-The admin dashboard has been implemented according to the PRD requirements. It provides comprehensive management capabilities for news sources, articles, and ingestion logs.
+The admin dashboard provides comprehensive management capabilities for news sources, articles, and ingestion logs. This guide explains how to access and use the admin features securely.
+
+## Security Architecture
+
+### Multi-Layer Admin Protection
+
+The admin system is now protected by multiple security layers:
+
+1. **Database-Level Security (RLS Policies)**
+   - Admin role assignments are stored in the `admin_users` table
+   - Row-Level Security (RLS) policies prevent unauthorized access
+   - Client-side users CANNOT modify admin roles or metadata
+   - Only service role (backend) can create/modify admin users
+
+2. **Metadata Protection**
+   - The `is_admin` flag is stored in Supabase auth user metadata
+   - Users CANNOT modify this flag through the `updateProfile` function
+   - Admin-related fields are filtered out from all client-side updates
+   - Automatic synchronization between `admin_users` table and auth metadata via database trigger
+
+3. **Role Hierarchy**
+   - **Editor**: Basic admin access (can moderate content)
+   - **Admin**: Full admin access (can manage sources, articles, campaigns)
+   - **Super Admin**: Highest level (can manage other admins, system-wide settings)
 
 ## Features Implemented
 
 ### 1. Admin Role System
-- Added `is_admin` field to User type
-- Integrated admin role in authentication flow
-- Role-based access control throughout the app
+- `admin_users` table with foreign key to auth.users
+- Role validation: editor | admin | super_admin
+- Automatic metadata synchronization via database triggers
+- Protected RLS policies preventing client-side modifications
 
 ### 2. Admin Dashboard Screens
 - **Admin Dashboard**: Central hub for all admin functions
@@ -19,112 +43,243 @@ The admin dashboard has been implemented according to the PRD requirements. It p
 ### 3. Profile Integration
 - Admin badge displayed for admin users
 - Admin Dashboard menu item (only visible to admins)
+- Role level displayed (if applicable)
 
 ## How to Access Admin Dashboard
 
 ### For Testing/Development:
 
-Since the admin role is stored in Supabase user metadata, you need to set it up through Supabase:
+Admin roles MUST be assigned by system administrators through secure backend access. Regular users cannot make themselves admin.
 
-#### Option 1: Using Supabase Dashboard (Recommended)
+#### Option 1: Using Supabase SQL Editor (Recommended for Setup)
+
 1. Log into your Supabase project dashboard
-2. Go to Authentication > Users
-3. Find the user you want to make admin
-4. Click on the user to edit
-5. In the "User Metadata" section (raw JSON), add:
-   ```json
-   {
-     "full_name": "Your Name",
-     "is_admin": true
-   }
-   ```
-6. Save changes
-7. The user will need to sign out and sign in again to see the admin features
+2. Go to SQL Editor
+3. Run the following SQL to create an admin user:
 
-#### Option 2: Using Supabase SQL Editor
-1. Go to SQL Editor in your Supabase dashboard
-2. Run the following SQL query (replace the email with your test user's email):
-   ```sql
-   UPDATE auth.users
-   SET raw_user_meta_data = raw_user_meta_data || '{"is_admin": true}'::jsonb
-   WHERE email = 'your-admin-email@example.com';
-   ```
-3. The user will need to sign out and sign in again to see the admin features
+```sql
+-- Step 1: Insert admin user into admin_users table
+INSERT INTO admin_users (id, role)
+VALUES (
+  (SELECT id FROM auth.users WHERE email = 'your-admin-email@example.com'),
+  'admin'  -- or 'editor' or 'super_admin'
+)
+ON CONFLICT (id) DO UPDATE SET role = 'admin';
 
-#### Option 3: Programmatic Setup (For Development)
-You can also create a temporary admin setup function in your app during development, but this should NOT be used in production.
+-- The database trigger will automatically sync is_admin to auth metadata
+```
+
+4. The user will need to sign out and sign in again to see the admin features
+
+#### Option 2: Verify Admin Status
+
+To check if admin metadata is synced correctly:
+
+```sql
+-- Check both admin_users table and auth metadata
+SELECT 
+  u.email,
+  u.raw_user_meta_data->>'is_admin' as metadata_is_admin,
+  CASE WHEN au.id IS NOT NULL THEN 'true' ELSE 'false' END as in_admin_table,
+  au.role as admin_role
+FROM auth.users u
+LEFT JOIN admin_users au ON u.id = au.id
+WHERE u.email = 'your-admin-email@example.com';
+```
+
+#### Option 3: Remove Admin Access
+
+To remove admin access from a user:
+
+```sql
+-- Delete from admin_users table
+DELETE FROM admin_users WHERE id = (
+  SELECT id FROM auth.users WHERE email = 'user-email@example.com'
+);
+
+-- The trigger will automatically set is_admin to false in metadata
+```
+
+### Important Security Notes:
+
+⚠️ **CRITICAL**: The following actions are **BLOCKED** on the client side:
+- Users cannot insert themselves into `admin_users` table
+- Users cannot update their role in `admin_users` table
+- Users cannot delete themselves from `admin_users` table
+- Users cannot modify `is_admin` flag via `updateProfile()` function
+
+These protections are enforced by:
+1. RLS policies on `admin_users` table (all client operations return `false`)
+2. Filtered updates in `AuthService.updateProfile()` (strips out admin fields)
+3. Database-level foreign key constraints and role validation
 
 ## Accessing the Dashboard
 
 1. **Sign in** as an admin user (after setting up the admin role as above)
 2. Navigate to the **Profile** tab
 3. You'll see an "👑 Admin" badge under your name
-4. Tap on **"⚙️ Admin Dashboard"** in the Administration section
-5. From the dashboard, you can access:
-   - Manage News Sources
+4. If you have a role, it will be displayed (e.g., "Role: Admin")
+5. Tap on **"⚙️ Admin Dashboard"** in the Administration section
+6. From the dashboard, you can access:
+   - Manage News Sources (requires admin check)
    - Manage Articles
    - Ingestion Logs
    - User Management (coming soon)
 
-## Security Notes
+## Admin API Service
 
-⚠️ **Important Security Considerations:**
+### AdminRoleService
 
-1. **Admin Role Assignment**: Admin roles should ONLY be assigned through:
-   - Direct database access by system administrators
-   - Secure server-side admin management API (to be implemented)
-   - Never allow users to self-assign admin roles
+The new `AdminRoleService` provides secure role management:
 
-2. **Backend Enforcement**: While the UI restricts admin features based on the `is_admin` flag, you MUST also enforce admin permissions on the backend/API level. The current implementation is UI-only.
+```typescript
+// Check if current user is admin
+const isAdmin = await AdminRoleService.isCurrentUserAdmin();
 
-3. **Production Setup**: Before deploying to production:
-   - Implement backend API endpoints for admin operations
-   - Add server-side permission checks on all admin endpoints
-   - Consider implementing row-level security (RLS) policies in Supabase
-   - Set up audit logging for admin actions
+// Get current user's role
+const role = await AdminRoleService.getCurrentUserRole();
+// Returns: 'editor' | 'admin' | 'super_admin' | null
 
-## Current Limitations
+// Check if user has specific role level
+const hasAccess = await AdminRoleService.hasRoleLevel('admin');
 
-The admin screens currently use mock data and placeholders:
-- News sources list uses sample data
-- Article management uses empty state
-- Ingestion logs show mock entries
-- Stats on dashboard show "-" placeholders
+// List all admin users (requires admin access)
+const { data, error } = await AdminRoleService.listAllAdmins();
 
-To make these functional, you'll need to:
-1. Implement backend API endpoints for CRUD operations
-2. Create database tables for sources and ingestion logs (if not already present)
-3. Connect the screens to real data using the services layer
-4. Implement proper error handling and loading states
+// Verify admin/metadata sync
+const syncStatus = await AdminRoleService.verifyAdminSync();
+```
 
-## Next Steps
+### Protected Admin Operations
 
-1. **Backend API Development**:
-   - Create admin endpoints in your backend
-   - Implement news source CRUD operations
-   - Add article moderation endpoints
-   - Set up ingestion logging system
+Admin operations now include access checks:
 
-2. **Database Schema**:
-   - Ensure `news_sources` table exists
-   - Create `ingestion_logs` table
-   - Add necessary indexes for performance
+```typescript
+// Example: Add a news source
+// This will fail if user is not admin
+const result = await AdminService.addSource('Source Name', 'https://rss.url');
+```
 
-3. **Security Enhancements**:
-   - Implement server-side role checking
-   - Add API middleware for admin route protection
-   - Set up audit logging
+## Security Best Practices
 
-4. **Testing**:
-   - Test with different user roles
-   - Verify access control restrictions
-   - Test on different screen sizes and devices
+### For Production Deployment:
 
-## Testing Checklist
+1. **Never expose service role key** in client-side code
+   - Service role key should only be used in backend services
+   - Use Edge Functions for admin operations requiring service role
 
-- [ ] Create a test admin user via Supabase
-- [ ] Sign in and verify admin badge appears
-- [ ] Access admin dashboard from profile
-- [ ] Navigate through all admin screens
-- [ ] Test with non-admin user (admin options should not appear)
-- [ ] Verify responsive layout on different screen sizes
+2. **Backend API for Admin Management**
+   - Create Supabase Edge Functions for admin user management
+   - Implement proper authentication in Edge Functions
+   - Example Edge Function structure:
+   ```typescript
+   // supabase/functions/manage-admin/index.ts
+   import { createClient } from '@supabase/supabase-js'
+   
+   Deno.serve(async (req) => {
+     const supabaseAdmin = createClient(
+       Deno.env.get('SUPABASE_URL'),
+       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+     )
+     
+     // Verify caller is super_admin
+     const authHeader = req.headers.get('Authorization')
+     // ... authentication logic
+     
+     // Perform admin operations with service role
+     const { data, error } = await supabaseAdmin
+       .from('admin_users')
+       .insert({ id: userId, role: 'admin' })
+     
+     return new Response(JSON.stringify({ data, error }))
+   })
+   ```
+
+3. **Audit Logging**
+   - Log all admin actions (who, what, when)
+   - Monitor suspicious activities
+   - Set up alerts for unauthorized access attempts
+
+4. **Regular Security Audits**
+   - Review admin user list regularly
+   - Remove inactive admin users
+   - Verify metadata sync status
+
+## Database Schema
+
+### admin_users Table
+
+```sql
+create table admin_users (
+  id uuid primary key references auth.users(id) on delete cascade,
+  role text default 'editor' check (role in ('editor', 'admin', 'super_admin')),
+  created_at timestamp with time zone default now()
+);
+```
+
+### RLS Policies
+
+```sql
+-- Users can only read their own admin record
+create policy "users_read_own_admin" on admin_users 
+  for select using (auth.uid() = id);
+
+-- Client-side inserts/updates/deletes are blocked
+create policy "service_role_insert_admin" on admin_users 
+  for insert with check (false);
+
+create policy "service_role_update_admin" on admin_users 
+  for update using (false);
+
+create policy "service_role_delete_admin" on admin_users 
+  for delete using (false);
+```
+
+### Database Functions
+
+The schema includes helper functions:
+
+- `is_admin(user_id)`: Check if user is admin
+- `get_admin_role(user_id)`: Get user's admin role
+- `sync_admin_metadata()`: Trigger function to auto-sync metadata
+
+### Automatic Sync Trigger
+
+```sql
+create trigger sync_admin_metadata_trigger
+  after insert or delete on admin_users
+  for each row
+  execute function sync_admin_metadata();
+```
+
+This trigger ensures that whenever a user is added to or removed from `admin_users`, their `is_admin` flag in auth metadata is automatically updated.
+
+## Troubleshooting
+
+### Admin features not showing after role assignment
+
+1. User must sign out and sign in again
+2. Verify sync status:
+   ```typescript
+   const syncStatus = await AdminRoleService.verifyAdminSync();
+   console.log(syncStatus);
+   ```
+3. If not synced, manually run sync trigger or re-insert admin record
+
+### Cannot modify admin roles from app
+
+This is **expected behavior**! Admin roles can only be modified by:
+- System administrators via SQL
+- Backend services with service role key
+- This protects against privilege escalation attacks
+
+### Admin user deleted but still has access
+
+1. Check if trigger executed properly
+2. Manually update metadata:
+   ```sql
+   UPDATE auth.users
+   SET raw_user_meta_data = raw_user_meta_data || '{"is_admin": false}'::jsonb
+   WHERE email = 'user@example.com';
+   ```
+3. User must sign out and sign in again

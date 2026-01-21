@@ -362,7 +362,45 @@ describe('AuthService', () => {
       expect(result.data?.full_name).toBe('Updated Name');
       expect(result.data?.avatar_url).toBe('https://example.com/new-avatar.jpg');
       expect(supabase.auth.updateUser).toHaveBeenCalledWith({
-        data: updates,
+        data: {
+          full_name: updates.full_name,
+          avatar_url: updates.avatar_url,
+        },
+      });
+    });
+
+    it('should filter out admin-related fields from updates', async () => {
+      const mockUser = {
+        id: 'test-user-id',
+        email: 'test@example.com',
+        created_at: '2024-01-01T00:00:00Z',
+        user_metadata: {
+          full_name: 'Updated Name',
+          is_admin: false, // Should remain false even if someone tries to update it
+        },
+      };
+
+      (supabase.auth.updateUser as jest.Mock).mockResolvedValue({
+        data: { user: mockUser },
+        error: null,
+      });
+
+      // Try to update profile with is_admin field (malicious attempt)
+      const updates: any = {
+        full_name: 'Updated Name',
+        is_admin: true, // This should be filtered out
+      };
+
+      const result = await AuthService.updateProfile(updates);
+
+      expect(result.error).toBeUndefined();
+      expect(result.data?.is_admin).toBe(false); // Should still be false
+      // Verify that updateUser was called WITHOUT is_admin field
+      expect(supabase.auth.updateUser).toHaveBeenCalledWith({
+        data: {
+          full_name: 'Updated Name',
+          avatar_url: undefined,
+        },
       });
     });
 
