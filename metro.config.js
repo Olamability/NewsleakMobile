@@ -4,19 +4,39 @@ const { getDefaultConfig } = require('expo/metro-config');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
+// Helper function to safely resolve modules
+function safeResolve(moduleName) {
+  try {
+    return require.resolve(moduleName);
+  } catch (error) {
+    console.warn(`Warning: Could not resolve module '${moduleName}'. Please run 'npm install' to install dependencies.`);
+    return undefined;
+  }
+}
+
 // Add resolver to handle Node.js core modules that rss-parser tries to import
+const extraNodeModules = {
+  // Provide empty implementations for Node.js core modules
+  // Since we're using axios for HTTP requests, these aren't needed
+  http: safeResolve('stream-http'),
+  https: safeResolve('https-browserify'),
+  url: safeResolve('url/'),
+  stream: safeResolve('readable-stream'),
+  buffer: safeResolve('buffer/'),
+  timers: safeResolve('timers-browserify'),
+};
+
+// Filter out undefined values (modules that couldn't be resolved)
+const resolvedModules = Object.entries(extraNodeModules).reduce((acc, [key, value]) => {
+  if (value !== undefined) {
+    acc[key] = value;
+  }
+  return acc;
+}, {});
+
 config.resolver = {
   ...config.resolver,
-  extraNodeModules: {
-    // Provide empty implementations for Node.js core modules
-    // Since we're using axios for HTTP requests, these aren't needed
-    http: require.resolve('stream-http'),
-    https: require.resolve('https-browserify'),
-    url: require.resolve('url/'),
-    stream: require.resolve('readable-stream'),
-    buffer: require.resolve('buffer/'),
-    timers: require.resolve('timers-browserify'),
-  },
+  extraNodeModules: resolvedModules,
 };
 
 module.exports = config;
