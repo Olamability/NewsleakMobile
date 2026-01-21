@@ -57,7 +57,7 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('for-you');
   const [currentBreakingIndex, setCurrentBreakingIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -140,7 +140,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header with Logo, Search Bar, and Search Icon */}
+      {/* Header with Logo and Search Bar */}
       <View style={styles.header}>
         <Image
           source={require('../../assets/icon.png')}
@@ -155,9 +155,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             onFocus={handleSearchPress}
           />
         </View>
-        <TouchableOpacity style={styles.searchIconButton} onPress={handleSearchPress}>
-          <Ionicons name="search" size={24} color={COLORS.primary} />
-        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -291,15 +288,6 @@ const styles = StyleSheet.create({
   },
   searchBarContainer: {
     flex: 1,
-    marginRight: SPACING.sm,
-  },
-  searchIconButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: COLORS.backgroundSecondary,
   },
   listContent: {
     paddingHorizontal: SPACING.lg,

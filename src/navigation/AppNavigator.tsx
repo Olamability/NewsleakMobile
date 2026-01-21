@@ -54,14 +54,6 @@ const MainTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Search"
-        component={SearchScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,
-          tabBarLabel: 'Search',
-        }}
-      />
-      <Tab.Screen
         name="Notifications"
         component={NotificationsScreen}
         options={{
@@ -102,6 +94,13 @@ export const AppNavigator = () => {
         }}
       >
         <Stack.Screen name="Main" component={MainTabNavigator} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="Search"
+          component={SearchScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="ArticleDetail"
           component={ArticleDetailScreen}
