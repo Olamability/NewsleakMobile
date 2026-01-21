@@ -11,6 +11,12 @@ import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ArticleDetailScreen } from '../screens/ArticleDetailScreen';
+import { SignInScreen } from '../screens/SignInScreen';
+import { SignUpScreen } from '../screens/SignUpScreen';
+import { AdminDashboardScreen } from '../screens/AdminDashboardScreen';
+import { ManageSourcesScreen } from '../screens/ManageSourcesScreen';
+import { ManageArticlesScreen } from '../screens/ManageArticlesScreen';
+import { IngestionLogsScreen } from '../screens/IngestionLogsScreen';
 import { COLORS, FONT_SIZES } from '../constants/theme';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -99,6 +105,55 @@ export const AppNavigator = () => {
         <Stack.Screen
           name="ArticleDetail"
           component={ArticleDetailScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="SignIn"
+          component={SignInScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUpScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Auth"
+          component={SignInScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="AdminDashboard"
+          component={AdminDashboardScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ManageSources"
+          component={ManageSourcesScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ManageArticles"
+          component={ManageArticlesScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="IngestionLogs"
+          component={IngestionLogsScreen}
           options={{
             headerShown: false,
           }}
