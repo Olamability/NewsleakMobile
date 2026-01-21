@@ -308,40 +308,39 @@ begin
 end;
 $$ language plpgsql security definer;
 
--- Function to sync admin status to auth metadata
+-- Function to sync admin status and role to auth metadata
 -- NOTE: This should only be called by backend services with service role
--- It syncs the is_admin flag from admin_users table to auth.users metadata
+-- It syncs the is_admin flag and role from admin_users table to auth.users metadata
+-- Handles INSERT (new admin), UPDATE (role change), and DELETE (remove admin)
 create or replace function sync_admin_metadata()
 returns trigger as $$
 begin
-  -- When an admin user is inserted, update auth metadata
+  -- When an admin user is inserted, update auth metadata with is_admin and role
   if (TG_OP = 'INSERT') then
     update auth.users
     set raw_user_meta_data = 
       coalesce(raw_user_meta_data, '{}'::jsonb) || 
-      jsonb_build_object('is_admin', true)
+      jsonb_build_object('is_admin', true, 'admin_role', NEW.role)
     where id = NEW.id;
     return NEW;
   end if;
   
-  -- When an admin user's role is updated, metadata stays true (still admin)
-  -- But we could add role-specific metadata here if needed
+  -- When an admin user's role is updated, sync the new role to metadata
   if (TG_OP = 'UPDATE') then
-    -- Ensure is_admin remains true in metadata
     update auth.users
     set raw_user_meta_data = 
       coalesce(raw_user_meta_data, '{}'::jsonb) || 
-      jsonb_build_object('is_admin', true)
+      jsonb_build_object('is_admin', true, 'admin_role', NEW.role)
     where id = NEW.id;
     return NEW;
   end if;
   
-  -- When an admin user is deleted, update auth metadata
+  -- When an admin user is deleted, remove admin flag and role from metadata
   if (TG_OP = 'DELETE') then
     update auth.users
     set raw_user_meta_data = 
       coalesce(raw_user_meta_data, '{}'::jsonb) || 
-      jsonb_build_object('is_admin', false)
+      jsonb_build_object('is_admin', false, 'admin_role', null)
     where id = OLD.id;
     return OLD;
   end if;

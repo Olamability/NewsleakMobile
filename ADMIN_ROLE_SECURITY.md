@@ -71,19 +71,30 @@ begin
     update auth.users
     set raw_user_meta_data = 
       coalesce(raw_user_meta_data, '{}'::jsonb) || 
-      jsonb_build_object('is_admin', true)
+      jsonb_build_object('is_admin', true, 'admin_role', NEW.role)
     where id = NEW.id;
+    return NEW;
+  end if;
+  
+  if (TG_OP = 'UPDATE') then
+    update auth.users
+    set raw_user_meta_data = 
+      coalesce(raw_user_meta_data, '{}'::jsonb) || 
+      jsonb_build_object('is_admin', true, 'admin_role', NEW.role)
+    where id = NEW.id;
+    return NEW;
   end if;
   
   if (TG_OP = 'DELETE') then
     update auth.users
     set raw_user_meta_data = 
       coalesce(raw_user_meta_data, '{}'::jsonb) || 
-      jsonb_build_object('is_admin', false)
+      jsonb_build_object('is_admin', false, 'admin_role', null)
     where id = OLD.id;
+    return OLD;
   end if;
   
-  return coalesce(NEW, OLD);
+  return null;
 end;
 $$ language plpgsql security definer;
 
