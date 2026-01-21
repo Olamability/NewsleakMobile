@@ -75,7 +75,7 @@ async function saveTokenToDatabase(token: string) {
       [
         {
           expo_push_token: token,
-          platform: Platform.OS,
+          platform: Platform.OS as 'ios' | 'android' | 'windows' | 'macos' | 'web',
           is_active: true,
         },
       ] as any,
