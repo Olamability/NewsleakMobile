@@ -162,10 +162,7 @@ export class MonetizationService {
   /**
    * Check if user has access to a feature
    */
-  static async hasFeatureAccess(
-    userId: string,
-    featureName: string
-  ): Promise<boolean> {
+  static async hasFeatureAccess(userId: string, featureName: string): Promise<boolean> {
     try {
       const featureGate = this.featureGates.find((f) => f.feature_name === featureName);
 
@@ -202,16 +199,11 @@ export class MonetizationService {
   /**
    * Get all feature gates for a user
    */
-  static async getUserFeatureAccess(
-    userId: string
-  ): Promise<Record<string, boolean>> {
+  static async getUserFeatureAccess(userId: string): Promise<Record<string, boolean>> {
     const accessMap: Record<string, boolean> = {};
 
     for (const feature of this.featureGates) {
-      accessMap[feature.feature_name] = await this.hasFeatureAccess(
-        userId,
-        feature.feature_name
-      );
+      accessMap[feature.feature_name] = await this.hasFeatureAccess(userId, feature.feature_name);
     }
 
     return accessMap;
@@ -220,10 +212,7 @@ export class MonetizationService {
   /**
    * Determine if ad should be shown to user
    */
-  static async shouldShowAd(
-    userId: string,
-    position: AdPlacement['position']
-  ): Promise<boolean> {
+  static async shouldShowAd(userId: string, position: AdPlacement['position']): Promise<boolean> {
     try {
       // Check if user has ad-free subscription
       const hasAdFree = await this.hasFeatureAccess(userId, 'ad_free_experience');

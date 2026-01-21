@@ -11,11 +11,7 @@ interface TrendingTopicChipProps {
 
 export const TrendingTopicChip: React.FC<TrendingTopicChipProps> = ({ topic, count, onPress }) => {
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() => onPress(topic)}
-      activeOpacity={0.7}
-    >
+    <TouchableOpacity style={styles.container} onPress={() => onPress(topic)} activeOpacity={0.7}>
       <Text style={styles.icon}>🔥</Text>
       <Text style={styles.text}>{topic}</Text>
     </TouchableOpacity>

@@ -96,9 +96,12 @@ export class IngestionScheduler {
         );
 
         // Retry failed sources after delay
-        setTimeout(() => {
-          this.runIngestion(retryCount + 1);
-        }, this.config.retryDelayMinutes * 60 * 1000);
+        setTimeout(
+          () => {
+            this.runIngestion(retryCount + 1);
+          },
+          this.config.retryDelayMinutes * 60 * 1000
+        );
       } else {
         this.config.onSuccess(results);
       }
@@ -109,9 +112,12 @@ export class IngestionScheduler {
       // Retry on error
       if (retryCount < this.config.maxRetries) {
         console.log(`Retrying in ${this.config.retryDelayMinutes} minutes...`);
-        setTimeout(() => {
-          this.runIngestion(retryCount + 1);
-        }, this.config.retryDelayMinutes * 60 * 1000);
+        setTimeout(
+          () => {
+            this.runIngestion(retryCount + 1);
+          },
+          this.config.retryDelayMinutes * 60 * 1000
+        );
       }
     }
   }

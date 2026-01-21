@@ -112,8 +112,7 @@ export class AdminService {
 
       return { data };
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to toggle featured status';
+      const message = error instanceof Error ? error.message : 'Failed to toggle featured status';
       return { error: message };
     }
   }
@@ -192,7 +191,7 @@ export class AdminService {
 
   /**
    * Get all users (requires admin permissions)
-   * 
+   *
    * Note: This method requires proper Supabase admin setup.
    * For production, this should be moved to a backend service
    * that uses service role keys, not exposed in the mobile client.

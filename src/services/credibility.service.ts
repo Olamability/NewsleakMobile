@@ -122,8 +122,7 @@ export class CredibilityService {
       if (article.content_snippet && article.content_snippet.length > 100) score += 25;
       return score;
     });
-    const avgArticleQuality =
-      qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length || 0;
+    const avgArticleQuality = qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length || 0;
 
     // Calculate average engagement (views per article)
     const avgViews =
@@ -132,8 +131,7 @@ export class CredibilityService {
 
     // Calculate update frequency (articles per day)
     const sortedArticles = [...articles].sort(
-      (a, b) =>
-        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+      (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
     );
 
     let updateFrequency = 50; // Default
@@ -154,9 +152,7 @@ export class CredibilityService {
     const diversityScore = Math.min(100, (categories.size / 8) * 100); // Assuming 8+ categories is excellent
 
     // Calculate error rate (articles with missing critical fields)
-    const errors = articles.filter(
-      (a) => !a.title || !a.article_url || !a.published_at
-    ).length;
+    const errors = articles.filter((a) => !a.title || !a.article_url || !a.published_at).length;
     const errorRate = (errors / articles.length) * 100;
 
     return {
@@ -174,7 +170,7 @@ export class CredibilityService {
   private static calculateReliabilityScore(factors: CredibilityFactors): number {
     // Reliability is based on quality and low error rate
     const errorScore = Math.max(0, 100 - factors.errorRate);
-    return Math.round((factors.avgArticleQuality * 0.7 + errorScore * 0.3));
+    return Math.round(factors.avgArticleQuality * 0.7 + errorScore * 0.3);
   }
 
   /**
@@ -297,10 +293,7 @@ export class CredibilityService {
 
       const sourceIds = topScores.map((s) => s.source_id);
 
-      const { data: sources } = await supabase
-        .from('news_sources')
-        .select('*')
-        .in('id', sourceIds);
+      const { data: sources } = await supabase.from('news_sources').select('*').in('id', sourceIds);
 
       return sources || [];
     } catch (error) {

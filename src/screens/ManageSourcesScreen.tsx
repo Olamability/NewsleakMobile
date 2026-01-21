@@ -49,7 +49,7 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ naviga
     try {
       const newState = !currentState;
       const response = await AdminService.toggleSourceStatus(sourceId, newState);
-      
+
       if (response.error) {
         Alert.alert('Error', response.error);
         return;

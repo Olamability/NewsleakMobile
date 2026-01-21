@@ -45,9 +45,7 @@ export const SettingsScreen: React.FC = () => {
               <Ionicons name="notifications-outline" size={24} color={COLORS.text} />
               <View style={styles.settingText}>
                 <Text style={styles.settingTitle}>Push Notifications</Text>
-                <Text style={styles.settingDescription}>
-                  Get notified about breaking news
-                </Text>
+                <Text style={styles.settingDescription}>Get notified about breaking news</Text>
               </View>
             </View>
             <Switch
@@ -76,7 +74,7 @@ export const SettingsScreen: React.FC = () => {
         {/* Legal Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Legal</Text>
-          
+
           <TouchableOpacity style={styles.settingItem} onPress={handlePrivacyPolicy}>
             <View style={styles.settingLeft}>
               <Ionicons name="shield-checkmark-outline" size={24} color={COLORS.text} />
@@ -101,9 +99,7 @@ export const SettingsScreen: React.FC = () => {
         {/* App Info */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Spazr News</Text>
-          <Text style={styles.footerSubtext}>
-            Your trusted source for news aggregation
-          </Text>
+          <Text style={styles.footerSubtext}>Your trusted source for news aggregation</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

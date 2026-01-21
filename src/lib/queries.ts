@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from './supabase';
-import { NewsArticle, Category, SponsoredContent, TrendingTopic, RecentSearch } from '../types/news';
+import {
+  NewsArticle,
+  Category,
+  SponsoredContent,
+  TrendingTopic,
+  RecentSearch,
+} from '../types/news';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -8,10 +14,7 @@ export const useCategories = () => {
   return useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
+      const { data, error } = await supabase.from('categories').select('*').order('name');
 
       if (error) throw error;
       return data as Category[];
@@ -26,14 +29,16 @@ export const useNewsFeed = (categoryId?: string) => {
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
         .from('news_articles')
-        .select(`
+        .select(
+          `
           *,
           news_sources (
             id,
             name,
             logo_url
           )
-        `)
+        `
+        )
         .order('published_at', { ascending: false })
         .range(pageParam * ITEMS_PER_PAGE, (pageParam + 1) * ITEMS_PER_PAGE - 1);
 
@@ -60,14 +65,16 @@ export const useBreakingNews = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('news_articles')
-        .select(`
+        .select(
+          `
           *,
           news_sources (
             id,
             name,
             logo_url
           )
-        `)
+        `
+        )
         .eq('is_breaking', true)
         .order('published_at', { ascending: false })
         .limit(5);
@@ -103,7 +110,8 @@ export const useArticle = (id: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('news_articles')
-        .select(`
+        .select(
+          `
           *,
           news_sources (
             id,
@@ -116,7 +124,8 @@ export const useArticle = (id: string) => {
             name,
             slug
           )
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -134,14 +143,16 @@ export const useSearchArticles = (query: string) => {
 
       const { data, error } = await supabase
         .from('news_articles')
-        .select(`
+        .select(
+          `
           *,
           news_sources (
             id,
             name,
             logo_url
           )
-        `)
+        `
+        )
         .or(`title.ilike.%${query}%,summary.ilike.%${query}%`)
         .order('published_at', { ascending: false })
         .limit(50);

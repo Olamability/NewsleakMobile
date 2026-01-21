@@ -36,23 +36,26 @@ export class AnalyticsService {
       if (article) {
         await supabase
           .from('news_articles')
-          .update({ 
+          .update({
             view_count: (article.view_count || 0) + 1,
-            last_viewed_at: new Date().toISOString()
+            last_viewed_at: new Date().toISOString(),
           })
           .eq('id', articleId);
       }
 
       // Track in analytics table if it exists
       try {
-        await supabase.from('article_analytics').upsert({
-          article_id: articleId,
-          views: 1,
-          last_viewed_at: new Date().toISOString(),
-        }, {
-          onConflict: 'article_id',
-          ignoreDuplicates: false,
-        });
+        await supabase.from('article_analytics').upsert(
+          {
+            article_id: articleId,
+            views: 1,
+            last_viewed_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'article_id',
+            ignoreDuplicates: false,
+          }
+        );
       } catch {
         // Analytics table might not exist, that's okay
       }
@@ -64,10 +67,7 @@ export class AnalyticsService {
   /**
    * Start reading session
    */
-  static async startReadingSession(
-    articleId: string,
-    userId?: string
-  ): Promise<string | null> {
+  static async startReadingSession(articleId: string, userId?: string): Promise<string | null> {
     try {
       const session: ReadingSession = {
         article_id: articleId,
@@ -93,10 +93,7 @@ export class AnalyticsService {
   /**
    * End reading session and calculate duration
    */
-  static async endReadingSession(
-    sessionId: string,
-    scrollDepthPercent?: number
-  ): Promise<void> {
+  static async endReadingSession(sessionId: string, scrollDepthPercent?: number): Promise<void> {
     try {
       const { data: session } = await supabase
         .from('reading_sessions')
@@ -144,8 +141,7 @@ export class AnalyticsService {
       if (analytics) {
         const newReads = (analytics.reads || 0) + 1;
         const currentAvgDuration = analytics.avg_read_duration_seconds || 0;
-        const newAvgDuration =
-          (currentAvgDuration * (newReads - 1) + durationSeconds) / newReads;
+        const newAvgDuration = (currentAvgDuration * (newReads - 1) + durationSeconds) / newReads;
 
         await supabase
           .from('article_analytics')
@@ -256,10 +252,7 @@ export class AnalyticsService {
   /**
    * Get personalized recommendations based on reading history
    */
-  static async getRecommendations(
-    userId: string,
-    limit: number = 10
-  ): Promise<NewsArticle[]> {
+  static async getRecommendations(userId: string, limit: number = 10): Promise<NewsArticle[]> {
     try {
       // Get user's reading history
       const { data: history } = await supabase
@@ -344,20 +337,23 @@ export class AnalyticsService {
   static estimateReadingTime(content: string, wordsPerMinute: number = 200): number {
     // Remove HTML tags more thoroughly to prevent XSS
     let plainText = content;
-    
+
     // First pass: remove script and style tags and their contents
     plainText = plainText.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
     plainText = plainText.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
-    
+
     // Second pass: remove all remaining HTML tags
     plainText = plainText.replace(/<[^>]+>/g, '');
-    
+
     // Decode HTML entities
     plainText = plainText.replace(/&[a-z]+;/gi, ' ');
-    
+
     // Count words
-    const wordCount = plainText.trim().split(/\s+/).filter(word => word.length > 0).length;
-    
+    const wordCount = plainText
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0).length;
+
     // Calculate minutes (minimum 1 minute)
     return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
   }

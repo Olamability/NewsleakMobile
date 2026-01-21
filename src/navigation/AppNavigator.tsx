@@ -59,7 +59,9 @@ const MainTabNavigator = () => {
         name="Notifications"
         component={NotificationsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="notifications" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="notifications" size={size} color={color} />
+          ),
           tabBarLabel: 'Notifications',
         }}
       />

@@ -37,7 +37,8 @@ export class ContentService {
     const slug = this.generateSlug(title);
     const summary = this.extractSummary(rawArticle, options?.maxSummaryLength);
     const content_snippet = this.extractContentSnippet(rawArticle);
-    const image_url = this.extractImageUrl(rawArticle) || options?.defaultImageUrl || this.DEFAULT_IMAGE_URL;
+    const image_url =
+      this.extractImageUrl(rawArticle) || options?.defaultImageUrl || this.DEFAULT_IMAGE_URL;
     const article_url = this.cleanUrl(rawArticle.link);
     const canonical_url = this.createCanonicalUrl(article_url);
     const category = this.inferCategory(rawArticle, options?.defaultCategory);
@@ -98,7 +99,7 @@ export class ContentService {
 
     // First remove HTML tags using sanitize-html
     const withoutTags = sanitizeHtml(text, { allowedTags: [], allowedAttributes: {} });
-    
+
     // Then normalize whitespace
     return withoutTags
       .replace(/\s+/g, ' ') // Normalize whitespace
@@ -111,10 +112,7 @@ export class ContentService {
   private extractSummary(rawArticle: RawArticle, maxLength?: number): string {
     const max = maxLength || this.MAX_SUMMARY_LENGTH;
     let summary =
-      rawArticle.description ||
-      rawArticle.contentSnippet ||
-      rawArticle.content ||
-      rawArticle.title;
+      rawArticle.description || rawArticle.contentSnippet || rawArticle.content || rawArticle.title;
 
     summary = this.cleanText(summary);
 
@@ -189,7 +187,13 @@ export class ContentService {
     try {
       const urlObj = new URL(url);
       // Remove tracking parameters
-      const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      const trackingParams = [
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_content',
+        'utm_term',
+      ];
       trackingParams.forEach((param) => urlObj.searchParams.delete(param));
       return urlObj.toString();
     } catch {
