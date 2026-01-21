@@ -15,6 +15,7 @@ config.resolver = {
     url: require.resolve('url/'),
     stream: require.resolve('readable-stream'),
     buffer: require.resolve('buffer/'),
+    timers: require.resolve('timers-browserify'),
   },
 };
 
