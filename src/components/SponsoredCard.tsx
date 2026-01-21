@@ -14,16 +14,16 @@ export const SponsoredCard: React.FC<SponsoredCardProps> = ({ content, onPress }
       {content.image_url && (
         <Image source={{ uri: content.image_url }} style={styles.image} resizeMode="cover" />
       )}
-      
+
       <View style={styles.badge}>
         <Text style={styles.badgeText}>SPONSORED</Text>
       </View>
-      
+
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={3}>
           {content.title}
         </Text>
-        
+
         <Text style={styles.summary} numberOfLines={2}>
           {content.summary}
         </Text>

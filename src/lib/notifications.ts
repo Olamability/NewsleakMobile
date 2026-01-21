@@ -25,19 +25,19 @@ export async function registerForPushNotificationsAsync() {
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
-  
+
   if (existingStatus !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
   }
-  
+
   if (finalStatus !== 'granted') {
     console.log('Failed to get push token for push notification!');
     return;
   }
-  
+
   token = (await Notifications.getExpoPushTokenAsync()).data;
-  
+
   await saveTokenToDatabase(token);
 
   return token;
@@ -46,23 +46,23 @@ export async function registerForPushNotificationsAsync() {
 async function saveTokenToDatabase(token: string) {
   try {
     const savedToken = await AsyncStorage.getItem('expo_push_token');
-    
+
     if (savedToken === token) {
       return;
     }
 
-    const { error } = await supabase
-      .from('user_devices')
-      .upsert(
-        [{
+    const { error } = await supabase.from('user_devices').upsert(
+      [
+        {
           expo_push_token: token,
           platform: Platform.OS as 'ios' | 'android' | 'windows' | 'macos' | 'web',
           is_active: true,
-        }] as any,
-        {
-          onConflict: 'expo_push_token',
-        }
-      );
+        },
+      ] as any,
+      {
+        onConflict: 'expo_push_token',
+      }
+    );
 
     if (error) {
       console.error('Error saving push token:', error);
@@ -78,9 +78,11 @@ export function setupNotificationListeners(
   onNotificationReceived: (notification: Notifications.Notification) => void,
   onNotificationTapped: (response: Notifications.NotificationResponse) => void
 ) {
-  const receivedSubscription = Notifications.addNotificationReceivedListener(onNotificationReceived);
+  const receivedSubscription =
+    Notifications.addNotificationReceivedListener(onNotificationReceived);
 
-  const responseSubscription = Notifications.addNotificationResponseReceivedListener(onNotificationTapped);
+  const responseSubscription =
+    Notifications.addNotificationResponseReceivedListener(onNotificationTapped);
 
   return () => {
     receivedSubscription.remove();

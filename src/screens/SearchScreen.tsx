@@ -1,12 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, FlatList, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SearchBar } from '../components/SearchBar';
@@ -100,10 +93,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
     if (activeQuery.length >= 2 && searchResults) {
       if (searchResults.length === 0) {
         return (
-          <EmptyState
-            title="No Results Found"
-            message={`No articles found for "${activeQuery}"`}
-          />
+          <EmptyState title="No Results Found" message={`No articles found for "${activeQuery}"`} />
         );
       }
 

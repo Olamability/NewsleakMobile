@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -113,9 +121,7 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
           <Text style={styles.title}>{article.title}</Text>
 
           {/* Summary */}
-          {article.summary && (
-            <Text style={styles.summary}>{article.summary}</Text>
-          )}
+          {article.summary && <Text style={styles.summary}>{article.summary}</Text>}
 
           {/* Read Full Story Button */}
           <View style={styles.actionContainer}>
@@ -127,7 +133,12 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
               <Text style={styles.readButtonText}>
                 Read Full Story at {article.news_sources?.name || 'Source'}
               </Text>
-              <Ionicons name="open-outline" size={20} color={COLORS.background} style={{ marginLeft: 8 }} />
+              <Ionicons
+                name="open-outline"
+                size={20}
+                color={COLORS.background}
+                style={{ marginLeft: 8 }}
+              />
             </TouchableOpacity>
           </View>
         </View>

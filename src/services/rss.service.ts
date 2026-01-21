@@ -42,7 +42,7 @@ export class RSSService {
           maxRedirects: options?.maxRedirects || 5,
           headers: {
             'User-Agent': 'NewsArena/1.0 (News Aggregator Mobile App)',
-            'Accept': 'application/rss+xml',
+            Accept: 'application/rss+xml',
             ...options?.headers,
           },
           responseType: 'text',
@@ -203,11 +203,7 @@ export class RSSService {
    */
   private extractContent(item: any): string | null {
     return (
-      item.content ||
-      item['content:encoded'] ||
-      item['atom:content'] ||
-      item.description ||
-      null
+      item.content || item['content:encoded'] || item['atom:content'] || item.description || null
     );
   }
 
@@ -343,7 +339,7 @@ export class RSSService {
         timeout: this.DEFAULT_TIMEOUT,
         headers: {
           'User-Agent': 'NewsArena/1.0 (News Aggregator Mobile App)',
-          'Accept': 'application/rss+xml',
+          Accept: 'application/rss+xml',
         },
         responseType: 'text',
       });

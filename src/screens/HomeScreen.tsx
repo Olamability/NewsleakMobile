@@ -101,14 +101,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     [navigation, trackEvent]
   );
 
-  const handleBreakingScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const contentOffset = event.nativeEvent.contentOffset.x;
-      const index = Math.round(contentOffset / (CARD_WIDTH + SPACING.lg));
-      setCurrentBreakingIndex(index);
-    },
-    []
-  );
+  const handleBreakingScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const contentOffset = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffset / (CARD_WIDTH + SPACING.lg));
+    setCurrentBreakingIndex(index);
+  }, []);
 
   if (isLoading && !allArticles.length) {
     return <LoadingSpinner fullScreen />;
@@ -116,10 +113,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   if (isError && !allArticles.length) {
     return (
-      <ErrorState
-        message={(error as Error)?.message || 'Failed to load news'}
-        onRetry={refetch}
-      />
+      <ErrorState message={(error as Error)?.message || 'Failed to load news'} onRetry={refetch} />
     );
   }
 
@@ -216,11 +210,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         }
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl
-            refreshing={false}
-            onRefresh={handleRefresh}
-            tintColor={COLORS.primary}
-          />
+          <RefreshControl refreshing={false} onRefresh={handleRefresh} tintColor={COLORS.primary} />
         }
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}

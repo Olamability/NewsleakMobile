@@ -18,16 +18,16 @@ export const BreakingNewsCard: React.FC<BreakingNewsCardProps> = ({ article, onP
       {article.image_url && (
         <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
       )}
-      
+
       <View style={styles.badge}>
         <Text style={styles.badgeText}>🔥 BREAKING</Text>
       </View>
-      
+
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={3}>
           {article.title}
         </Text>
-        
+
         <View style={styles.meta}>
           <Text style={styles.source}>{source?.name || 'Unknown Source'}</Text>
           <Text style={styles.dot}>•</Text>

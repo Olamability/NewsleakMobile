@@ -4,7 +4,13 @@ import { checkRateLimit } from '../utils/security';
 export interface SecurityLog {
   id?: string;
   user_id?: string;
-  event_type: 'login' | 'logout' | 'failed_login' | 'suspicious_activity' | 'data_access' | 'data_deletion';
+  event_type:
+    | 'login'
+    | 'logout'
+    | 'failed_login'
+    | 'suspicious_activity'
+    | 'data_access'
+    | 'data_deletion';
   ip_address?: string;
   user_agent?: string;
   metadata?: Record<string, any>;
@@ -41,10 +47,7 @@ export class SecurityService {
   /**
    * Check for suspicious login patterns
    */
-  static async detectSuspiciousActivity(
-    userId: string,
-    ipAddress?: string
-  ): Promise<boolean> {
+  static async detectSuspiciousActivity(userId: string, ipAddress?: string): Promise<boolean> {
     try {
       // Check for multiple failed login attempts in last hour
       const oneHourAgo = new Date();
@@ -288,7 +291,7 @@ export class SecurityService {
     // In React Native, use expo-crypto or react-native-get-random-values
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let token = '';
-    
+
     // For web compatibility, use crypto.getRandomValues if available
     if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
       const randomValues = new Uint8Array(length);
@@ -303,7 +306,7 @@ export class SecurityService {
         token += chars.charAt(Math.floor(Math.random() * chars.length));
       }
     }
-    
+
     return token;
   }
 
@@ -315,13 +318,7 @@ export class SecurityService {
     reason?: string;
   } {
     // Check for spam patterns
-    const spamPatterns = [
-      /viagra/i,
-      /casino/i,
-      /click here/i,
-      /buy now/i,
-      /limited time/i,
-    ];
+    const spamPatterns = [/viagra/i, /casino/i, /click here/i, /buy now/i, /limited time/i];
 
     for (const pattern of spamPatterns) {
       if (pattern.test(content)) {
@@ -372,8 +369,7 @@ export class SecurityService {
 
       if (sessions && sessions.length > 0) {
         const lastLogin = new Date(sessions[0].created_at);
-        const daysSinceLogin =
-          (new Date().getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24);
+        const daysSinceLogin = (new Date().getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24);
 
         if (daysSinceLogin > 90) {
           recommendations.push('Update your password regularly (every 90 days)');

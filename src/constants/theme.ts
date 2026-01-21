@@ -47,7 +47,7 @@ export const COLORS = {
   lifestyle: '#EC4899',
   breaking: '#DC2626',
   environment: '#0891B2',
-  
+
   // Sponsored color
   sponsored: '#8B5CF6',
 

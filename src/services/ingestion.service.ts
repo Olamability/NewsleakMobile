@@ -192,9 +192,7 @@ export class IngestionService {
   /**
    * Filter out articles that already exist in database
    */
-  private async filterExistingArticles(
-    articles: ProcessedArticle[]
-  ): Promise<ProcessedArticle[]> {
+  private async filterExistingArticles(articles: ProcessedArticle[]): Promise<ProcessedArticle[]> {
     try {
       const hashes = articles.map((a) => a.content_hash);
 

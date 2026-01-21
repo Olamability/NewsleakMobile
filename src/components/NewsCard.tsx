@@ -35,7 +35,10 @@ export const NewsCard: React.FC<NewsCardProps> = ({
           <View style={styles.footer}>
             <Text style={styles.time}>{formatRelativeTime(article.published_at)}</Text>
             {onBookmarkPress && (
-              <TouchableOpacity onPress={onBookmarkPress} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <TouchableOpacity
+                onPress={onBookmarkPress}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
                 <Ionicons
                   name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
                   size={18}

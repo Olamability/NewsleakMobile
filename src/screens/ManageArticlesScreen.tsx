@@ -35,16 +35,16 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
       if (!isRefresh) {
         setIsLoading(true);
       }
-      
+
       const response = await AdminService.getAllArticles(isRefresh ? 1 : page);
-      
+
       if (isRefresh) {
         setArticles(response.data);
         setPage(1);
       } else {
         setArticles(response.data);
       }
-      
+
       setHasMore(response.hasMore);
     } catch (error) {
       console.error('Error loading articles:', error);
@@ -72,7 +72,7 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
                 articleId,
                 newFeaturedStatus
               );
-              
+
               if (response.error) {
                 Alert.alert('Error', response.error);
                 return;
@@ -107,7 +107,7 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
           onPress: async () => {
             try {
               const response = await AdminService.deleteArticle(articleId);
-              
+
               if (response.error) {
                 Alert.alert('Error', response.error);
                 return;
@@ -116,7 +116,7 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navi
               setArticles((prevArticles) =>
                 prevArticles.filter((article) => article.id !== articleId)
               );
-              
+
               Alert.alert('Success', 'Article removed successfully');
             } catch (error) {
               console.error('Error removing article:', error);

@@ -27,10 +27,7 @@ export class OfflineService {
       };
 
       // Save article
-      await AsyncStorage.setItem(
-        `${CACHE_PREFIX}${article.id}`,
-        JSON.stringify(cachedArticle)
-      );
+      await AsyncStorage.setItem(`${CACHE_PREFIX}${article.id}`, JSON.stringify(cachedArticle));
 
       // Update cache index
       await this.updateCacheIndex(article.id, 'add');
@@ -189,10 +186,7 @@ export class OfflineService {
           );
 
           // Remove oldest articles
-          const toRemove = articlesWithTime.slice(
-            0,
-            remainingIndex.length - MAX_CACHED_ARTICLES
-          );
+          const toRemove = articlesWithTime.slice(0, remainingIndex.length - MAX_CACHED_ARTICLES);
 
           for (const article of toRemove) {
             await this.removeCachedArticle(article.id);

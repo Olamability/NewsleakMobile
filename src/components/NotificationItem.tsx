@@ -20,11 +20,15 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   onPress,
 }) => {
   return (
-    <TouchableOpacity style={[styles.container, !isRead && styles.unread]} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={[styles.container, !isRead && styles.unread]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       <View style={styles.iconContainer}>
         <Ionicons name="notifications" size={24} color={COLORS.primary} />
       </View>
-      
+
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={2}>
           {title}
@@ -34,7 +38,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         </Text>
         <Text style={styles.time}>{timeAgo(timestamp)} ago</Text>
       </View>
-      
+
       {!isRead && <View style={styles.unreadDot} />}
     </TouchableOpacity>
   );

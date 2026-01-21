@@ -12,11 +12,19 @@ interface RecentSearchChipProps {
 export const RecentSearchChip: React.FC<RecentSearchChipProps> = ({ query, onPress, onDelete }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.textContainer} onPress={() => onPress(query)} activeOpacity={0.7}>
+      <TouchableOpacity
+        style={styles.textContainer}
+        onPress={() => onPress(query)}
+        activeOpacity={0.7}
+      >
         <Ionicons name="time-outline" size={16} color={COLORS.textLight} style={styles.icon} />
         <Text style={styles.text}>{query}</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={onDelete} style={styles.deleteButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+      <TouchableOpacity
+        onPress={onDelete}
+        style={styles.deleteButton}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      >
         <Ionicons name="close" size={16} color={COLORS.textLight} />
       </TouchableOpacity>
     </View>
