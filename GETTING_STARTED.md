@@ -171,20 +171,22 @@ The app includes a full admin dashboard for managing sources and articles.
 
 ### Adding New News Sources
 
-> **💡 Note:** Currently, the "Add New Source" button mentioned below is not yet implemented in the app UI. To add sources, use the "Via SQL Editor" method below or the Supabase Table Editor.
+> **💡 Note:** You can now add sources directly in the app! See the updated method below.
 
-Two ways to add sources:
+Three ways to add sources:
 
-#### Via Admin Dashboard (Coming Soon)
+#### Via App UI (Recommended) ✨ NEW!
 
-The Manage Sources screen currently allows you to:
-- View all existing news sources
-- Enable/disable sources with toggle switches
-- Pull to refresh the list
+1. Access admin dashboard (see above for how to get admin access)
+2. Tap "Manage Sources"
+3. Tap **"+ Add Source"** button in the top-right
+4. Fill in the form:
+   - Source name (e.g., "Reuters")
+   - RSS Feed URL (e.g., "https://feeds.reuters.com/reuters/worldNews")
+   - Website URL (optional)
+5. Tap "Add Source" - the source will be available for ingestion immediately!
 
-To **add new sources**, use the SQL method below for now.
-
-#### Via SQL Editor (Current Method)
+#### Via Supabase Table Editor (Alternative)
 
 1. Open **SQL Editor** in your Supabase dashboard
 2. Create a new query

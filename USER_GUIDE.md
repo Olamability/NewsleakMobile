@@ -149,13 +149,35 @@ Once you have admin access, follow these steps:
 1. In the Admin Dashboard, tap **"📰 Manage News Sources"**
 2. You'll see a list of existing news sources (if any)
 
-#### 3. Check if "Add Source" Button Exists
+#### 3. Add a New RSS Feed Source
 
-The current implementation shows existing sources and allows you to enable/disable them. 
+You now have **two options** to add new RSS feeds:
 
-**To add a new RSS feed source**, you have two options:
+##### Option A: Via App UI (Recommended) ✨ NEW!
 
-##### Option A: Via Supabase Dashboard (Currently Required)
+1. **Tap "Add Source" Button**
+   - In the top-right corner of the Manage Sources screen, tap **"+ Add Source"**
+   - A modal will appear with a form
+
+2. **Fill in the Form**
+   - **Source Name** (Required): Name of the news source (e.g., "BBC World News")
+   - **RSS Feed URL** (Required): The RSS feed URL (e.g., "http://feeds.bbci.co.uk/news/world/rss.xml")
+   - **Website URL** (Optional): Homepage URL (e.g., "https://www.bbc.com/news")
+
+3. **Submit the Form**
+   - Tap **"Add Source"**
+   - The app will validate the URL
+   - If the URL doesn't look like an RSS feed, you'll get a warning (you can proceed if you're sure it's correct)
+   - If successful, you'll see a success message and the source will appear in your list!
+
+4. **Verify the Source**
+   - Pull down to refresh the list
+   - You should see your new source
+   - Toggle the switch to enable/disable it
+
+##### Option B: Via Supabase Dashboard (Alternative Method)
+
+If you prefer to add sources via the Supabase dashboard:
 
 1. **Open Supabase Dashboard**
    - Go to your Supabase project
@@ -180,7 +202,7 @@ The current implementation shows existing sources and allows you to enable/disab
    - Pull down to refresh
    - You should see your new source in the list!
 
-##### Option B: Via SQL Query
+##### Option C: Via SQL Query
 
 1. **Open SQL Editor** in Supabase Dashboard
 
