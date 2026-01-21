@@ -39,15 +39,15 @@ const SPONSORED_INTERVAL = 6;
 
 // Fixed categories for the homepage
 const FIXED_CATEGORIES = [
-  { id: 'all', name: 'Following' },
   { id: 'for-you', name: 'For you' },
-  { id: 'society', name: 'Society' },
-  { id: 'headline', name: 'Headline' },
-  { id: 'football', name: 'Football' },
-  { id: 'entertainment', name: 'Entertainment' },
-  { id: 'technology', name: 'Technology' },
-  { id: 'business', name: 'Business' },
-  { id: 'health', name: 'Health' },
+  { id: 'all', name: 'Following' },
+  { id: '1', name: 'Top Stories' },
+  { id: '4', name: 'Business' },
+  { id: '6', name: 'Technology' },
+  { id: '7', name: 'Entertainment' },
+  { id: '8', name: 'Health' },
+  { id: '5', name: 'Sports' },
+  { id: '3', name: 'Politics' },
 ];
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
