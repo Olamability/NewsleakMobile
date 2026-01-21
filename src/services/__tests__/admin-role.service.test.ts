@@ -270,7 +270,7 @@ describe('AdminRoleService', () => {
       const mockUser = {
         id: 'admin-id',
         email: 'admin@example.com',
-        user_metadata: {
+        raw_user_meta_data: {
           is_admin: true,
         },
       };
@@ -301,7 +301,7 @@ describe('AdminRoleService', () => {
       const mockUser = {
         id: 'user-id',
         email: 'user@example.com',
-        user_metadata: {
+        raw_user_meta_data: {
           is_admin: true, // User has admin flag in metadata but not in table
         },
       };
