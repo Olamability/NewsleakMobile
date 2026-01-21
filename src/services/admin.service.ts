@@ -1,14 +1,23 @@
 import { supabase } from './supabase';
 import { NewsArticle, NewsSource, ApiResponse, PaginatedResponse, User } from '../types';
+import { AdminRoleService } from './admin-role.service';
 
 const ITEMS_PER_PAGE = 20;
 
 export class AdminService {
   /**
    * Get all sources for admin management (including inactive)
+   * Requires admin access
    */
   static async getAllSources(): Promise<NewsSource[]> {
     try {
+      // Check admin access
+      const isAdmin = await AdminRoleService.isCurrentUserAdmin();
+      if (!isAdmin) {
+        console.error('Unauthorized: Admin access required');
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('news_sources')
         .select('*')
@@ -27,6 +36,7 @@ export class AdminService {
 
   /**
    * Add a new news source
+   * Requires admin access
    */
   static async addSource(
     name: string,
@@ -34,6 +44,12 @@ export class AdminService {
     websiteUrl?: string
   ): Promise<ApiResponse<NewsSource>> {
     try {
+      // Check admin access
+      const isAdmin = await AdminRoleService.isCurrentUserAdmin();
+      if (!isAdmin) {
+        return { error: 'Unauthorized: Admin access required' };
+      }
+
       // Extract base domain from RSS URL if website URL not provided
       let finalWebsiteUrl = websiteUrl;
       if (!websiteUrl && rssUrl) {

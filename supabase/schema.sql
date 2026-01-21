@@ -115,8 +115,8 @@ create table if not exists publisher_sources (
 -- ADMIN USERS TABLE
 -- =============================================
 create table if not exists admin_users (
-  id uuid primary key,
-  role text default 'editor', -- editor | admin | super_admin
+  id uuid primary key references auth.users(id) on delete cascade,
+  role text default 'editor' check (role in ('editor', 'admin', 'super_admin')),
   created_at timestamp with time zone default now()
 );
 
@@ -193,6 +193,9 @@ alter table publishers enable row level security;
 alter table publisher_sources enable row level security;
 alter table recent_searches enable row level security;
 alter table trending_topics enable row level security;
+alter table admin_users enable row level security;
+alter table article_moderation enable row level security;
+alter table push_campaigns enable row level security;
 
 -- Public read policies
 create policy "public_read_categories" on categories for select using (true);
@@ -219,6 +222,143 @@ create policy "users_read_own_searches" on recent_searches for select using (tru
 
 -- Trending topics policies
 create policy "public_read_trending" on trending_topics for select using (true);
+
+-- Admin users policies
+-- Users can only read their own admin record
+create policy "users_read_own_admin" on admin_users 
+  for select using (auth.uid() = id);
+
+-- Only super admins can insert new admin users (via backend service role)
+-- This prevents users from making themselves admin
+create policy "service_role_insert_admin" on admin_users 
+  for insert with check (false); -- Blocks all client-side inserts
+
+-- Only super admins can update admin users (via backend service role)
+create policy "service_role_update_admin" on admin_users 
+  for update using (false); -- Blocks all client-side updates
+
+-- Only super admins can delete admin users (via backend service role)
+create policy "service_role_delete_admin" on admin_users 
+  for delete using (false); -- Blocks all client-side deletes
+
+-- Article moderation policies
+-- Only admins can read moderation records
+create policy "admins_read_moderation" on article_moderation 
+  for select using (
+    exists (
+      select 1 from admin_users 
+      where id = auth.uid()
+    )
+  );
+
+-- Only admins can create moderation records
+create policy "admins_create_moderation" on article_moderation 
+  for insert with check (
+    exists (
+      select 1 from admin_users 
+      where id = auth.uid()
+    )
+  );
+
+-- Push campaigns policies
+-- Only admins can read campaigns
+create policy "admins_read_campaigns" on push_campaigns 
+  for select using (
+    exists (
+      select 1 from admin_users 
+      where id = auth.uid()
+    )
+  );
+
+-- Only admins can create campaigns
+create policy "admins_create_campaigns" on push_campaigns 
+  for insert with check (
+    exists (
+      select 1 from admin_users 
+      where id = auth.uid()
+    )
+  );
+
+-- =============================================
+-- DATABASE FUNCTIONS
+-- =============================================
+
+-- Function to check if user is an admin
+create or replace function is_admin(user_id uuid)
+returns boolean as $$
+begin
+  return exists (
+    select 1 from admin_users 
+    where id = user_id
+  );
+end;
+$$ language plpgsql security definer;
+
+-- Function to get user's admin role
+create or replace function get_admin_role(user_id uuid)
+returns text as $$
+declare
+  user_role text;
+begin
+  select role into user_role
+  from admin_users
+  where id = user_id;
+  
+  return user_role;
+end;
+$$ language plpgsql security definer;
+
+-- Function to sync admin status to auth metadata
+-- NOTE: This should only be called by backend services with service role
+-- It syncs the is_admin flag from admin_users table to auth.users metadata
+create or replace function sync_admin_metadata()
+returns trigger as $$
+begin
+  -- When an admin user is inserted, update auth metadata
+  if (TG_OP = 'INSERT') then
+    update auth.users
+    set raw_user_meta_data = 
+      coalesce(raw_user_meta_data, '{}'::jsonb) || 
+      jsonb_build_object('is_admin', true)
+    where id = NEW.id;
+  end if;
+  
+  -- When an admin user is deleted, update auth metadata
+  if (TG_OP = 'DELETE') then
+    update auth.users
+    set raw_user_meta_data = 
+      coalesce(raw_user_meta_data, '{}'::jsonb) || 
+      jsonb_build_object('is_admin', false)
+    where id = OLD.id;
+  end if;
+  
+  return coalesce(NEW, OLD);
+end;
+$$ language plpgsql security definer;
+
+-- Create trigger to automatically sync admin status
+drop trigger if exists sync_admin_metadata_trigger on admin_users;
+create trigger sync_admin_metadata_trigger
+  after insert or delete on admin_users
+  for each row
+  execute function sync_admin_metadata();
+
+-- =============================================
+-- HELPER VIEWS
+-- =============================================
+
+-- View to safely expose admin user info without exposing auth details
+create or replace view admin_users_view as
+select 
+  au.id,
+  au.role,
+  au.created_at,
+  u.email
+from admin_users au
+join auth.users u on au.id = u.id;
+
+-- Grant access to authenticated users to view admin info
+grant select on admin_users_view to authenticated;
 
 -- =============================================
 -- SEED DATA

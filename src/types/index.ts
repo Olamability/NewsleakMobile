@@ -35,6 +35,7 @@ export interface User {
   full_name?: string;
   avatar_url?: string;
   is_admin?: boolean;
+  role?: 'editor' | 'admin' | 'super_admin'; // Admin role level from admin_users table
   created_at: string;
 }
 
@@ -91,6 +92,15 @@ export interface SignUpCredentials extends AuthCredentials {
 }
 
 export type ArticleStatus = 'draft' | 'pending_approval' | 'approved' | 'rejected' | 'published';
+
+export type AdminRole = 'editor' | 'admin' | 'super_admin';
+
+export interface AdminUser {
+  id: string;
+  role: AdminRole;
+  email?: string;
+  created_at: string;
+}
 
 export interface IngestionLog {
   id: string;

@@ -210,6 +210,7 @@ export class AuthService {
 
   /**
    * Update user profile
+   * NOTE: is_admin and other sensitive fields are filtered out to prevent privilege escalation
    */
   static async updateProfile(updates: {
     full_name?: string;
@@ -224,8 +225,15 @@ export class AuthService {
         updates.full_name = updates.full_name.trim();
       }
 
+      // Filter out any admin-related or sensitive fields that shouldn't be user-editable
+      // This prevents users from escalating their privileges
+      const safeUpdates = {
+        full_name: updates.full_name,
+        avatar_url: updates.avatar_url,
+      };
+
       const { data, error } = await supabase.auth.updateUser({
-        data: updates,
+        data: safeUpdates,
       });
 
       if (error) {
