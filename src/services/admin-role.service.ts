@@ -1,14 +1,5 @@
 import { supabase } from './supabase';
-import { ApiResponse } from '../types';
-
-export type AdminRole = 'editor' | 'admin' | 'super_admin';
-
-export interface AdminUser {
-  id: string;
-  role: AdminRole;
-  email?: string;
-  created_at: string;
-}
+import { ApiResponse, AdminRole, AdminUser } from '../types';
 
 /**
  * AdminRoleService - Manages admin roles and permissions
@@ -200,7 +191,7 @@ export class AdminRoleService {
         .single();
 
       const inTable = !!data;
-      const inMetadata = !!user.user_metadata?.is_admin;
+      const inMetadata = !!user.raw_user_meta_data?.is_admin;
 
       return {
         synced: inTable === inMetadata,
