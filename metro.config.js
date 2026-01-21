@@ -27,12 +27,9 @@ const extraNodeModules = {
 };
 
 // Filter out undefined values (modules that couldn't be resolved)
-const resolvedModules = Object.entries(extraNodeModules).reduce((acc, [key, value]) => {
-  if (value !== undefined) {
-    acc[key] = value;
-  }
-  return acc;
-}, {});
+const resolvedModules = Object.fromEntries(
+  Object.entries(extraNodeModules).filter(([, value]) => value !== undefined)
+);
 
 config.resolver = {
   ...config.resolver,
