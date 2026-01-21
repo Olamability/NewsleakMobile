@@ -34,12 +34,24 @@ export class AdminService {
     websiteUrl?: string
   ): Promise<ApiResponse<NewsSource>> {
     try {
+      // Extract base domain from RSS URL if website URL not provided
+      let finalWebsiteUrl = websiteUrl;
+      if (!websiteUrl && rssUrl) {
+        try {
+          const url = new URL(rssUrl);
+          finalWebsiteUrl = `${url.protocol}//${url.host}`;
+        } catch {
+          // If URL parsing fails, just use the rss URL as fallback
+          finalWebsiteUrl = rssUrl;
+        }
+      }
+
       const { data, error } = await supabase
         .from('news_sources')
         .insert({
           name,
           rss_url: rssUrl,
-          website_url: websiteUrl || rssUrl,
+          website_url: finalWebsiteUrl || rssUrl,
           is_active: true,
         })
         .select()

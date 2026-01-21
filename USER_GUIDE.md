@@ -305,13 +305,17 @@ Here are some popular RSS feeds you can add:
 
 ### I Can't Add RSS Feeds in the App
 
-**Problem:** There's no "Add New Source" button in the Manage Sources screen.
+**Problem:** I don't see the "Add Source" button.
 
-**Current Status:** The Manage Sources screen currently shows existing sources and allows you to enable/disable them. To add new sources, you need to:
-- Use Supabase Table Editor (see "Option A" above)
-- Use SQL queries (see "Option B" above)
-
-**Future Enhancement:** A full "Add Source" form in the app is planned for a future update.
+**Solution:**
+1. Make sure you have admin access (see "How to Grant Yourself Admin Access" above)
+2. Make sure you're signed in to the app
+3. Navigate to Profile → Admin Dashboard → Manage Sources
+4. You should see a **"+ Add Source"** button in the top-right corner
+5. If you don't see it:
+   - Verify you have the admin badge on your profile
+   - Sign out and sign back in
+   - Check that you're in the Manage Sources screen (not another admin screen)
 
 ### Articles Aren't Showing Up After Adding RSS Feed
 
