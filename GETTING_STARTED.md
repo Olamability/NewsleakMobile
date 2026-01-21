@@ -2,6 +2,8 @@
 
 This guide will help you get the app running with sample data in under 10 minutes.
 
+> **📌 Looking to add RSS feeds or access admin features?** See the [USER_GUIDE.md](./USER_GUIDE.md) for detailed instructions on granting admin access and adding RSS feeds.
+
 ## Prerequisites
 
 - Node.js 16+ installed
@@ -136,9 +138,13 @@ You have several options:
 
 ### Accessing the Admin Dashboard
 
+> **📌 Important:** Want to add RSS feeds or manage news sources? You need admin access first! See the detailed steps below.
+
 The app includes a full admin dashboard for managing sources and articles.
 
 #### Set Up an Admin User
+
+**⚠️ Required for RSS Feed Management:** By default, new user accounts cannot add or manage RSS feeds. You must grant yourself admin privileges first.
 
 1. First, create a regular user account in the app (Sign Up)
 2. Go to **Authentication** → **Users** in Supabase dashboard
@@ -150,7 +156,7 @@ The app includes a full admin dashboard for managing sources and articles.
    }
    ```
 5. Save changes
-6. Sign out and sign in again in the app
+6. **Sign out and sign in again in the app** (required for changes to take effect)
 
 #### Access the Dashboard
 
@@ -165,21 +171,24 @@ The app includes a full admin dashboard for managing sources and articles.
 
 ### Adding New News Sources
 
+> **💡 Note:** Currently, the "Add New Source" button mentioned below is not yet implemented in the app UI. To add sources, use the "Via SQL Editor" method below or the Supabase Table Editor.
+
 Two ways to add sources:
 
-#### Via Admin Dashboard (Recommended)
+#### Via Admin Dashboard (Coming Soon)
 
-1. Access admin dashboard (see above)
-2. Tap "Manage Sources"
-3. Tap "Add New Source"
-4. Fill in:
-   - Source name (e.g., "Reuters")
-   - Website URL
-   - RSS Feed URL
-   - Logo URL (optional)
-5. Save - the source will be available for ingestion
+The Manage Sources screen currently allows you to:
+- View all existing news sources
+- Enable/disable sources with toggle switches
+- Pull to refresh the list
 
-#### Via SQL Editor
+To **add new sources**, use the SQL method below for now.
+
+#### Via SQL Editor (Current Method)
+
+1. Open **SQL Editor** in your Supabase dashboard
+2. Create a new query
+3. Run this SQL to add a news source:
 
 ```sql
 INSERT INTO news_sources (name, website_url, rss_url, is_active)
