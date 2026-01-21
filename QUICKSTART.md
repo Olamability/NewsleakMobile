@@ -15,7 +15,7 @@ Get up and running with Spazr News Aggregator in 5 minutes!
 ```bash
 # Clone the repository
 git clone https://github.com/Olamability/NewsleakMobile.git
-cd NewsleakMobile
+cd NewsleakMobile  # Project root (repository name unchanged)
 
 # Run automated setup
 ./setup.sh
@@ -53,21 +53,24 @@ Then:
 ✅ **Working UI** - All screens and components
 ✅ **Navigation** - Full app navigation flow
 ✅ **Splash Screen** - Animated splash screen
-✅ **Category System** - 9 news categories
+✅ **Category System** - 8 news categories
 ✅ **Search Interface** - Search UI (needs backend data)
 ✅ **Authentication Screens** - Sign up/in forms
 ✅ **Profile Management** - User profile screen
 
 ## Adding Real Data
 
-To get real news articles, you need to:
+**Important:** The app will show "No articles found" until you add sample data!
 
-1. **Set up Supabase** (see CONFIGURATION.md)
-2. **Create database tables** (SQL provided in docs)
-3. **Add sample data** (SQL provided in docs)
-4. **Connect RSS feeds** (future enhancement)
+To get news articles displaying:
 
-See [CONFIGURATION.md](./CONFIGURATION.md) for detailed backend setup.
+1. **Set up Supabase** - Create a free account at [supabase.com](https://supabase.com)
+2. **Run schema.sql** - Creates all database tables (see CONFIGURATION.md)
+3. **Run sample-articles.sql** - Adds 20+ sample articles to display immediately
+4. **Configure .env** - Add your Supabase credentials
+
+**Quick Setup:**
+See [GETTING_STARTED.md](./GETTING_STARTED.md) for a complete 10-minute setup guide with sample data.
 
 ## Testing the App
 
@@ -75,17 +78,26 @@ Without backend (UI only):
 - ✅ View all screens
 - ✅ Test navigation
 - ✅ See UI components
-- ❌ Can't load articles
+- ❌ Can't load articles (shows "No articles found")
 - ❌ Can't authenticate
 
-With Supabase configured:
+With Supabase + Sample Data:
 - ✅ Everything works!
-- ✅ Load real articles
+- ✅ See 20+ sample articles
+- ✅ Browse by category
+- ✅ Search articles
 - ✅ Sign up/sign in
 - ✅ Bookmark articles
-- ✅ Search articles
 
 ## Common Issues
+
+**"No articles found" even with Supabase**
+```bash
+# You need to run BOTH SQL files:
+# 1. schema.sql (creates tables)
+# 2. sample-articles.sql (adds articles)
+# See TROUBLESHOOTING.md for details
+```
 
 **"Can't find .env file"**
 ```bash
@@ -144,7 +156,7 @@ npm install
 ## Project Structure
 
 ```
-NewsleakMobile/
+spazr-news/  (Repository: NewsleakMobile)
 ├── src/
 │   ├── components/     # Reusable UI
 │   ├── screens/        # App screens

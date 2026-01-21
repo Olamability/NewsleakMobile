@@ -252,3 +252,16 @@ insert into trending_topics (topic, search_count) values
   ('Economic Forum', 850),
   ('AI Developments', 1420)
 on conflict do nothing;
+
+-- =============================================
+-- NOTE: SAMPLE ARTICLES
+-- =============================================
+-- To populate the database with sample news articles for testing,
+-- run the sample-articles.sql file after executing this schema.
+-- 
+-- From Supabase SQL Editor:
+-- 1. First run this schema.sql file
+-- 2. Then run supabase/sample-articles.sql
+--
+-- This will add 20+ sample articles across all categories
+-- so you can test the app immediately without waiting for RSS ingestion.

@@ -134,59 +134,83 @@ CREATE POLICY "Users can delete own bookmarks" ON bookmarks
 
 2. Click "Run" to execute
 
-### Step 5: Add Sample Data (Optional for Testing)
+### Step 5: Add Sample Articles (Required for Testing)
+
+**Important:** Without sample articles, the app will show "No articles found"!
+
+#### Option A: Use the Comprehensive Sample Data (Recommended)
+
+1. In SQL Editor, create a new query
+2. Copy the entire contents of `/supabase/sample-articles.sql` from the repository
+3. Paste and click "Run"
+4. This adds 20+ realistic sample articles across all categories
+
+**What you get:**
+- 20+ articles with realistic content
+- Coverage across all 8 categories
+- 3 breaking news articles
+- Real images from Unsplash
+- Varied published times
+- Ready to display immediately!
+
+#### Option B: Quick Test with Minimal Data
+
+If you just want a few articles to test quickly:
 
 ```sql
--- Insert sample news sources
-INSERT INTO news_sources (name, website_url, logo_url, is_active) VALUES
-('BBC News', 'https://www.bbc.com/news', 'https://via.placeholder.com/100', true),
-('CNN', 'https://www.cnn.com', 'https://via.placeholder.com/100', true),
-('TechCrunch', 'https://techcrunch.com', 'https://via.placeholder.com/100', true);
+-- Note: The schema.sql already seeds categories and news sources
+-- This adds a few quick test articles
 
--- Insert sample news articles
 INSERT INTO news_articles (
+  source_id,
+  category_id,
   title, 
   summary, 
   image_url, 
-  source_name, 
-  source_url, 
-  article_url, 
-  category, 
-  published_at
+  original_url,
+  published_at,
+  is_breaking
 ) VALUES
 (
+  (SELECT id FROM news_sources WHERE name = 'TechCrunch' LIMIT 1),
+  (SELECT id FROM categories WHERE slug = 'technology' LIMIT 1),
   'Breaking: Major Tech Announcement',
   'A major technology company has announced a groundbreaking new product that could change the industry.',
-  'https://via.placeholder.com/800x400',
-  'TechCrunch',
-  'https://techcrunch.com',
+  'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop',
   'https://techcrunch.com/article-1',
-  'technology',
-  NOW() - INTERVAL '2 hours'
+  NOW() - INTERVAL '2 hours',
+  true
 ),
 (
+  (SELECT id FROM news_sources WHERE name = 'ESPN' LIMIT 1),
+  (SELECT id FROM categories WHERE slug = 'sports' LIMIT 1),
   'Sports: Championship Final Results',
   'The championship final concluded with an unexpected winner after an intense match.',
-  'https://via.placeholder.com/800x400',
-  'ESPN',
-  'https://espn.com',
+  'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&h=400&fit=crop',
   'https://espn.com/article-1',
-  'sports',
-  NOW() - INTERVAL '4 hours'
+  NOW() - INTERVAL '4 hours',
+  false
 ),
 (
+  (SELECT id FROM news_sources WHERE name = 'CNN' LIMIT 1),
+  (SELECT id FROM categories WHERE slug = 'business' LIMIT 1),
   'Business: Market Update',
   'Stock markets showed mixed results today as investors react to new economic data.',
-  'https://via.placeholder.com/800x400',
-  'Bloomberg',
-  'https://bloomberg.com',
-  'https://bloomberg.com/article-1',
-  'business',
-  NOW() - INTERVAL '6 hours'
+  'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
+  'https://cnn.com/business/article-1',
+  NOW() - INTERVAL '6 hours',
+  false
 );
 ```
 
+**Verify Articles Were Added:**
+```sql
+SELECT COUNT(*) FROM news_articles;  -- Should return 3 or 20+
+SELECT title, published_at FROM news_articles ORDER BY published_at DESC;
+```
+
 ### Step 6: Configure Authentication
+
 
 1. Go to Authentication > Settings in Supabase dashboard
 2. Enable Email Auth:
@@ -250,9 +274,42 @@ Before deploying to production:
 - Ensure auth.users table exists
 
 ### Data Not Loading
+
+#### "No articles found" Error
+
+**Most Common Cause:** Sample articles not added to database
+
+**Solution:**
+1. Verify tables exist:
+   ```sql
+   SELECT COUNT(*) FROM categories;      -- Should return 8
+   SELECT COUNT(*) FROM news_sources;    -- Should return 5  
+   SELECT COUNT(*) FROM news_articles;   -- Should return 20+ (or 0 if not seeded)
+   ```
+
+2. If `news_articles` returns 0, run `/supabase/sample-articles.sql`
+
+3. Verify articles are visible:
+   ```sql
+   SELECT title, published_at, category_id 
+   FROM news_articles 
+   ORDER BY published_at DESC 
+   LIMIT 5;
+   ```
+
+4. Check RLS policies allow public read access:
+   ```sql
+   SELECT * FROM pg_policies WHERE tablename = 'news_articles';
+   -- Should have policy: FOR SELECT USING (true)
+   ```
+
+**Still not working?** See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for comprehensive troubleshooting steps.
+
+#### Other Data Issues
 - Check if tables are created correctly
 - Verify RLS policies allow public read access for news_articles
 - Check browser/app console for error messages
+- Ensure Supabase project is not paused
 
 ## Support
 
