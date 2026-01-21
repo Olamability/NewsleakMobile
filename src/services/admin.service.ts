@@ -82,10 +82,14 @@ export class AdminService {
         .update({ is_active: isActive })
         .eq('id', sourceId)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         return { error: error.message };
+      }
+
+      if (!data) {
+        return { error: 'Source not found' };
       }
 
       return { data };
