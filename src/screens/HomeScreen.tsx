@@ -9,9 +9,12 @@ import {
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
@@ -19,6 +22,7 @@ import { ErrorState } from '../components/ErrorState';
 import { CategoryPill } from '../components/CategoryPill';
 import { BreakingNewsCard } from '../components/BreakingNewsCard';
 import { SponsoredCard } from '../components/SponsoredCard';
+import { SearchBar } from '../components/SearchBar';
 import { NewsArticle, SponsoredContent } from '../types/news';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import {
@@ -34,6 +38,19 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - SPACING.lg * 2;
 const SPONSORED_INTERVAL = 6;
 
+// Fixed categories for the homepage
+const FIXED_CATEGORIES = [
+  { id: 'following', name: 'Following' },
+  { id: 'for-you', name: 'For you' },
+  { id: 'society', name: 'Society' },
+  { id: 'headline', name: 'Headline' },
+  { id: 'football', name: 'Football' },
+  { id: 'entertainment', name: 'Entertainment' },
+  { id: 'technology', name: 'Technology' },
+  { id: 'business', name: 'Business' },
+  { id: 'health', name: 'Health' },
+];
+
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
 
 interface HomeScreenProps {
@@ -41,10 +58,10 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('following');
   const [currentBreakingIndex, setCurrentBreakingIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: breakingNews, isLoading: breakingLoading } = useBreakingNews();
   const { data: sponsoredContent, isLoading: sponsoredLoading } = useSponsoredContent();
   const { mutate: trackEvent } = useTrackEvent();
@@ -107,6 +124,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setCurrentBreakingIndex(index);
   }, []);
 
+  const handleSearchPress = useCallback(() => {
+    // Navigate to the Search tab in the bottom tab navigator
+    (navigation as any).navigate('Search');
+  }, [navigation]);
+
   if (isLoading && !allArticles.length) {
     return <LoadingSpinner fullScreen />;
   }
@@ -119,6 +141,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header with Logo, Search Bar, and Search Icon */}
+      <View style={styles.header}>
+        <Image
+          source={require('../../assets/icon.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <View style={styles.searchBarContainer}>
+          <SearchBar
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search news..."
+            onFocus={handleSearchPress}
+          />
+        </View>
+        <TouchableOpacity style={styles.searchIconButton} onPress={handleSearchPress}>
+          <Ionicons name="search" size={24} color={COLORS.primary} />
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={feedItems}
         keyExtractor={(item, index) => `${item.type}-${index}`}
@@ -146,29 +188,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         ListHeaderComponent={
           <>
             {/* Categories */}
-            {!categoriesLoading && categories && categories.length > 0 && (
-              <View style={styles.categoriesContainer}>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.categoriesContent}
-                >
+            <View style={styles.categoriesContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.categoriesContent}
+              >
+                {FIXED_CATEGORIES.map((category) => (
                   <CategoryPill
-                    label="All"
-                    isActive={selectedCategory === 'all'}
-                    onPress={() => setSelectedCategory('all')}
+                    key={category.id}
+                    label={category.name}
+                    isActive={selectedCategory === category.id}
+                    onPress={() => setSelectedCategory(category.id)}
                   />
-                  {categories.map((category) => (
-                    <CategoryPill
-                      key={category.id}
-                      label={category.name}
-                      isActive={selectedCategory === category.id}
-                      onPress={() => setSelectedCategory(category.id)}
-                    />
-                  ))}
-                </ScrollView>
-              </View>
-            )}
+                ))}
+              </ScrollView>
+            </View>
 
             {/* Breaking News */}
             {!breakingLoading && breakingNews && breakingNews.length > 0 && (
@@ -240,6 +275,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    backgroundColor: COLORS.background,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    marginRight: SPACING.sm,
+  },
+  searchBarContainer: {
+    flex: 1,
+    marginRight: SPACING.sm,
+  },
+  searchIconButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: COLORS.backgroundSecondary,
   },
   listContent: {
     paddingHorizontal: SPACING.lg,

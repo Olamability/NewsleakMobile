@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,8 +16,11 @@ import * as WebBrowser from 'expo-web-browser';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { timeAgo } from '../lib/helpers';
-import { useArticle, useTrackEvent } from '../lib/queries';
+import { useArticle, useTrackEvent, useNewsFeed } from '../lib/queries';
 import { RootStackParamList } from '../navigation/types';
+import { NewsCard } from '../components/NewsCard';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { NewsArticle } from '../types/news';
 
 type ArticleDetailScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -34,6 +38,21 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
   const { data: article, isLoading, error } = useArticle(articleId);
   const [imageError, setImageError] = useState(false);
   const { mutate: trackEvent } = useTrackEvent();
+
+  // Get related news - using 'all' category to get general news feed
+  const {
+    data: relatedNewsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useNewsFeed('all');
+
+  // Filter out the current article from related news
+  const relatedNews = React.useMemo(() => {
+    if (!relatedNewsData) return [];
+    const allArticles = relatedNewsData.pages.flatMap((page) => page);
+    return allArticles.filter((item) => item.id !== articleId).slice(0, 20);
+  }, [relatedNewsData, articleId]);
 
   useEffect(() => {
     if (article) {
@@ -80,69 +99,105 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
     }
   };
 
+  const handleRelatedArticlePress = (relatedArticle: NewsArticle) => {
+    trackEvent({ eventType: 'article_view', articleId: relatedArticle.id });
+    navigation.push('ArticleDetail', { articleId: relatedArticle.id });
+  };
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header with back button */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.text} />
-          </TouchableOpacity>
-        </View>
+      <FlatList
+        data={relatedNews}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={
+          <>
+            {/* Header with back button */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+              </TouchableOpacity>
+            </View>
 
-        {/* Article Image */}
-        {!imageError && article.image_url ? (
-          <Image
-            source={{ uri: article.image_url }}
-            style={styles.image}
-            resizeMode="cover"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <View style={[styles.image, styles.imagePlaceholder]}>
-            <Ionicons name="newspaper-outline" size={80} color={COLORS.textLight} />
-          </View>
-        )}
-
-        {/* Article Content */}
-        <View style={styles.content}>
-          {/* Source & Time */}
-          <View style={styles.metaContainer}>
-            {article.news_sources && (
-              <View style={styles.sourceRow}>
-                <Text style={styles.sourceName}>{article.news_sources.name}</Text>
-                <Text style={styles.dot}>•</Text>
-                <Text style={styles.publishedTime}>{timeAgo(article.published_at)} ago</Text>
+            {/* Article Image */}
+            {!imageError && article.image_url ? (
+              <Image
+                source={{ uri: article.image_url }}
+                style={styles.image}
+                resizeMode="cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <View style={[styles.image, styles.imagePlaceholder]}>
+                <Ionicons name="newspaper-outline" size={80} color={COLORS.textLight} />
               </View>
             )}
-          </View>
 
-          {/* Title */}
-          <Text style={styles.title}>{article.title}</Text>
+            {/* Article Content */}
+            <View style={styles.content}>
+              {/* Source & Time */}
+              <View style={styles.metaContainer}>
+                {article.news_sources && (
+                  <View style={styles.sourceRow}>
+                    <Text style={styles.sourceName}>{article.news_sources.name}</Text>
+                    <Text style={styles.dot}>•</Text>
+                    <Text style={styles.publishedTime}>{timeAgo(article.published_at)} ago</Text>
+                  </View>
+                )}
+              </View>
 
-          {/* Summary */}
-          {article.summary && <Text style={styles.summary}>{article.summary}</Text>}
+              {/* Title */}
+              <Text style={styles.title}>{article.title}</Text>
 
-          {/* Read Full Story Button */}
-          <View style={styles.actionContainer}>
-            <TouchableOpacity
-              style={styles.readButton}
-              onPress={handleReadFullStory}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.readButtonText}>
-                Read Full Story at {article.news_sources?.name || 'Source'}
-              </Text>
-              <Ionicons
-                name="open-outline"
-                size={20}
-                color={COLORS.background}
-                style={{ marginLeft: 8 }}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
+              {/* Summary */}
+              {article.summary && <Text style={styles.summary}>{article.summary}</Text>}
+
+              {/* Read Full Story Button */}
+              <View style={styles.actionContainer}>
+                <TouchableOpacity
+                  style={styles.readButton}
+                  onPress={handleReadFullStory}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.readButtonText}>
+                    Read Full Story at {article.news_sources?.name || 'Source'}
+                  </Text>
+                  <Ionicons
+                    name="open-outline"
+                    size={20}
+                    color={COLORS.background}
+                    style={{ marginLeft: 8 }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Related News Section Header */}
+            <View style={styles.relatedNewsHeader}>
+              <Text style={styles.relatedNewsTitle}>Read More News</Text>
+            </View>
+          </>
+        }
+        renderItem={({ item }) => (
+          <NewsCard article={item} onPress={() => handleRelatedArticlePress(item)} />
+        )}
+        contentContainerStyle={styles.listContent}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <View style={styles.footer}>
+              <LoadingSpinner size="small" />
+            </View>
+          ) : null
+        }
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   );
 };
@@ -260,5 +315,25 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.md,
     fontWeight: '600',
     color: COLORS.background,
+  },
+  relatedNewsHeader: {
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.xl,
+    paddingBottom: SPACING.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    marginTop: SPACING.lg,
+  },
+  relatedNewsTitle: {
+    fontSize: FONT_SIZES.xl,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  listContent: {
+    paddingHorizontal: SPACING.lg,
+  },
+  footer: {
+    paddingVertical: SPACING.lg,
+    alignItems: 'center',
   },
 });
