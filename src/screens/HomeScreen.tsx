@@ -38,16 +38,18 @@ const CARD_WIDTH = SCREEN_WIDTH - SPACING.lg * 2;
 const SPONSORED_INTERVAL = 6;
 
 // Fixed categories for the homepage
+// Note: 'for-you' and 'all' are special categories that show all articles (unfiltered)
+// Numeric IDs (1-8) correspond to database category IDs for filtered views
 const FIXED_CATEGORIES = [
-  { id: 'all', name: 'Following' },
   { id: 'for-you', name: 'For you' },
-  { id: 'society', name: 'Society' },
-  { id: 'headline', name: 'Headline' },
-  { id: 'football', name: 'Football' },
-  { id: 'entertainment', name: 'Entertainment' },
-  { id: 'technology', name: 'Technology' },
-  { id: 'business', name: 'Business' },
-  { id: 'health', name: 'Health' },
+  { id: 'all', name: 'Following' },
+  { id: '1', name: 'Top Stories' },
+  { id: '4', name: 'Business' },
+  { id: '6', name: 'Technology' },
+  { id: '7', name: 'Entertainment' },
+  { id: '8', name: 'Health' },
+  { id: '5', name: 'Sports' },
+  { id: '3', name: 'Politics' },
 ];
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
@@ -57,7 +59,7 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('for-you');
   const [currentBreakingIndex, setCurrentBreakingIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -124,8 +126,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }, []);
 
   const handleSearchPress = useCallback(() => {
-    // Navigate to the Search tab in the bottom tab navigator
-    (navigation as any).navigate('Search');
+    // Navigate to the Search screen in the stack navigator
+    navigation.navigate('Search');
   }, [navigation]);
 
   if (isLoading && !allArticles.length) {
@@ -140,7 +142,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header with Logo, Search Bar, and Search Icon */}
+      {/* Header with Logo and Search Bar */}
       <View style={styles.header}>
         <Image
           source={require('../../assets/icon.png')}
@@ -155,9 +157,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             onFocus={handleSearchPress}
           />
         </View>
-        <TouchableOpacity style={styles.searchIconButton} onPress={handleSearchPress}>
-          <Ionicons name="search" size={24} color={COLORS.primary} />
-        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -291,15 +290,6 @@ const styles = StyleSheet.create({
   },
   searchBarContainer: {
     flex: 1,
-    marginRight: SPACING.sm,
-  },
-  searchIconButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: COLORS.backgroundSecondary,
   },
   listContent: {
     paddingHorizontal: SPACING.lg,

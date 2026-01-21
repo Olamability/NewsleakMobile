@@ -2,6 +2,7 @@ import { NewsArticle } from '../types/news';
 
 export type RootStackParamList = {
   Main: undefined;
+  Search: undefined;
   ArticleDetail: { articleId: string };
   SignIn: undefined;
   SignUp: undefined;

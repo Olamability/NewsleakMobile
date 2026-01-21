@@ -42,7 +42,7 @@ export const useNewsFeed = (categoryId?: string) => {
         .order('published_at', { ascending: false })
         .range(pageParam * ITEMS_PER_PAGE, (pageParam + 1) * ITEMS_PER_PAGE - 1);
 
-      if (categoryId && categoryId !== 'all') {
+      if (categoryId && categoryId !== 'all' && categoryId !== 'for-you') {
         query = query.eq('category_id', categoryId);
       }
 
