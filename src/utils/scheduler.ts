@@ -4,7 +4,7 @@ interface SchedulerConfig {
   intervalMinutes?: number;
   maxRetries?: number;
   retryDelayMinutes?: number;
-  onSuccess?: (results: any[]) => void;
+  onSuccess?: (results: Array<{ success: boolean }>) => void;
   onError?: (error: Error) => void;
 }
 
@@ -34,7 +34,7 @@ export class IngestionScheduler {
       return;
     }
 
-    console.log(`Starting ingestion scheduler (interval: ${this.config.intervalMinutes} minutes)`);
+    console.warn(`Starting ingestion scheduler (interval: ${this.config.intervalMinutes} minutes)`);
     this.isRunning = true;
 
     // Run immediately on start
@@ -56,7 +56,7 @@ export class IngestionScheduler {
       return;
     }
 
-    console.log('Stopping ingestion scheduler');
+    console.warn('Stopping ingestion scheduler');
     this.isRunning = false;
 
     if (this.intervalId) {
@@ -84,7 +84,7 @@ export class IngestionScheduler {
    */
   private async runIngestion(retryCount: number = 0): Promise<void> {
     try {
-      console.log(`\n[${new Date().toISOString()}] Running scheduled ingestion...`);
+      console.warn(`\n[${new Date().toISOString()}] Running scheduled ingestion...`);
       const results = await this.ingestionService.ingestFromAllSources();
 
       // Check if any ingestions failed
@@ -111,7 +111,7 @@ export class IngestionScheduler {
 
       // Retry on error
       if (retryCount < this.config.maxRetries) {
-        console.log(`Retrying in ${this.config.retryDelayMinutes} minutes...`);
+        console.warn(`Retrying in ${this.config.retryDelayMinutes} minutes...`);
         setTimeout(
           () => {
             this.runIngestion(retryCount + 1);
@@ -149,7 +149,7 @@ export class IngestionScheduler {
    * Trigger manual ingestion (doesn't affect schedule)
    */
   async triggerManual(): Promise<void> {
-    console.log('Triggering manual ingestion...');
+    console.warn('Triggering manual ingestion...');
     await this.runIngestion();
   }
 }
@@ -165,10 +165,10 @@ export function createDefaultScheduler(): IngestionScheduler {
     onSuccess: (results) => {
       const summary = {
         total: results.length,
-        successful: results.filter((r: any) => r.success).length,
-        failed: results.filter((r: any) => !r.success).length,
+        successful: results.filter((r: { success: boolean }) => r.success).length,
+        failed: results.filter((r: { success: boolean }) => !r.success).length,
       };
-      console.log('Ingestion completed:', summary);
+      console.warn('Ingestion completed:', summary);
     },
     onError: (error) => {
       console.error('Ingestion scheduler error:', error);

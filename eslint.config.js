@@ -19,6 +19,8 @@ module.exports = [
       'metro.config.js',
       'eslint.config.js',
       '.prettierrc.js',
+      'supabase/**',
+      'patches/**',
     ],
   },
   {

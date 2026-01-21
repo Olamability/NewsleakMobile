@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { View, FlatList, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, FlatList, StyleSheet, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SearchBar } from '../components/SearchBar';
@@ -38,14 +38,15 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   const { mutate: deleteSearch } = useDeleteSearch();
   const { mutate: trackEvent } = useTrackEvent();
 
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      setActiveQuery(query);
-      if (query.length >= 2) {
-        saveSearch({ query });
-      }
-    }, 500),
-    []
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query: string) => {
+        setActiveQuery(query);
+        if (query.length >= 2) {
+          saveSearch({ query });
+        }
+      }, 500),
+    [saveSearch]
   );
 
   const handleSearchChange = (text: string) => {

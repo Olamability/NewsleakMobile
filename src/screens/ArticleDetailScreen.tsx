@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   Image,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
@@ -58,7 +57,7 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
       .slice(0, 20);
   }, [relatedNewsData, articleId]);
 
-  useEffect(() => {
+  const trackArticleView = useCallback(() => {
     if (article) {
       trackEvent({
         eventType: 'article_view',
@@ -66,7 +65,11 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
         metadata: { source: article.news_sources?.name },
       });
     }
-  }, [article?.id]);
+  }, [article, trackEvent]);
+
+  useEffect(() => {
+    trackArticleView();
+  }, [trackArticleView]);
 
   if (isLoading) {
     return (

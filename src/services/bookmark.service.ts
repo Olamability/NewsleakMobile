@@ -42,8 +42,8 @@ export class BookmarkService {
       }
 
       return { data, message: 'Article bookmarked successfully' };
-    } catch (error: any) {
-      return { error: error.message || 'Failed to add bookmark' };
+    } catch (_error) {
+      return { error: (_error as Error).message || 'Failed to add bookmark' };
     }
   }
 
@@ -71,8 +71,8 @@ export class BookmarkService {
       }
 
       return { data: null, message: 'Bookmark removed successfully' };
-    } catch (error: any) {
-      return { error: error.message || 'Failed to remove bookmark' };
+    } catch (_error) {
+      return { error: (_error as Error).message || 'Failed to remove bookmark' };
     }
   }
 
@@ -94,7 +94,10 @@ export class BookmarkService {
         .select(
           `
           *,
-          article:news_articles(*)
+          article:news_articles(
+            *,
+            news_sources(*)
+          )
         `
         )
         .eq('user_id', user.id)
@@ -104,10 +107,10 @@ export class BookmarkService {
         throw error;
       }
 
-      // Extract articles from bookmarks
-      return (data || []).map((bookmark: any) => bookmark.article).filter(Boolean);
-    } catch (error: any) {
-      console.error('Error fetching bookmarks:', error);
+      // Extract articles from bookmarks and cast to NewsArticle
+      return (data || []).map((bookmark: any) => bookmark.article).filter(Boolean) as NewsArticle[];
+    } catch (_error) {
+      console.error('Error fetching bookmarks:', _error);
       return [];
     }
   }
@@ -133,7 +136,7 @@ export class BookmarkService {
         .single();
 
       return !error && !!data;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -161,8 +164,8 @@ export class BookmarkService {
       }
 
       return count || 0;
-    } catch (error: any) {
-      console.error('Error getting bookmark count:', error);
+    } catch (_error) {
+      console.error('Error getting bookmark count:', _error);
       return 0;
     }
   }

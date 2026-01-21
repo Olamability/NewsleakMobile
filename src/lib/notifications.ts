@@ -20,8 +20,8 @@ export async function registerForPushNotificationsAsync() {
   if (isExpoGo) {
     console.warn(
       'Push notifications are not supported in Expo Go. ' +
-      'To use push notifications, create a development build. ' +
-      'Learn more: https://docs.expo.dev/develop/development-builds/introduction/'
+        'To use push notifications, create a development build. ' +
+        'Learn more: https://docs.expo.dev/develop/development-builds/introduction/'
     );
     return;
   }
@@ -47,7 +47,7 @@ export async function registerForPushNotificationsAsync() {
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Failed to get push token for push notification!');
+      console.warn('Failed to get push token for push notification!');
       return;
     }
 
@@ -75,7 +75,7 @@ async function saveTokenToDatabase(token: string) {
       [
         {
           expo_push_token: token,
-          platform: Platform.OS as 'ios' | 'android' | 'windows' | 'macos' | 'web',
+          platform: Platform.OS,
           is_active: true,
         },
       ] as any,

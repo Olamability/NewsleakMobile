@@ -36,8 +36,8 @@ export class OfflineService {
       await this.cleanupCache();
 
       return true;
-    } catch (error) {
-      console.error('Error caching article:', error);
+    } catch (_error) {
+      console.error('Error caching article:', _error);
       return false;
     }
   }
@@ -59,8 +59,8 @@ export class OfflineService {
       }
 
       return article;
-    } catch (error) {
-      console.error('Error getting cached article:', error);
+    } catch (_error) {
+      console.error('Error getting cached article:', _error);
       return null;
     }
   }
@@ -72,8 +72,8 @@ export class OfflineService {
     try {
       await AsyncStorage.removeItem(`${CACHE_PREFIX}${articleId}`);
       await this.updateCacheIndex(articleId, 'remove');
-    } catch (error) {
-      console.error('Error removing cached article:', error);
+    } catch (_error) {
+      console.error('Error removing cached article:', _error);
     }
   }
 
@@ -96,8 +96,8 @@ export class OfflineService {
       }
 
       return articles;
-    } catch (error) {
-      console.error('Error getting all cached articles:', error);
+    } catch (_error) {
+      console.error('Error getting all cached articles:', _error);
       return [];
     }
   }
@@ -109,7 +109,7 @@ export class OfflineService {
     try {
       const article = await this.getCachedArticle(articleId);
       return article !== null;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -134,8 +134,8 @@ export class OfflineService {
       }
 
       await AsyncStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(index));
-    } catch (error) {
-      console.error('Error updating cache index:', error);
+    } catch (_error) {
+      console.error('Error updating cache index:', _error);
     }
   }
 
@@ -193,8 +193,8 @@ export class OfflineService {
           }
         }
       }
-    } catch (error) {
-      console.error('Error cleaning up cache:', error);
+    } catch (_error) {
+      console.error('Error cleaning up cache:', _error);
     }
   }
 
@@ -213,8 +213,8 @@ export class OfflineService {
       }
 
       await AsyncStorage.removeItem(CACHE_INDEX_KEY);
-    } catch (error) {
-      console.error('Error clearing cache:', error);
+    } catch (_error) {
+      console.error('Error clearing cache:', _error);
     }
   }
 
@@ -237,8 +237,8 @@ export class OfflineService {
       }
 
       return totalSize;
-    } catch (error) {
-      console.error('Error getting cache size:', error);
+    } catch (_error) {
+      console.error('Error getting cache size:', _error);
       return 0;
     }
   }
@@ -277,8 +277,8 @@ export class OfflineService {
         oldestCachedAt: sortedArticles[0].cached_at,
         newestCachedAt: sortedArticles[sortedArticles.length - 1].cached_at,
       };
-    } catch (error) {
-      console.error('Error getting cache stats:', error);
+    } catch (_error) {
+      console.error('Error getting cache stats:', _error);
       return {
         totalArticles: 0,
         totalSizeBytes: 0,

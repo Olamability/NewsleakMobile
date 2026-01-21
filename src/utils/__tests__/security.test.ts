@@ -115,7 +115,7 @@ describe('Security Utils', () => {
 
     it('should pass arguments to throttled function', () => {
       let lastArg: any;
-      const throttled = throttle((arg: string) => {
+      const throttled = throttle((arg: unknown) => {
         lastArg = arg;
       }, 100);
 
@@ -145,7 +145,7 @@ describe('Security Utils', () => {
 
     it('should pass arguments to debounced function', (done) => {
       let lastArg: any;
-      const debounced = debounce((arg: string) => {
+      const debounced = debounce((arg: unknown) => {
         lastArg = arg;
       }, 100);
 

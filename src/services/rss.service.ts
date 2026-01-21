@@ -81,39 +81,41 @@ export class RSSService {
   /**
    * Normalize feed items to RawArticle format
    */
-  private normalizeFeedItems(items: any[]): RawArticle[] {
+  private normalizeFeedItems(items: unknown[]): RawArticle[] {
     return items.map((item) => this.normalizeItem(item)).filter((item) => item !== null);
   }
 
   /**
    * Normalize a single feed item
    */
-  private normalizeItem(item: any): RawArticle | null {
+  private normalizeItem(item: unknown): RawArticle | null {
     try {
+      const itemObj = item as Record<string, unknown>;
+
       // Extract title (required)
-      const title = this.extractTitle(item);
+      const title = this.extractTitle(itemObj);
       if (!title) {
         console.warn('Skipping item without title');
         return null;
       }
 
       // Extract link (required)
-      const link = this.extractLink(item);
+      const link = this.extractLink(itemObj);
       if (!link) {
         console.warn('Skipping item without link:', title);
         return null;
       }
 
       // Extract other fields
-      const description = this.extractDescription(item);
-      const pubDate = this.extractPubDate(item);
-      const creator = this.extractCreator(item);
-      const content = this.extractContent(item);
-      const contentSnippet = this.extractContentSnippet(item);
-      const guid = this.extractGuid(item);
-      const categories = this.extractCategories(item);
-      const isoDate = this.extractIsoDate(item);
-      const enclosure = this.extractEnclosure(item);
+      const description = this.extractDescription(itemObj);
+      const pubDate = this.extractPubDate(itemObj);
+      const creator = this.extractCreator(itemObj);
+      const content = this.extractContent(itemObj);
+      const contentSnippet = this.extractContentSnippet(itemObj);
+      const guid = this.extractGuid(itemObj);
+      const categories = this.extractCategories(itemObj);
+      const isoDate = this.extractIsoDate(itemObj);
+      const enclosure = this.extractEnclosure(itemObj);
 
       return {
         title,
@@ -137,20 +139,22 @@ export class RSSService {
   /**
    * Extract title from various formats
    */
-  private extractTitle(item: any): string | null {
-    return item.title?.trim() || item['rss:title']?.trim() || null;
+  private extractTitle(item: Record<string, unknown>): string | null {
+    const title = item.title || item['rss:title'];
+    return typeof title === 'string' ? title.trim() : null;
   }
 
   /**
    * Extract link from various formats
    */
-  private extractLink(item: any): string | null {
+  private extractLink(item: Record<string, unknown>): string | null {
     const link = item.link || item.guid || item.id;
     if (!link) return null;
 
     // Handle link objects
-    if (typeof link === 'object') {
-      return link.$ || link.href || null;
+    if (typeof link === 'object' && link !== null) {
+      const linkObj = link as Record<string, unknown>;
+      return (linkObj.$ as string) || (linkObj.href as string) || null;
     }
 
     return typeof link === 'string' ? link.trim() : null;
@@ -159,71 +163,65 @@ export class RSSService {
   /**
    * Extract description
    */
-  private extractDescription(item: any): string | null {
-    return (
-      item.description?.trim() ||
-      item.summary?.trim() ||
-      item['rss:description']?.trim() ||
-      item.contentSnippet?.trim() ||
-      null
-    );
+  private extractDescription(item: Record<string, unknown>): string | null {
+    const desc = item.description || item.summary || item['rss:description'] || item.contentSnippet;
+    return typeof desc === 'string' ? desc.trim() : null;
   }
 
   /**
    * Extract publication date
    */
-  private extractPubDate(item: any): string | null {
-    return (
+  private extractPubDate(item: Record<string, unknown>): string | null {
+    const date =
       item.pubDate ||
       item.published ||
       item.updated ||
       item.isoDate ||
       item['dc:date'] ||
-      item.date ||
-      null
-    );
+      item.date;
+    return typeof date === 'string' ? date : null;
   }
 
   /**
    * Extract creator/author
    */
-  private extractCreator(item: any): string | null {
-    return (
-      item.creator ||
-      item.author ||
-      item['dc:creator'] ||
-      item['itunes:author'] ||
-      (typeof item.creator === 'object' ? item.creator.name : null) ||
-      null
-    );
+  private extractCreator(item: Record<string, unknown>): string | null {
+    const creator = item.creator || item.author || item['dc:creator'] || item['itunes:author'];
+    if (typeof creator === 'string') return creator;
+    if (typeof creator === 'object' && creator !== null) {
+      return ((creator as Record<string, unknown>).name as string) || null;
+    }
+    return null;
   }
 
   /**
    * Extract full content
    */
-  private extractContent(item: any): string | null {
-    return (
-      item.content || item['content:encoded'] || item['atom:content'] || item.description || null
-    );
+  private extractContent(item: Record<string, unknown>): string | null {
+    const content =
+      item.content || item['content:encoded'] || item['atom:content'] || item.description;
+    return typeof content === 'string' ? content : null;
   }
 
   /**
    * Extract content snippet
    */
-  private extractContentSnippet(item: any): string | null {
-    return item.contentSnippet || item.summary || null;
+  private extractContentSnippet(item: Record<string, unknown>): string | null {
+    const snippet = item.contentSnippet || item.summary;
+    return typeof snippet === 'string' ? snippet : null;
   }
 
   /**
    * Extract GUID
    */
-  private extractGuid(item: any): string | null {
+  private extractGuid(item: Record<string, unknown>): string | null {
     const guid = item.guid || item.id;
     if (!guid) return null;
 
     // Handle guid objects
-    if (typeof guid === 'object') {
-      return guid._ || guid.value || null;
+    if (typeof guid === 'object' && guid !== null) {
+      const guidObj = guid as Record<string, unknown>;
+      return (guidObj._ as string) || (guidObj.value as string) || null;
     }
 
     return typeof guid === 'string' ? guid.trim() : null;
@@ -232,11 +230,11 @@ export class RSSService {
   /**
    * Extract categories
    */
-  private extractCategories(item: any): string[] {
+  private extractCategories(item: Record<string, unknown>): string[] {
     const categories: string[] = [];
 
     if (Array.isArray(item.categories)) {
-      categories.push(...item.categories.filter((c: any) => typeof c === 'string'));
+      categories.push(...item.categories.filter((c: unknown) => typeof c === 'string'));
     } else if (item.category) {
       if (Array.isArray(item.category)) {
         categories.push(...item.category);
@@ -251,14 +249,15 @@ export class RSSService {
   /**
    * Extract ISO date
    */
-  private extractIsoDate(item: any): string | null {
-    return item.isoDate || null;
+  private extractIsoDate(item: Record<string, unknown>): string | null {
+    const date = item.isoDate;
+    return typeof date === 'string' ? date : null;
   }
 
   /**
    * Extract enclosure (media attachments)
    */
-  private extractEnclosure(item: any): RawArticle['enclosure'] {
+  private extractEnclosure(item: Record<string, unknown>): RawArticle['enclosure'] {
     const enclosure = item.enclosure || item['media:content'] || item['media:thumbnail'];
 
     if (!enclosure) return undefined;
@@ -275,13 +274,14 @@ export class RSSService {
   /**
    * Normalize enclosure object
    */
-  private normalizeEnclosure(enclosure: any): RawArticle['enclosure'] {
-    if (!enclosure) return undefined;
+  private normalizeEnclosure(enclosure: unknown): RawArticle['enclosure'] {
+    if (!enclosure || typeof enclosure !== 'object') return undefined;
 
+    const enc = enclosure as Record<string, unknown>;
     return {
-      url: enclosure.url || enclosure.$ || enclosure.href || undefined,
-      type: enclosure.type || enclosure.medium || undefined,
-      length: enclosure.length || undefined,
+      url: (enc.url as string) || (enc.$ as string) || (enc.href as string) || undefined,
+      type: (enc.type as string) || (enc.medium as string) || undefined,
+      length: (enc.length as string) || undefined,
     };
   }
 

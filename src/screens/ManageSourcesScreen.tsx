@@ -18,10 +18,10 @@ import { NewsSource } from '../types';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 
 interface ManageSourcesScreenProps {
-  navigation: any;
+  navigation: unknown;
 }
 
-export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = ({ navigation }) => {
+export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = () => {
   const [sources, setSources] = useState<NewsSource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);

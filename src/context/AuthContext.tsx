@@ -71,8 +71,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(response.data);
       }
       return {};
-    } catch (error: any) {
-      return { error: error.message || 'Sign in failed' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Sign in failed' };
     }
   };
 
@@ -86,8 +87,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(response.data);
       }
       return {};
-    } catch (error: any) {
-      return { error: error.message || 'Sign up failed' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Sign up failed' };
     }
   };
 

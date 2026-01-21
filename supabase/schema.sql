@@ -37,11 +37,22 @@ create table if not exists news_articles (
   source_id uuid references news_sources(id) on delete cascade,
   category_id uuid references categories(id),
   title text not null,
+  slug text,
   summary text not null,
+  content_snippet text,
   image_url text,
+  article_url text,
   original_url text unique not null,
+  source_name text,
+  source_url text,
+  category text,
+  tags text[],
+  language text,
   published_at timestamp with time zone,
+  content_hash text unique,
+  view_count integer default 0,
   is_breaking boolean default false,
+  is_featured boolean default false,
   is_sponsored boolean default false,
   quality_score numeric default 1.0,
   created_at timestamp with time zone default now()
@@ -191,8 +202,10 @@ create table if not exists ingestion_logs (
 -- =============================================
 create index if not exists idx_news_articles_published_at on news_articles(published_at desc);
 create index if not exists idx_news_articles_category_id on news_articles(category_id);
+create index if not exists idx_news_articles_category on news_articles(category);
 create index if not exists idx_news_articles_source_id on news_articles(source_id);
 create index if not exists idx_news_articles_is_breaking on news_articles(is_breaking) where is_breaking = true;
+create index if not exists idx_news_articles_content_hash on news_articles(content_hash);
 create index if not exists idx_analytics_events_created_at on analytics_events(created_at desc);
 create index if not exists idx_analytics_events_article_id on analytics_events(article_id);
 create index if not exists idx_ingestion_logs_created_at on ingestion_logs(created_at desc);

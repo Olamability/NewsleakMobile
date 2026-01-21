@@ -24,7 +24,9 @@ interface Notification {
   read: boolean;
 }
 
-export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation }) => {
+export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
+  navigation: _navigation,
+}) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -50,7 +52,7 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ naviga
         // navigation.navigate('ArticleDetail', { article });
       }
     },
-    [navigation, trackEvent]
+    [trackEvent]
   );
 
   if (isLoading && notifications.length === 0) {
