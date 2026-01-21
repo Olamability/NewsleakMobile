@@ -39,9 +39,10 @@ export class AdminService {
       if (!websiteUrl && rssUrl) {
         try {
           const url = new URL(rssUrl);
+          // Use the base domain as website URL (e.g., https://example.com)
           finalWebsiteUrl = `${url.protocol}//${url.host}`;
         } catch {
-          // If URL parsing fails, just use the rss URL as fallback
+          // Last resort: use RSS URL itself (not ideal but prevents empty field)
           finalWebsiteUrl = rssUrl;
         }
       }
@@ -51,7 +52,7 @@ export class AdminService {
         .insert({
           name,
           rss_url: rssUrl,
-          website_url: finalWebsiteUrl || rssUrl,
+          website_url: finalWebsiteUrl!,
           is_active: true,
         })
         .select()
