@@ -3,7 +3,7 @@
 ## Date: 2026-01-20
 
 ## Problem Summary
-User reported that the NewsleakMobile app was displaying "No articles found" even though Supabase was configured. They also asked how to access the admin dashboard and add new sources.
+User reported that the Spazr News app was displaying "No articles found" even though Supabase was configured. They also asked how to access the admin dashboard and add new sources.
 
 ## Root Cause Analysis
 After exploring the codebase, I identified that:

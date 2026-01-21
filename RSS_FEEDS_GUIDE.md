@@ -2,7 +2,7 @@
 
 ## Overview
 
-The NewsleakMobile app has a complete RSS aggregation system that can automatically fetch news articles from any RSS or Atom feed. This guide shows you how to add new RSS feeds from different news sites.
+The Spazr News app has a complete RSS aggregation system that can automatically fetch news articles from any RSS or Atom feed. This guide shows you how to add new RSS feeds from different news sites.
 
 ## Table of Contents
 - [Quick Start](#quick-start)

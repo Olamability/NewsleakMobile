@@ -108,7 +108,7 @@ src/
 1. **Clone the repository**
 ```bash
 git clone https://github.com/Olamability/NewsleakMobile.git
-cd NewsleakMobile
+cd NewsleakMobile  # Project root (repository name unchanged)
 ```
 
 2. **Install dependencies**

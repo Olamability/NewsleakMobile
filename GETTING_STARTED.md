@@ -14,7 +14,7 @@ This guide will help you get the app running with sample data in under 10 minute
 
 ```bash
 git clone https://github.com/Olamability/NewsleakMobile.git
-cd NewsleakMobile
+cd NewsleakMobile  # Project root (repository name unchanged)
 npm install
 ```
 
@@ -280,7 +280,7 @@ npm run lint:fix  # Auto-fix issues
 ## Project Structure
 
 ```
-NewsleakMobile/
+spazr-news/  (Repository: NewsleakMobile)
 ├── supabase/
 │   ├── schema.sql           # Database schema + seeds
 │   └── sample-articles.sql  # Sample articles for testing

@@ -15,7 +15,7 @@ Get up and running with Spazr News Aggregator in 5 minutes!
 ```bash
 # Clone the repository
 git clone https://github.com/Olamability/NewsleakMobile.git
-cd NewsleakMobile
+cd NewsleakMobile  # Project root (repository name unchanged)
 
 # Run automated setup
 ./setup.sh
@@ -156,7 +156,7 @@ npm install
 ## Project Structure
 
 ```
-NewsleakMobile/
+spazr-news/  (Repository: NewsleakMobile)
 ├── src/
 │   ├── components/     # Reusable UI
 │   ├── screens/        # App screens

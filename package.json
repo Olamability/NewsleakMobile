@@ -1,7 +1,7 @@
 {
-  "name": "news-arena",
+  "name": "spazr-news",
   "version": "1.0.0",
-  "description": "A modern news aggregator mobile app built with React Native Expo and Supabase",
+  "description": "Spazr News - A modern news aggregator mobile app built with React Native Expo and Supabase",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
@@ -25,6 +25,7 @@
     "expo",
     "news",
     "aggregator",
+    "spazr",
     "supabase",
     "mobile",
     "typescript"

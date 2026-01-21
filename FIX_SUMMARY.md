@@ -2,7 +2,7 @@
 
 ## Problem Resolved
 
-Your NewsleakMobile app was showing "No articles found" because the database had no news articles to display, even though the tables and structure were set up correctly.
+Your Spazr News app was showing "No articles found" because the database had no news articles to display, even though the tables and structure were set up correctly.
 
 ## What Was Fixed
 
