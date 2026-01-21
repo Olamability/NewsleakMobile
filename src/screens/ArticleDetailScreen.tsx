@@ -47,11 +47,15 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
     isFetchingNextPage,
   } = useNewsFeed('all');
 
-  // Filter out the current article from related news
+  // Filter out the current article from related news and optimize performance
   const relatedNews = React.useMemo(() => {
     if (!relatedNewsData) return [];
     const allArticles = relatedNewsData.pages.flatMap((page) => page);
-    return allArticles.filter((item) => item.id !== articleId).slice(0, 20);
+    // Limit to first 50 articles, then filter out current article, then take 20
+    return allArticles
+      .slice(0, 50)
+      .filter((item) => item.id !== articleId)
+      .slice(0, 20);
   }, [relatedNewsData, articleId]);
 
   useEffect(() => {

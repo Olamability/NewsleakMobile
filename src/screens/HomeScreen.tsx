@@ -26,7 +26,6 @@ import { SearchBar } from '../components/SearchBar';
 import { NewsArticle, SponsoredContent } from '../types/news';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import {
-  useCategories,
   useNewsFeed,
   useBreakingNews,
   useSponsoredContent,
@@ -40,7 +39,7 @@ const SPONSORED_INTERVAL = 6;
 
 // Fixed categories for the homepage
 const FIXED_CATEGORIES = [
-  { id: 'following', name: 'Following' },
+  { id: 'all', name: 'Following' },
   { id: 'for-you', name: 'For you' },
   { id: 'society', name: 'Society' },
   { id: 'headline', name: 'Headline' },
@@ -58,7 +57,7 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('following');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [currentBreakingIndex, setCurrentBreakingIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
