@@ -38,6 +38,8 @@ const CARD_WIDTH = SCREEN_WIDTH - SPACING.lg * 2;
 const SPONSORED_INTERVAL = 6;
 
 // Fixed categories for the homepage
+// Note: 'for-you' and 'all' are special categories that show all articles (unfiltered)
+// Numeric IDs (1-8) correspond to database category IDs for filtered views
 const FIXED_CATEGORIES = [
   { id: 'for-you', name: 'For you' },
   { id: 'all', name: 'Following' },
@@ -124,8 +126,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }, []);
 
   const handleSearchPress = useCallback(() => {
-    // Navigate to the Search tab in the bottom tab navigator
-    (navigation as any).navigate('Search');
+    // Navigate to the Search screen in the stack navigator
+    navigation.navigate('Search');
   }, [navigation]);
 
   if (isLoading && !allArticles.length) {
