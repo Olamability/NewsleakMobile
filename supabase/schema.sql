@@ -321,6 +321,19 @@ begin
       coalesce(raw_user_meta_data, '{}'::jsonb) || 
       jsonb_build_object('is_admin', true)
     where id = NEW.id;
+    return NEW;
+  end if;
+  
+  -- When an admin user's role is updated, metadata stays true (still admin)
+  -- But we could add role-specific metadata here if needed
+  if (TG_OP = 'UPDATE') then
+    -- Ensure is_admin remains true in metadata
+    update auth.users
+    set raw_user_meta_data = 
+      coalesce(raw_user_meta_data, '{}'::jsonb) || 
+      jsonb_build_object('is_admin', true)
+    where id = NEW.id;
+    return NEW;
   end if;
   
   -- When an admin user is deleted, update auth metadata
@@ -330,16 +343,17 @@ begin
       coalesce(raw_user_meta_data, '{}'::jsonb) || 
       jsonb_build_object('is_admin', false)
     where id = OLD.id;
+    return OLD;
   end if;
   
-  return coalesce(NEW, OLD);
+  return null;
 end;
 $$ language plpgsql security definer;
 
 -- Create trigger to automatically sync admin status
 drop trigger if exists sync_admin_metadata_trigger on admin_users;
 create trigger sync_admin_metadata_trigger
-  after insert or delete on admin_users
+  after insert or update or delete on admin_users
   for each row
   execute function sync_admin_metadata();
 

@@ -1,4 +1,5 @@
-import { AdminRoleService, AdminRole } from '../admin-role.service';
+import { AdminRoleService } from '../admin-role.service';
+import { AdminRole } from '../../types';
 import { supabase } from '../supabase';
 
 // Mock the supabase client
