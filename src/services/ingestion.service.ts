@@ -254,9 +254,11 @@ export class IngestionService {
         return 0;
       }
 
-      // When ignoreDuplicates is true, we can't determine the exact count of inserted records
-      // Return the number of articles we attempted to store
-      // The calling code already filters out duplicates by content_hash before calling this method
+      // Note: When ignoreDuplicates is true, Supabase doesn't return the count of actually inserted records
+      // We return the number of articles we attempted to store as an approximation
+      // Duplicate detection happens at two levels:
+      // 1. Content hash filtering (done before calling this method)
+      // 2. Original URL conflict handling (done by the database via upsert)
       return articles.length;
     } catch (error) {
       console.error('Error in storeArticles:', error);
