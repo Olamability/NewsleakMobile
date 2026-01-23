@@ -264,7 +264,7 @@ describe('IngestionService', () => {
           content_snippet: 'Test snippet',
           image_url: 'https://example.com/image.jpg',
           article_url: 'https://example.com/article',
-          original_url: 'https://example.com/article',
+          canonical_url: 'https://example.com/article',
           source_name: 'Test Source',
           source_url: 'https://example.com',
           category: 'Technology',
@@ -272,6 +272,7 @@ describe('IngestionService', () => {
           language: 'en',
           published_at: '2024-01-01T00:00:00Z',
           content_hash: 'hash123',
+          status: 'pending_approval' as const,
         },
       ];
 
@@ -291,6 +292,7 @@ describe('IngestionService', () => {
       expect(mockUpsert).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
+            // Should use canonical_url as original_url for better duplicate detection
             original_url: 'https://example.com/article',
           }),
         ]),
