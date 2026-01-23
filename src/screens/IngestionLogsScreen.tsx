@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -8,34 +8,37 @@ import { IngestionService } from '../services/ingestion.service';
 import { IngestionLog } from '../types';
 
 interface IngestionLogsScreenProps {
-  navigation: any;
+  navigation: unknown;
 }
 
-export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = ({ navigation }) => {
+export const IngestionLogsScreen: React.FC<IngestionLogsScreenProps> = () => {
   const [logs, setLogs] = useState<IngestionLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const ingestionService = new IngestionService();
+  const ingestionService = useMemo(() => new IngestionService(), []);
+
+  const loadLogs = useCallback(
+    async (isRefresh: boolean = false) => {
+      try {
+        if (!isRefresh) {
+          setIsLoading(true);
+        }
+
+        const fetchedLogs = await ingestionService.getIngestionLogs(50);
+        setLogs(fetchedLogs);
+      } catch (error) {
+        console.error('Error loading logs:', error);
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [ingestionService]
+  );
 
   useEffect(() => {
     loadLogs();
-  }, []);
-
-  const loadLogs = async (isRefresh: boolean = false) => {
-    try {
-      if (!isRefresh) {
-        setIsLoading(true);
-      }
-
-      const fetchedLogs = await ingestionService.getIngestionLogs(50);
-      setLogs(fetchedLogs);
-    } catch (error) {
-      console.error('Error loading logs:', error);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
+  }, [loadLogs]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, FlatList, RefreshControl, StyleSheet, Text } from 'react-native';
+import { View, FlatList, RefreshControl, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
@@ -8,13 +10,14 @@ import { ErrorState } from '../components/ErrorState';
 import { NewsService } from '../services/news.service';
 import { BookmarkService } from '../services/bookmark.service';
 import { NewsArticle } from '../types';
-import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
+import { COLORS, SPACING } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 import { getCategoryBySlug } from '../constants/categories';
+import { RootStackParamList } from '../navigation/types';
 
 interface CategoryFeedScreenProps {
-  route: any;
-  navigation: any;
+  route: RouteProp<RootStackParamList, 'CategoryFeed'>;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({ route, navigation }) => {
@@ -31,38 +34,42 @@ export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({ route, n
 
   const categoryData = getCategoryBySlug(category);
 
+  const loadArticles = useCallback(
+    async (pageNum: number = 1, isRefresh: boolean = false) => {
+      try {
+        if (pageNum === 1 && !isRefresh) {
+          setIsLoading(true);
+        }
+        setError(null);
+
+        const response = await NewsService.getArticles(pageNum, 20, category);
+
+        if (pageNum === 1) {
+          setArticles(response.data);
+        } else {
+          setArticles((prev) => [...prev, ...response.data]);
+        }
+
+        setHasMore(response.hasMore);
+        setPage(pageNum);
+      } catch (err) {
+        const error = err as Error;
+        setError(error.message || 'Failed to load articles');
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [category]
+  );
+
   useEffect(() => {
     loadArticles();
     if (isAuthenticated) {
       loadBookmarks();
     }
-  }, [category, isAuthenticated]);
-
-  const loadArticles = async (pageNum: number = 1, isRefresh: boolean = false) => {
-    try {
-      if (pageNum === 1 && !isRefresh) {
-        setIsLoading(true);
-      }
-      setError(null);
-
-      const response = await NewsService.getArticles(pageNum, 20, category);
-
-      if (pageNum === 1) {
-        setArticles(response.data);
-      } else {
-        setArticles((prev) => [...prev, ...response.data]);
-      }
-
-      setHasMore(response.hasMore);
-      setPage(pageNum);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load articles');
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-      setIsLoadingMore(false);
-    }
-  };
+  }, [loadArticles, isAuthenticated]);
 
   const loadBookmarks = async () => {
     try {
@@ -77,17 +84,17 @@ export const CategoryFeedScreen: React.FC<CategoryFeedScreenProps> = ({ route, n
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
     loadArticles(1, true);
-  }, [category]);
+  }, [loadArticles]);
 
   const handleLoadMore = useCallback(() => {
     if (!isLoadingMore && hasMore && !isLoading) {
       setIsLoadingMore(true);
       loadArticles(page + 1);
     }
-  }, [isLoadingMore, hasMore, isLoading, page]);
+  }, [isLoadingMore, hasMore, isLoading, page, loadArticles]);
 
   const handleArticlePress = (article: NewsArticle) => {
-    navigation.navigate('ArticleDetail', { article });
+    navigation.navigate('ArticleDetail', { articleId: article.id });
   };
 
   const handleBookmarkPress = async (article: NewsArticle) => {

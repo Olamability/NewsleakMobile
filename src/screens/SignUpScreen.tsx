@@ -10,14 +10,16 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import { validateEmail, validatePassword, validateName } from '../utils/validation';
+import { RootStackParamList } from '../navigation/types';
 
 interface SignUpScreenProps {
-  navigation: any;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {

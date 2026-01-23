@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CATEGORIES } from '../constants/categories';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
+import { RootStackParamList } from '../navigation/types';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - SPACING.md * 3) / 2;
 
 interface CategoryListScreenProps {
-  navigation: any;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({ navigation }) => {
@@ -16,7 +18,11 @@ export const CategoryListScreen: React.FC<CategoryListScreenProps> = ({ navigati
     navigation.navigate('CategoryFeed', { category: slug, categoryName: name });
   };
 
-  const renderItem = ({ item }: any) => (
+  const renderItem = ({
+    item,
+  }: {
+    item: { slug: string; name: string; icon: string; color: string };
+  }) => (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: item.color }]}
       onPress={() => handleCategoryPress(item.slug, item.name)}

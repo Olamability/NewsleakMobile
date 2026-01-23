@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { TrendingTopic } from '../types/news';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
 interface TrendingTopicChipProps {
@@ -9,7 +8,7 @@ interface TrendingTopicChipProps {
   onPress: (topic: string) => void;
 }
 
-export const TrendingTopicChip: React.FC<TrendingTopicChipProps> = ({ topic, count, onPress }) => {
+export const TrendingTopicChip: React.FC<TrendingTopicChipProps> = ({ topic, onPress }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={() => onPress(topic)} activeOpacity={0.7}>
       <Text style={styles.icon}>🔥</Text>

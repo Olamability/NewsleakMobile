@@ -42,8 +42,8 @@ export class NewsService {
         total: count || 0,
         hasMore: (count || 0) > to + 1,
       };
-    } catch (error: any) {
-      console.error('Error fetching articles:', error);
+    } catch (_error) {
+      console.error('Error fetching articles:', _error);
       return {
         data: [],
         page,
@@ -70,8 +70,8 @@ export class NewsService {
       }
 
       return { data };
-    } catch (error: any) {
-      return { error: error.message || 'Failed to fetch article' };
+    } catch (_error) {
+      return { error: (_error as Error).message || 'Failed to fetch article' };
     }
   }
 
@@ -141,8 +141,8 @@ export class NewsService {
         total: count || 0,
         hasMore: (count || 0) > to + 1,
       };
-    } catch (error: any) {
-      console.error('Error searching articles:', error);
+    } catch (_error) {
+      console.error('Error searching articles:', _error);
       return {
         data: [],
         page,
@@ -170,8 +170,8 @@ export class NewsService {
       }
 
       return data || [];
-    } catch (error: any) {
-      console.error('Error fetching featured articles:', error);
+    } catch (_error) {
+      console.error('Error fetching featured articles:', _error);
       return [];
     }
   }
@@ -192,8 +192,8 @@ export class NewsService {
       }
 
       return data || [];
-    } catch (error: any) {
-      console.error('Error fetching trending articles:', error);
+    } catch (_error) {
+      console.error('Error fetching trending articles:', _error);
       return [];
     }
   }
@@ -217,8 +217,8 @@ export class NewsService {
           .update({ view_count: (article.view_count || 0) + 1 })
           .eq('id', articleId);
       }
-    } catch (error: any) {
-      console.error('Error incrementing view count:', error);
+    } catch (_error) {
+      console.error('Error incrementing view count:', _error);
     }
   }
 

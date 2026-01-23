@@ -252,8 +252,8 @@ export class SecurityService {
   static validateApiRequest(
     userId: string,
     endpoint: string,
-    maxRequests: number = 100,
-    windowMinutes: number = 1
+    _maxRequests: number = 100,
+    _windowMinutes: number = 1
   ): { allowed: boolean; remaining?: number; resetAt?: Date } {
     const rateLimit = checkRateLimit(`${userId}_${endpoint}`, 'api');
 

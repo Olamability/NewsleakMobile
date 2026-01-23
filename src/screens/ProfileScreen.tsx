@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
+import { RootStackParamList } from '../navigation/types';
 
 interface ProfileScreenProps {
-  navigation: any;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
@@ -20,7 +22,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         style: 'destructive',
         onPress: async () => {
           await signOut();
-          navigation.navigate('Home');
+          navigation.navigate('Main');
         },
       },
     ]);

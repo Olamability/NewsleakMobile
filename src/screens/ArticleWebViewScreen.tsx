@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { WebView } from 'react-native-webview';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS } from '../constants/theme';
+import { RootStackParamList } from '../navigation/types';
 
 interface ArticleWebViewScreenProps {
-  route: any;
-  navigation: any;
+  route: RouteProp<RootStackParamList, 'ArticleWebView'>;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 export const ArticleWebViewScreen: React.FC<ArticleWebViewScreenProps> = ({

@@ -28,10 +28,10 @@ export default function App() {
 
     const cleanup = setupNotificationListeners(
       (notification) => {
-        console.log('Notification received:', notification);
+        console.warn('Notification received:', notification);
       },
       (response) => {
-        console.log('Notification tapped:', response);
+        console.warn('Notification tapped:', response);
       }
     );
 

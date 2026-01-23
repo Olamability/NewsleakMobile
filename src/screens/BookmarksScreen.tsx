@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
@@ -9,9 +10,10 @@ import { NewsArticle } from '../types';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import { useAuth } from '../context/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation/types';
 
 interface BookmarksScreenProps {
-  navigation: any;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) => {
@@ -51,7 +53,7 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
   };
 
   const handleArticlePress = (article: NewsArticle) => {
-    navigation.navigate('ArticleDetail', { article });
+    navigation.navigate('ArticleDetail', { articleId: article.id });
   };
 
   const handleRemoveBookmark = async (article: NewsArticle) => {
@@ -104,7 +106,7 @@ export const BookmarksScreen: React.FC<BookmarksScreenProps> = ({ navigation }) 
           title="No Saved Articles"
           message="Save articles to read them later"
           actionLabel="Explore News"
-          onAction={() => navigation.navigate('Home')}
+          onAction={() => navigation.navigate('Main')}
         />
       </SafeAreaView>
     );

@@ -238,6 +238,6 @@ export interface Database {
         };
       };
     };
-    Enums: {};
+    Enums: Record<string, never>;
   };
 }

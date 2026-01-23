@@ -60,8 +60,9 @@ export class AuthService {
           created_at: data.user.created_at,
         },
       };
-    } catch (error: any) {
-      return { error: error.message || 'Sign up failed' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Sign up failed' };
     }
   }
 
@@ -109,8 +110,9 @@ export class AuthService {
           created_at: data.user.created_at,
         },
       };
-    } catch (error: any) {
-      return { error: error.message || 'Sign in failed' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Sign in failed' };
     }
   }
 
@@ -126,8 +128,9 @@ export class AuthService {
       }
 
       return { data: null };
-    } catch (error: any) {
-      return { error: error.message || 'Sign out failed' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Sign out failed' };
     }
   }
 
@@ -152,7 +155,7 @@ export class AuthService {
         is_admin: user.user_metadata?.is_admin || false,
         created_at: user.created_at,
       };
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -166,7 +169,7 @@ export class AuthService {
         data: { session },
       } = await supabase.auth.getSession();
       return session;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -203,8 +206,9 @@ export class AuthService {
       }
 
       return { data: null, message: 'Password reset email sent' };
-    } catch (error: any) {
-      return { error: error.message || 'Password reset failed' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Password reset failed' };
     }
   }
 
@@ -246,8 +250,9 @@ export class AuthService {
           created_at: data.user.created_at,
         },
       };
-    } catch (error: any) {
-      return { error: error.message || 'Profile update failed' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Failed to update profile' };
     }
   }
 }

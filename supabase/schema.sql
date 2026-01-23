@@ -37,11 +37,22 @@ create table if not exists news_articles (
   source_id uuid references news_sources(id) on delete cascade,
   category_id uuid references categories(id),
   title text not null,
+  slug text,
   summary text not null,
+  content_snippet text,
   image_url text,
+  article_url text,
   original_url text unique not null,
+  source_name text,
+  source_url text,
+  category text,
+  tags text[],
+  language text,
   published_at timestamp with time zone,
+  content_hash text unique,
+  view_count integer default 0,
   is_breaking boolean default false,
+  is_featured boolean default false,
   is_sponsored boolean default false,
   quality_score numeric default 1.0,
   created_at timestamp with time zone default now()
@@ -170,14 +181,35 @@ create table if not exists trending_topics (
 );
 
 -- =============================================
+-- INGESTION LOGS TABLE
+-- =============================================
+create table if not exists ingestion_logs (
+  id uuid primary key default uuid_generate_v4(),
+  source_id uuid references news_sources(id) on delete cascade,
+  source_name text not null,
+  status text not null, -- in_progress | success | error
+  articles_fetched integer default 0,
+  articles_processed integer default 0,
+  articles_duplicates integer default 0,
+  error_message text,
+  started_at timestamp with time zone,
+  completed_at timestamp with time zone,
+  created_at timestamp with time zone default now()
+);
+
+-- =============================================
 -- INDEXES FOR PERFORMANCE
 -- =============================================
 create index if not exists idx_news_articles_published_at on news_articles(published_at desc);
 create index if not exists idx_news_articles_category_id on news_articles(category_id);
+create index if not exists idx_news_articles_category on news_articles(category);
 create index if not exists idx_news_articles_source_id on news_articles(source_id);
 create index if not exists idx_news_articles_is_breaking on news_articles(is_breaking) where is_breaking = true;
+create index if not exists idx_news_articles_content_hash on news_articles(content_hash);
 create index if not exists idx_analytics_events_created_at on analytics_events(created_at desc);
 create index if not exists idx_analytics_events_article_id on analytics_events(article_id);
+create index if not exists idx_ingestion_logs_created_at on ingestion_logs(created_at desc);
+create index if not exists idx_ingestion_logs_source_id on ingestion_logs(source_id);
 
 -- =============================================
 -- ROW LEVEL SECURITY (RLS)
@@ -193,6 +225,7 @@ alter table publishers enable row level security;
 alter table publisher_sources enable row level security;
 alter table recent_searches enable row level security;
 alter table trending_topics enable row level security;
+alter table ingestion_logs enable row level security;
 
 -- Public read policies
 create policy "public_read_categories" on categories for select using (true);
@@ -219,6 +252,11 @@ create policy "users_read_own_searches" on recent_searches for select using (tru
 
 -- Trending topics policies
 create policy "public_read_trending" on trending_topics for select using (true);
+
+-- Ingestion logs policies
+create policy "public_read_ingestion_logs" on ingestion_logs for select using (true);
+create policy "service_insert_ingestion_logs" on ingestion_logs for insert with check (true);
+create policy "service_update_ingestion_logs" on ingestion_logs for update using (true);
 
 -- =============================================
 -- SEED DATA

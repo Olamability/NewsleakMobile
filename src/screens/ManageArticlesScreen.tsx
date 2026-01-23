@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,44 +16,47 @@ import { NewsArticle } from '../types';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 
 interface ManageArticlesScreenProps {
-  navigation: any;
+  navigation: unknown;
 }
 
-export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = ({ navigation }) => {
+export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = () => {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [_hasMore, setHasMore] = useState(true);
+
+  const loadArticles = useCallback(
+    async (isRefresh: boolean = false) => {
+      try {
+        if (!isRefresh) {
+          setIsLoading(true);
+        }
+
+        const response = await AdminService.getAllArticles(isRefresh ? 1 : page);
+
+        if (isRefresh) {
+          setArticles(response.data);
+          setPage(1);
+        } else {
+          setArticles(response.data);
+        }
+
+        setHasMore(response.hasMore);
+      } catch (error) {
+        console.error('Error loading articles:', error);
+        Alert.alert('Error', 'Failed to load articles. Please try again.');
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [page]
+  );
 
   useEffect(() => {
     loadArticles();
-  }, []);
-
-  const loadArticles = async (isRefresh: boolean = false) => {
-    try {
-      if (!isRefresh) {
-        setIsLoading(true);
-      }
-
-      const response = await AdminService.getAllArticles(isRefresh ? 1 : page);
-
-      if (isRefresh) {
-        setArticles(response.data);
-        setPage(1);
-      } else {
-        setArticles(response.data);
-      }
-
-      setHasMore(response.hasMore);
-    } catch (error) {
-      console.error('Error loading articles:', error);
-      Alert.alert('Error', 'Failed to load articles. Please try again.');
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
+  }, [loadArticles]);
 
   const handleFeatureArticle = (articleId: string, isFeatured: boolean) => {
     Alert.alert(

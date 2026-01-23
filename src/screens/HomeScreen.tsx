@@ -10,11 +10,10 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   Image,
-  TouchableOpacity,
+  ImageSourcePropType,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
@@ -25,13 +24,11 @@ import { SponsoredCard } from '../components/SponsoredCard';
 import { SearchBar } from '../components/SearchBar';
 import { NewsArticle, SponsoredContent } from '../types/news';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
-import {
-  useNewsFeed,
-  useBreakingNews,
-  useSponsoredContent,
-  useTrackEvent,
-} from '../lib/queries';
+import { useNewsFeed, useBreakingNews, useSponsoredContent, useTrackEvent } from '../lib/queries';
 import { RootStackParamList } from '../navigation/types';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const logoImage = require('../../assets/icon.png') as ImageSourcePropType;
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - SPACING.lg * 2;
@@ -64,7 +61,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { data: breakingNews, isLoading: breakingLoading } = useBreakingNews();
-  const { data: sponsoredContent, isLoading: sponsoredLoading } = useSponsoredContent();
+  const { data: sponsoredContent, isLoading: _sponsoredLoading } = useSponsoredContent();
   const { mutate: trackEvent } = useTrackEvent();
 
   const {
@@ -144,11 +141,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header with Logo and Search Bar */}
       <View style={styles.header}>
-        <Image
-          source={require('../../assets/icon.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <Image source={logoImage} style={styles.logo} resizeMode="contain" />
         <View style={styles.searchBarContainer}>
           <SearchBar
             value={searchQuery}

@@ -212,12 +212,12 @@ export const useTrackEvent = () => {
     }: {
       eventType: string;
       articleId?: string;
-      metadata?: Record<string, any>;
+      metadata?: Record<string, unknown>;
     }) => {
       const { error } = await supabase.from('analytics_events').insert({
         event_type: eventType,
         article_id: articleId || null,
-        metadata: metadata || null,
+        metadata: (metadata as Record<string, any>) || null,
       } as any);
 
       if (error) throw error;

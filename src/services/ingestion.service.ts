@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 import { RSSService } from './rss.service';
 import { ContentService } from './content.service';
-import { NewsSource, ProcessedArticle, IngestionLog, RawArticle } from '../types';
+import { NewsSource, ProcessedArticle, IngestionLog } from '../types';
 
 interface IngestionResult {
   success: boolean;
@@ -61,7 +61,7 @@ export class IngestionService {
       }
 
       // Fetch RSS feed
-      console.log(`Fetching RSS feed from ${source.name}...`);
+      console.warn(`Fetching RSS feed from ${source.name}...`);
       const rawArticles = await this.rssService.parseFeed(source.rss_url);
       result.articlesFetched = rawArticles.length;
 
@@ -73,7 +73,7 @@ export class IngestionService {
       const deduplicated = RSSService.deduplicateArticles(rawArticles);
       result.articlesDuplicates = rawArticles.length - deduplicated.length;
 
-      console.log(`Processing ${deduplicated.length} articles from ${source.name}...`);
+      console.warn(`Processing ${deduplicated.length} articles from ${source.name}...`);
 
       // Process articles
       const processedArticles = await this.contentService.processArticles(
@@ -104,7 +104,7 @@ export class IngestionService {
         completed_at: new Date().toISOString(),
       });
 
-      console.log(`✓ Successfully ingested ${result.articlesStored} articles from ${source.name}`);
+      console.warn(`✓ Successfully ingested ${result.articlesStored} articles from ${source.name}`);
     } catch (error) {
       const errorMessage = (error as Error).message;
       result.errors.push(errorMessage);
@@ -134,7 +134,7 @@ export class IngestionService {
 
     for (const source of sources) {
       if (!source.is_active) {
-        console.log(`Skipping inactive source: ${source.name}`);
+        console.warn(`Skipping inactive source: ${source.name}`);
         continue;
       }
 
@@ -164,23 +164,23 @@ export class IngestionService {
       }
 
       if (!sources || sources.length === 0) {
-        console.log('No active sources with RSS URLs found');
+        console.warn('No active sources with RSS URLs found');
         return [];
       }
 
-      console.log(`Starting ingestion from ${sources.length} sources...`);
+      console.warn(`Starting ingestion from ${sources.length} sources...`);
       const results = await this.ingestFromMultipleSources(sources);
 
       // Log summary
       const summary = this.generateSummary(results);
-      console.log('\n=== Ingestion Summary ===');
-      console.log(`Total sources: ${summary.totalSources}`);
-      console.log(`Successful: ${summary.successful}`);
-      console.log(`Failed: ${summary.failed}`);
-      console.log(`Total articles fetched: ${summary.totalFetched}`);
-      console.log(`Total articles stored: ${summary.totalStored}`);
-      console.log(`Total duplicates: ${summary.totalDuplicates}`);
-      console.log('========================\n');
+      console.warn('\n=== Ingestion Summary ===');
+      console.warn(`Total sources: ${summary.totalSources}`);
+      console.warn(`Successful: ${summary.successful}`);
+      console.warn(`Failed: ${summary.failed}`);
+      console.warn(`Total articles fetched: ${summary.totalFetched}`);
+      console.warn(`Total articles stored: ${summary.totalStored}`);
+      console.warn(`Total duplicates: ${summary.totalDuplicates}`);
+      console.warn('========================\n');
 
       return results;
     } catch (error) {

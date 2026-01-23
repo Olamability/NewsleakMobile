@@ -10,14 +10,16 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import { validateEmail } from '../utils/validation';
+import { RootStackParamList } from '../navigation/types';
 
 interface SignInScreenProps {
-  navigation: any;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
@@ -138,7 +140,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
             />
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
+              <Text style={styles.footerText}>Don&apos;t have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                 <Text style={styles.signUpText}>Sign up</Text>
               </TouchableOpacity>
