@@ -218,7 +218,7 @@ export class IngestionService {
    */
   private async storeArticles(articles: ProcessedArticle[]): Promise<number> {
     try {
-      const { data, error } = await supabase.from('news_articles').insert(
+      const { data, error } = await supabase.from('news_articles').upsert(
         articles.map((article) => ({
           title: article.title,
           slug: article.slug,
@@ -226,6 +226,7 @@ export class IngestionService {
           content_snippet: article.content_snippet,
           image_url: article.image_url,
           article_url: article.article_url,
+          original_url: article.article_url, // Use article_url as original_url
           source_name: article.source_name,
           source_url: article.source_url,
           category: article.category,
@@ -235,7 +236,11 @@ export class IngestionService {
           content_hash: article.content_hash,
           view_count: 0,
           is_featured: false,
-        }))
+        })),
+        {
+          onConflict: 'original_url',
+          ignoreDuplicates: true
+        }
       );
 
       if (error) {
