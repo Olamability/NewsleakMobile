@@ -239,7 +239,7 @@ export class IngestionService {
         })),
         {
           onConflict: 'original_url',
-          ignoreDuplicates: true
+          ignoreDuplicates: true,
         }
       );
 
