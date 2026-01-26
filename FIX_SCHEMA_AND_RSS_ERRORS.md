@@ -52,29 +52,36 @@ The 404 errors occur when RSS feed URLs are incorrect or the website has changed
 1. Open Supabase **SQL Editor**
 2. Find the problematic source:
    ```sql
+   -- Find sources with feed URLs ending in /feeds (common mistake)
    SELECT id, name, rss_url, is_active 
    FROM news_sources 
-   WHERE name ILIKE '%abilitydigitalz%';
+   WHERE rss_url LIKE '%/feeds';
+   
+   -- Or search for a specific source by name
+   SELECT id, name, rss_url, is_active 
+   FROM news_sources 
+   WHERE name ILIKE '%your-source-name%';
    ```
 
 3. **Option A: Update the feed URL** (if you know the correct URL)
    ```sql
+   -- Example: Fix a feed URL from /feeds to /feed
    UPDATE news_sources 
-   SET rss_url = 'https://abilitydigitalz.com.ng/feed/'  -- or /feed or /rss
-   WHERE name = 'AbilityDigitalz';
+   SET rss_url = 'https://example.com/feed/'  -- or /feed or /rss
+   WHERE name = 'YourSourceName';
    ```
 
 4. **Option B: Deactivate the source** (if feed doesn't exist)
    ```sql
    UPDATE news_sources 
    SET is_active = false 
-   WHERE name = 'AbilityDigitalz';
+   WHERE name = 'YourSourceName';
    ```
 
 5. **Option C: Remove the source completely**
    ```sql
    DELETE FROM news_sources 
-   WHERE name = 'AbilityDigitalz';
+   WHERE name = 'YourSourceName';
    ```
 
 ### Step 3: Test RSS Feed URLs
@@ -142,6 +149,39 @@ If a feed URL is returning 404:
 
 After applying the migration and fixing feed URLs:
 
+### 1. Verify Database Schema
+
+Run this SQL query in Supabase SQL Editor to verify the schema is correct:
+
+```sql
+-- Verify ingestion_logs table exists
+SELECT EXISTS (
+  SELECT FROM information_schema.tables 
+  WHERE table_schema = 'public' 
+  AND table_name = 'ingestion_logs'
+) as ingestion_logs_exists;
+
+-- Verify article_url column exists
+SELECT EXISTS (
+  SELECT FROM information_schema.columns 
+  WHERE table_schema = 'public' 
+  AND table_name = 'news_articles' 
+  AND column_name = 'article_url'
+) as article_url_exists;
+
+-- Both should return 'true'
+```
+
+**Expected Output:**
+```
+ingestion_logs_exists: true
+article_url_exists: true
+```
+
+If either returns `false`, re-run the migration script.
+
+### 2. Test RSS Feed Ingestion
+
 1. **Restart your app** to clear any cached errors
 2. **Check the logs** for successful ingestion:
    ```
@@ -151,6 +191,34 @@ After applying the migration and fixing feed URLs:
    - Navigate to Admin Panel → Ingestion Logs
    - Check recent logs show "success" status
    - Verify articles appear in the app
+
+### 3. Verify Active RSS Sources
+
+Check which sources are active and their feed URLs:
+
+```sql
+SELECT 
+  name,
+  rss_url,
+  is_active,
+  (
+    SELECT COUNT(*) 
+    FROM ingestion_logs il 
+    WHERE il.source_id = ns.id 
+    AND il.status = 'success'
+  ) as successful_ingestions,
+  (
+    SELECT COUNT(*) 
+    FROM ingestion_logs il 
+    WHERE il.source_id = ns.id 
+    AND il.status = 'error'
+  ) as failed_ingestions
+FROM news_sources ns
+WHERE is_active = true
+ORDER BY name;
+```
+
+This shows you which sources are working and which are failing.
 
 ## Still Having Issues?
 

@@ -3,10 +3,16 @@
 -- Addresses errors:
 -- 1. "Could not find the table 'public.ingestion_logs' in the schema cache"
 -- 2. "Could not find the 'article_url' column of 'news_articles' in the schema cache"
+--
+-- NOTE: This migration can be run safely even if schema.sql has already been applied.
+-- It uses IF NOT EXISTS clauses to only create missing elements.
+-- This is a consolidated fix for users who may have partial schema from older versions.
 
 -- =============================================
 -- ENSURE INGESTION_LOGS TABLE EXISTS
 -- =============================================
+-- Creates the table exactly as defined in schema.sql (lines 186-198)
+-- This is needed if users have an old schema that predates ingestion_logs
 CREATE TABLE IF NOT EXISTS ingestion_logs (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id uuid REFERENCES news_sources(id) ON DELETE CASCADE,
@@ -25,6 +31,8 @@ CREATE TABLE IF NOT EXISTS ingestion_logs (
 -- ENSURE ALL REQUIRED COLUMNS IN NEWS_ARTICLES
 -- =============================================
 -- Add missing columns to news_articles table if they don't exist
+-- These columns are defined in schema.sql but may be missing in older databases
+-- This section ensures compatibility with migration-add-missing-columns.sql
 ALTER TABLE news_articles ADD COLUMN IF NOT EXISTS slug text;
 ALTER TABLE news_articles ADD COLUMN IF NOT EXISTS content_snippet text;
 ALTER TABLE news_articles ADD COLUMN IF NOT EXISTS article_url text;
@@ -43,6 +51,8 @@ ALTER TABLE news_articles ADD COLUMN IF NOT EXISTS quality_score numeric DEFAULT
 -- =============================================
 -- CREATE INDEXES FOR PERFORMANCE
 -- =============================================
+-- These indexes are defined in schema.sql (lines 203-212)
+-- Using IF NOT EXISTS ensures they're created if missing without causing errors
 CREATE INDEX IF NOT EXISTS idx_news_articles_published_at ON news_articles(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_news_articles_category_id ON news_articles(category_id);
 CREATE INDEX IF NOT EXISTS idx_news_articles_category ON news_articles(category);
