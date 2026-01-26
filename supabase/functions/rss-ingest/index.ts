@@ -51,23 +51,13 @@ serve(async (req) => {
           
           if (!rssItem.title || !rssItem.link) continue;
 
-          const existingArticle = await supabase
-            .from('news_articles')
-            .select('id')
-            .eq('original_url', rssItem.link)
-            .single();
-
-          if (existingArticle.data) {
-            totalSkipped++;
-            continue;
-          }
-
           const summary = cleanSummary(rssItem.contentSnippet || rssItem.content || rssItem.title);
           const imageUrl = extractImage(rssItem);
 
+          // Use upsert with onConflict to handle duplicates gracefully
           const { error: insertError } = await supabase
             .from('news_articles')
-            .insert({
+            .upsert({
               source_id: source.id,
               title: rssItem.title.trim(),
               summary: summary,
@@ -76,10 +66,14 @@ serve(async (req) => {
               published_at: rssItem.pubDate ? new Date(rssItem.pubDate).toISOString() : new Date().toISOString(),
               is_breaking: false,
               is_sponsored: false,
+            }, {
+              onConflict: 'original_url',
+              ignoreDuplicates: true
             });
 
           if (insertError) {
             console.error(`Error inserting article: ${insertError.message}`);
+            totalSkipped++;
           } else {
             totalInserted++;
           }

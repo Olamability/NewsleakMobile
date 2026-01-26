@@ -253,4 +253,54 @@ describe('IngestionService', () => {
       expect(ingestionService.ingestFromSource).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('storeArticles with duplicate URLs', () => {
+    it('should handle duplicate original_url gracefully using upsert', async () => {
+      const mockArticles = [
+        {
+          title: 'Test Article',
+          slug: 'test-article',
+          summary: 'Test summary',
+          content_snippet: 'Test snippet',
+          image_url: 'https://example.com/image.jpg',
+          article_url: 'https://example.com/article',
+          canonical_url: 'https://example.com/article',
+          source_name: 'Test Source',
+          source_url: 'https://example.com',
+          category: 'Technology',
+          tags: ['tech'],
+          language: 'en',
+          published_at: '2024-01-01T00:00:00Z',
+          content_hash: 'hash123',
+          status: 'pending_approval' as const,
+        },
+      ];
+
+      const mockUpsert = jest.fn().mockResolvedValue({ data: mockArticles, error: null });
+      const mockFrom = jest.fn().mockReturnValue({
+        upsert: mockUpsert,
+      });
+
+      (supabase.from as jest.Mock) = mockFrom;
+
+      // Access private method via reflection for testing
+      const storeArticles = (ingestionService as any).storeArticles.bind(ingestionService);
+      const result = await storeArticles(mockArticles);
+
+      expect(result).toBe(1);
+      expect(mockFrom).toHaveBeenCalledWith('news_articles');
+      expect(mockUpsert).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            // Should use canonical_url as original_url for better duplicate detection
+            original_url: 'https://example.com/article',
+          }),
+        ]),
+        expect.objectContaining({
+          onConflict: 'original_url',
+          ignoreDuplicates: true,
+        })
+      );
+    });
+  });
 });

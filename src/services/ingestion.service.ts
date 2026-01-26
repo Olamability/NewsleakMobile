@@ -217,8 +217,12 @@ export class IngestionService {
    * Store articles in database
    */
   private async storeArticles(articles: ProcessedArticle[]): Promise<number> {
+    if (articles.length === 0) {
+      return 0;
+    }
+
     try {
-      const { data, error } = await supabase.from('news_articles').insert(
+      const { error } = await supabase.from('news_articles').upsert(
         articles.map((article) => ({
           title: article.title,
           slug: article.slug,
@@ -226,6 +230,9 @@ export class IngestionService {
           content_snippet: article.content_snippet,
           image_url: article.image_url,
           article_url: article.article_url,
+          // Use canonical_url as original_url for better duplicate detection
+          // canonical_url is a normalized version of the article URL
+          original_url: article.canonical_url,
           source_name: article.source_name,
           source_url: article.source_url,
           category: article.category,
@@ -235,7 +242,11 @@ export class IngestionService {
           content_hash: article.content_hash,
           view_count: 0,
           is_featured: false,
-        }))
+        })),
+        {
+          onConflict: 'original_url',
+          ignoreDuplicates: true,
+        }
       );
 
       if (error) {
@@ -243,6 +254,11 @@ export class IngestionService {
         return 0;
       }
 
+      // Note: When ignoreDuplicates is true, Supabase doesn't return the count of actually inserted records
+      // We return the number of articles we attempted to store as an approximation
+      // Duplicate detection happens at two levels:
+      // 1. Content hash filtering (done before calling this method)
+      // 2. Original URL conflict handling (done by the database via upsert)
       return articles.length;
     } catch (error) {
       console.error('Error in storeArticles:', error);
