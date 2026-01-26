@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AdminService } from '../services/admin.service';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { RootStackParamList } from '../navigation/types';
+import { getGlobalScheduler } from '../utils/scheduler';
 
 interface AdminDashboardScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -19,6 +20,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
     featuredArticles: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isIngesting, setIsIngesting] = useState(false);
 
   useEffect(() => {
     loadDashboardStats();
@@ -33,6 +35,42 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleManualIngestion = async () => {
+    Alert.alert(
+      'Trigger Manual Ingestion',
+      'This will fetch the latest articles from all active news sources. This may take a few minutes.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Start Ingestion',
+          onPress: async () => {
+            try {
+              setIsIngesting(true);
+              const scheduler = getGlobalScheduler();
+              await scheduler.triggerManual();
+              
+              // Refresh stats after ingestion
+              await loadDashboardStats();
+              
+              Alert.alert(
+                'Success',
+                'Manual ingestion completed! Check the Ingestion Logs for details.'
+              );
+            } catch (error) {
+              console.error('Error during manual ingestion:', error);
+              Alert.alert(
+                'Error',
+                'Failed to complete ingestion. Please check the logs for details.'
+              );
+            } finally {
+              setIsIngesting(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const adminMenuItems = [
@@ -111,6 +149,27 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
               <Text style={styles.menuItemArrow}>›</Text>
             </TouchableOpacity>
           ))}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Ingestion</Text>
+          <TouchableOpacity
+            style={[styles.ingestionButton, isIngesting && styles.ingestionButtonDisabled]}
+            onPress={handleManualIngestion}
+            disabled={isIngesting}
+          >
+            <Text style={styles.ingestionButtonIcon}>⚡</Text>
+            <View style={styles.ingestionButtonContent}>
+              <Text style={styles.ingestionButtonTitle}>
+                {isIngesting ? 'Ingesting...' : 'Trigger Manual Ingestion'}
+              </Text>
+              <Text style={styles.ingestionButtonDescription}>
+                {isIngesting
+                  ? 'Fetching latest articles from all sources'
+                  : 'Fetch latest articles from all active news sources'}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.warningBox}>
@@ -233,5 +292,34 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     color: '#856404',
     lineHeight: 20,
+  },
+  ingestionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    padding: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.sm,
+  },
+  ingestionButtonDisabled: {
+    opacity: 0.6,
+  },
+  ingestionButtonIcon: {
+    fontSize: 32,
+    marginRight: SPACING.md,
+  },
+  ingestionButtonContent: {
+    flex: 1,
+  },
+  ingestionButtonTitle: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.background,
+    fontWeight: '600',
+    marginBottom: SPACING.xs,
+  },
+  ingestionButtonDescription: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.background,
+    opacity: 0.9,
   },
 });
