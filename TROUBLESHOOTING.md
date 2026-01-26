@@ -3,6 +3,7 @@
 Common issues and their solutions for Spazr News Aggregator.
 
 ## Table of Contents
+- [🩹 Database Schema & RSS Feed Errors](#database-schema--rss-feed-errors) - **NEW!**
 - [Data & Content Issues](#data--content-issues)
 - [Installation Issues](#installation-issues)
 - [Development Issues](#development-issues)
@@ -11,6 +12,58 @@ Common issues and their solutions for Spazr News Aggregator.
 - [Navigation Issues](#navigation-issues)
 - [Performance Issues](#performance-issues)
 - [Build Issues](#build-issues)
+
+---
+
+## Database Schema & RSS Feed Errors
+
+### Schema Cache Errors
+
+**Error Messages:**
+```
+ERROR  Error creating ingestion log: {"code": "PGRST205", "message": "Could not find the table 'public.ingestion_logs' in the schema cache"}
+ERROR  Error storing articles: {"code": "PGRST204", "message": "Could not find the 'article_url' column of 'news_articles' in the schema cache"}
+```
+
+**Cause:** Your Supabase database is missing required tables or columns. This happens when:
+- The initial schema wasn't fully applied
+- You're using an older version of the schema
+- Database was manually modified
+
+**Solution:** Apply the schema migration fix
+
+📖 **[See Complete Fix Guide →](./FIX_SCHEMA_AND_RSS_ERRORS.md)**
+
+**Quick Fix:**
+1. Go to Supabase SQL Editor
+2. Run the migration: `supabase/migration-fix-schema-cache.sql`
+3. Verify success messages appear
+4. Restart your app
+
+### RSS Feed 404 Errors
+
+**Error Message:**
+```
+ERROR  RSS parse attempt 1 failed for https://example.com/feeds: [AxiosError: Request failed with status code 404]
+```
+
+**Cause:** The RSS feed URL is incorrect or the website changed its feed location.
+
+**Solution:** Fix or remove the invalid feed URL
+
+📖 **[See Complete Fix Guide →](./FIX_SCHEMA_AND_RSS_ERRORS.md)**
+
+**Quick Fix:**
+```sql
+-- Find the problematic source
+SELECT id, name, rss_url FROM news_sources WHERE rss_url LIKE '%/feeds';
+
+-- Option 1: Fix the URL (change /feeds to /feed)
+UPDATE news_sources SET rss_url = 'https://example.com/feed/' WHERE name = 'YourSource';
+
+-- Option 2: Deactivate the source
+UPDATE news_sources SET is_active = false WHERE name = 'YourSource';
+```
 
 ---
 
