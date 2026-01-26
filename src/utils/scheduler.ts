@@ -159,7 +159,7 @@ export class IngestionScheduler {
  */
 export function createDefaultScheduler(): IngestionScheduler {
   return new IngestionScheduler({
-    intervalMinutes: 60, // Run every hour
+    intervalMinutes: 15, // Run every 15 minutes for realtime news curation
     maxRetries: 3,
     retryDelayMinutes: 5,
     onSuccess: (results) => {

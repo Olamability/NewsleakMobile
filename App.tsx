@@ -10,6 +10,7 @@ import {
   registerForPushNotificationsAsync,
   setupNotificationListeners,
 } from './src/lib/notifications';
+import { startGlobalScheduler, stopGlobalScheduler } from './src/utils/scheduler';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,18 @@ export default function App() {
     );
 
     return cleanup;
+  }, []);
+
+  useEffect(() => {
+    // Start realtime RSS ingestion scheduler
+    console.warn('Starting realtime RSS ingestion scheduler...');
+    startGlobalScheduler();
+
+    // Cleanup: stop scheduler when app unmounts
+    return () => {
+      console.warn('Stopping realtime RSS ingestion scheduler...');
+      stopGlobalScheduler();
+    };
   }, []);
 
   if (showSplash) {

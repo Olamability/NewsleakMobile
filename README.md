@@ -8,12 +8,15 @@ A modern, production-ready React Native Expo news aggregator app with Supabase b
 - **⚡ [Quick Start](./QUICKSTART.md)** - Get the app running in 5 minutes
 - **🚀 [Getting Started](./GETTING_STARTED.md)** - Complete setup with sample data (10 minutes)
 - **📰 [RSS Feeds Guide](./RSS_FEEDS_GUIDE.md)** - Comprehensive RSS feed management
+- **🔄 [Realtime News Implementation](./REALTIME_NEWS_IMPLEMENTATION.md)** - Automatic news curation and admin panel
 - **🔧 [Troubleshooting](./TROUBLESHOOTING.md)** - Common issues and solutions
 
 ## 🎯 Features
 
 ### Core Features
-- **News Aggregation**: Real-time news from multiple trusted sources
+- **News Aggregation**: Real-time news from multiple trusted sources (fetched every 15 minutes)
+- **Automatic Ingestion**: Background scheduler fetches latest articles automatically
+- **Manual Trigger**: Admins can trigger immediate ingestion from admin panel
 - **Category-based Navigation**: Browse news by Politics, Sports, Business, Technology, Entertainment, Health, and Lifestyle
 - **Search Functionality**: Search for articles by keywords
 - **Bookmarking**: Save articles for later reading (authenticated users)
@@ -34,6 +37,14 @@ A modern, production-ready React Native Expo news aggregator app with Supabase b
 - **Loading States**: Skeleton screens and loading indicators
 - **Empty States**: Helpful empty state messages
 - **Error Handling**: Graceful error handling with retry options
+
+### Admin Features
+- **Article Management**: Delete unwanted articles from admin panel
+- **Featured Articles**: Toggle featured status for articles
+- **Source Management**: Add/remove/toggle RSS news sources
+- **Manual Ingestion**: Trigger immediate news fetch
+- **Ingestion Logs**: Monitor RSS feed ingestion status
+- **Dashboard Stats**: View active sources, articles, and users
 
 ## 📱 Screenshots
 
