@@ -10,6 +10,7 @@ A modern, production-ready React Native Expo news aggregator app with Supabase b
 - **📰 [RSS Feeds Guide](./RSS_FEEDS_GUIDE.md)** - Comprehensive RSS feed management
 - **🔄 [Realtime News Implementation](./REALTIME_NEWS_IMPLEMENTATION.md)** - Automatic news curation and admin panel
 - **🔧 [Troubleshooting](./TROUBLESHOOTING.md)** - Common issues and solutions
+- **🩹 [Fix Schema & RSS Errors](./FIX_SCHEMA_AND_RSS_ERRORS.md)** - **NEW!** Fix database schema cache and 404 RSS feed errors
 
 ## 🎯 Features
 

@@ -92,6 +92,15 @@ Then:
 
 If you see "No articles found" after setup:
 
+### Common Database Schema Errors
+
+If you see errors like:
+- `"Could not find the table 'public.ingestion_logs' in the schema cache"`
+- `"Could not find the 'article_url' column of 'news_articles' in the schema cache"`
+- `"Request failed with status code 404"` for RSS feeds
+
+📖 **[See Complete Fix Guide →](./FIX_SCHEMA_AND_RSS_ERRORS.md)** for step-by-step solutions.
+
 ### Check Database Connection
 
 1. Open the app and check browser/device console for errors
