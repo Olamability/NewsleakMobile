@@ -229,13 +229,21 @@ alter table ingestion_logs enable row level security;
 
 -- Public read policies
 create policy "public_read_categories" on categories for select using (true);
-create policy "public_read_sources" on news_sources for select using (is_active = true);
+create policy "public_and_admin_read_sources" on news_sources for select using (
+  is_active = true 
+  or auth.uid() is not null
+);
 create policy "public_read_articles" on news_articles for select using (true);
 create policy "public_read_sponsored" on sponsored_content for select using (
   is_active = true 
   and (start_date is null or start_date <= current_date)
   and (end_date is null or end_date >= current_date)
 );
+
+-- News sources management policies (admin)
+create policy "authenticated_insert_sources" on news_sources for insert with check (auth.uid() is not null);
+create policy "authenticated_update_sources" on news_sources for update using (auth.uid() is not null) with check (auth.uid() is not null);
+create policy "authenticated_delete_sources" on news_sources for delete using (auth.uid() is not null);
 
 -- User devices policies
 create policy "public_insert_device" on user_devices for insert with check (true);
