@@ -352,6 +352,14 @@ INSERT INTO news_sources (name, website_url, rss_url, is_active) VALUES
 
 ## Troubleshooting
 
+### Database Schema Errors
+
+If you see errors like:
+- `"Could not find the table 'public.ingestion_logs' in the schema cache"`
+- `"Could not find the 'article_url' column of 'news_articles' in the schema cache"`
+
+📖 **[See Complete Fix Guide →](./FIX_SCHEMA_AND_RSS_ERRORS.md)** for step-by-step solutions to fix schema cache issues.
+
 ### Feed Not Fetching Articles
 
 **Problem:** Added source but no articles appear
@@ -384,6 +392,24 @@ INSERT INTO news_sources (name, website_url, rss_url, is_active) VALUES
    const result = await ingestionService.triggerManualIngestion('source-id');
    console.log('Errors:', result.errors);
    ```
+
+### RSS Feed Returns 404 Error
+
+**Problem:** `Request failed with status code 404`
+
+**Common Causes:**
+- Wrong feed URL (e.g., `/feeds` instead of `/feed`)
+- Website changed feed location
+- Feed no longer exists
+
+**Solutions:**
+
+📖 **[See Complete Fix Guide →](./FIX_SCHEMA_AND_RSS_ERRORS.md)** for detailed steps to fix 404 errors.
+
+**Quick Fix:**
+1. Test the feed URL in a browser - should show XML
+2. Try common variations: `/feed`, `/feed/`, `/rss`, `/feed.xml`
+3. Update or deactivate the source in your database
 
 ### Articles Are Duplicates
 
