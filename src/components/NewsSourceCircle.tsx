@@ -18,9 +18,7 @@ export const NewsSourceCircle: React.FC<NewsSourceCircleProps> = ({
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.circle, isActive && styles.circleActive]}>
-        {logoUrl && (
-          <Image source={{ uri: logoUrl }} style={styles.logo} resizeMode="cover" />
-        )}
+        {logoUrl && <Image source={{ uri: logoUrl }} style={styles.logo} resizeMode="cover" />}
       </View>
       <Text style={styles.name} numberOfLines={1}>
         {name}

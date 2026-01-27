@@ -2,7 +2,7 @@
 
 /**
  * Database Setup Script
- * 
+ *
  * This script helps users set up their Supabase database by displaying
  * the migration files that need to be applied.
  */
@@ -24,8 +24,9 @@ if (!fs.existsSync(MIGRATIONS_DIR)) {
 }
 
 // Get all migration files
-const migrations = fs.readdirSync(MIGRATIONS_DIR)
-  .filter(file => file.endsWith('.sql'))
+const migrations = fs
+  .readdirSync(MIGRATIONS_DIR)
+  .filter((file) => file.endsWith('.sql'))
   .sort();
 
 if (migrations.length === 0) {
@@ -79,15 +80,15 @@ console.log('📄 Migration Details:\n');
 migrations.forEach((file, index) => {
   const filePath = path.join(MIGRATIONS_DIR, file);
   const content = fs.readFileSync(filePath, 'utf8');
-  
+
   // Extract comments from the SQL file
   const comments = content
     .split('\n')
-    .filter(line => line.trim().startsWith('--'))
+    .filter((line) => line.trim().startsWith('--'))
     .slice(0, 3) // First 3 comment lines
-    .map(line => line.replace(/^--\s*/, '').trim())
+    .map((line) => line.replace(/^--\s*/, '').trim())
     .join(' ');
-  
+
   const description = comments || 'Database migration';
   console.log(`   ${index + 1}. ${file}`);
   console.log(`      ${description}\n`);

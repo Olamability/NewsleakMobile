@@ -166,11 +166,7 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
 
             {/* Article Image */}
             {article.image_url && (
-              <Image
-                source={{ uri: article.image_url }}
-                style={styles.image}
-                resizeMode="cover"
-              />
+              <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
             )}
 
             {/* Article Content */}
@@ -546,5 +542,12 @@ const styles = StyleSheet.create({
   footer: {
     paddingVertical: SPACING.lg,
     alignItems: 'center',
+  },
+  backButton: {
+    marginTop: SPACING.md,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
   },
 });
