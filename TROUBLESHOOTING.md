@@ -47,6 +47,7 @@ npm start              # Already uses --offline
 npm run start:clear    # Already uses --offline
 npm run android        # Already uses --offline
 npm run ios            # Already uses --offline
+npm run web            # Already uses --offline
 ```
 
 **Manual Override (if needed):**
@@ -72,6 +73,7 @@ npx expo start         # Without --offline flag
    rm -rf node_modules package-lock.json
    npm install
    ```
+   Note: This project uses npm. If using a different package manager, adjust accordingly (e.g., `yarn.lock` for Yarn or `pnpm-lock.yaml` for pnpm).
 
 4. **Update Expo CLI:**
    ```bash
