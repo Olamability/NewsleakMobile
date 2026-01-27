@@ -44,7 +44,6 @@ interface ArticleDetailScreenProps {
 export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ navigation, route }) => {
   const { articleId } = route.params;
   const { data: article, isLoading, error } = useArticle(articleId);
-  const [imageError, setImageError] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [showComments, setShowComments] = useState(false);
   const { mutate: trackEvent } = useTrackEvent();
@@ -166,17 +165,12 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
             </View>
 
             {/* Article Image */}
-            {!imageError && article.image_url ? (
+            {article.image_url && (
               <Image
                 source={{ uri: article.image_url }}
                 style={styles.image}
                 resizeMode="cover"
-                onError={() => setImageError(true)}
               />
-            ) : (
-              <View style={[styles.image, styles.imagePlaceholder]}>
-                <Ionicons name="newspaper-outline" size={80} color={COLORS.textLight} />
-              </View>
             )}
 
             {/* Article Content */}
@@ -383,10 +377,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
     backgroundColor: COLORS.backgroundSecondary,
-  },
-  imagePlaceholder: {
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   content: {
     padding: SPACING.lg,
