@@ -62,7 +62,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   // Determine actual theme based on mode and system preference
   const isDark =
-    themeMode === 'dark' || (themeMode === 'auto' && systemColorScheme === 'dark');
+    themeMode === 'dark' ||
+    (themeMode === 'auto' && systemColorScheme !== null && systemColorScheme === 'dark');
 
   const colors = isDark ? THEMES.dark : THEMES.light;
 

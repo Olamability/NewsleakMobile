@@ -307,6 +307,11 @@ export class AuthService {
    */
   static async handleOAuthCallback(url: string): Promise<ApiResponse<User>> {
     try {
+      // Validate URL has required OAuth parameters
+      if (!url || !url.includes('code=') && !url.includes('access_token=')) {
+        return { error: 'Invalid OAuth callback URL - missing required parameters' };
+      }
+
       // Extract the session from the URL hash/query
       const { data, error } = await supabase.auth.exchangeCodeForSession(url);
 
@@ -315,7 +320,7 @@ export class AuthService {
       }
 
       if (!data?.user) {
-        return { error: 'No user found' };
+        return { error: 'No user found in OAuth response' };
       }
 
       const user: User = {

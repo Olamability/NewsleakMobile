@@ -19,7 +19,7 @@ type FontSizeMode = 'small' | 'medium' | 'large' | 'extra-large';
 const FONT_SIZE_STORAGE_KEY = '@spazr_font_size';
 
 export const SettingsScreen: React.FC = () => {
-  const { isDark, themeMode, setThemeMode } = useTheme();
+  const { isDark, themeMode, setThemeMode, colors } = useTheme();
   const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(true);
   const [fontSize, setFontSizeState] = useState<FontSizeMode>('medium');
 
