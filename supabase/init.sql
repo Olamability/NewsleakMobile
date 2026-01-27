@@ -214,6 +214,8 @@ create table if not exists article_likes (
   device_id text,
   created_at timestamp with time zone default now(),
   -- Ensure a user can only like an article once
+  -- Note: user_id is for authenticated users, device_id is for anonymous users
+  -- Only one of these should be set at a time by the application
   unique(article_id, user_id),
   unique(article_id, device_id)
 );
@@ -379,7 +381,12 @@ insert into trending_topics (topic, search_count) values
   ('AI Developments', 1420)
 on conflict do nothing;
 
+-- =============================================
+-- REFRESH SCHEMA CACHE (OPTIONAL)
+-- =============================================
 -- Notify PostgREST to reload schema cache
+-- Note: This is optional and may not work on all Supabase instances
+-- If it fails, you can safely ignore the error
 notify pgrst, 'reload schema';
 
 -- =============================================

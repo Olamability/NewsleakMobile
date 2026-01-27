@@ -52,9 +52,13 @@ migrations.forEach((file, index) => {
 });
 
 console.log('5. (Optional) Add sample data for testing:');
-const sampleRelativePath = path.relative(process.cwd(), SAMPLE_DATA);
-console.log(`   Copy and paste the content of '${sampleRelativePath}'`);
-console.log('   Then click "Run" in the SQL Editor\n');
+if (fs.existsSync(SAMPLE_DATA)) {
+  const sampleRelativePath = path.relative(process.cwd(), SAMPLE_DATA);
+  console.log(`   Copy and paste the content of '${sampleRelativePath}'`);
+  console.log('   Then click "Run" in the SQL Editor\n');
+} else {
+  console.log('   Sample data file not found (this is optional)\n');
+}
 
 console.log('✅ After completing all steps, your database will be ready!\n');
 
