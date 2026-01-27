@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, GestureResponderEvent } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NewsArticle } from '../types/news';
@@ -19,7 +19,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   onBookmarkPress,
   isBookmarked = false,
 }) => {
-  const [imageError, setImageError] = useState(false);
   const { data: engagement } = useArticleEngagement(article.id);
   const { mutate: toggleLike } = useToggleLike();
 
@@ -105,17 +104,12 @@ export const NewsCard: React.FC<NewsCardProps> = ({
         </View>
 
         {/* Image */}
-        {!imageError && article.image_url ? (
+        {article.image_url && (
           <Image
             source={{ uri: article.image_url }}
             style={styles.image}
             resizeMode="cover"
-            onError={() => setImageError(true)}
           />
-        ) : (
-          <View style={[styles.image, styles.imagePlaceholder]}>
-            <Ionicons name="newspaper-outline" size={32} color={COLORS.textLight} />
-          </View>
         )}
       </View>
     </TouchableOpacity>
@@ -183,10 +177,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: BORDER_RADIUS.md,
-  },
-  imagePlaceholder: {
     backgroundColor: COLORS.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

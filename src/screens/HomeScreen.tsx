@@ -22,9 +22,16 @@ import { CategoryPill } from '../components/CategoryPill';
 import { BreakingNewsCard } from '../components/BreakingNewsCard';
 import { SponsoredCard } from '../components/SponsoredCard';
 import { SearchBar } from '../components/SearchBar';
+import { NewsSourceCircle } from '../components/NewsSourceCircle';
 import { NewsArticle, SponsoredContent } from '../types/news';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
-import { useNewsFeed, useBreakingNews, useSponsoredContent, useTrackEvent } from '../lib/queries';
+import {
+  useNewsFeed,
+  useBreakingNews,
+  useSponsoredContent,
+  useTrackEvent,
+  useNewsSources,
+} from '../lib/queries';
 import { RootStackParamList } from '../navigation/types';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -59,9 +66,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('for-you');
   const [currentBreakingIndex, setCurrentBreakingIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedSource, setSelectedSource] = useState<string | null>(null);
 
   const { data: breakingNews, isLoading: breakingLoading } = useBreakingNews();
   const { data: sponsoredContent, isLoading: _sponsoredLoading } = useSponsoredContent();
+  const { data: newsSources, isLoading: _sourcesLoading } = useNewsSources();
   const { mutate: trackEvent } = useTrackEvent();
 
   const {
@@ -178,6 +187,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         }}
         ListHeaderComponent={
           <>
+            {/* News Sources Row */}
+            {newsSources && newsSources.length > 0 && (
+              <View style={styles.sourcesContainer}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.sourcesContent}
+                >
+                  {newsSources.slice(0, 10).map((source) => (
+                    <NewsSourceCircle
+                      key={source.id}
+                      name={source.name}
+                      logoUrl={source.logo_url}
+                      onPress={() => setSelectedSource(source.id)}
+                      isActive={selectedSource === source.id}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
             {/* Categories */}
             <View style={styles.categoriesContainer}>
               <ScrollView
@@ -196,10 +226,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               </ScrollView>
             </View>
 
-            {/* Breaking News */}
+            {/* Headlines (Breaking News) */}
             {!breakingLoading && breakingNews && breakingNews.length > 0 && (
               <View style={styles.breakingSection}>
-                <Text style={styles.sectionTitle}>Breaking News</Text>
+                <View style={styles.headlineHeader}>
+                  <Text style={styles.sectionTitle}>Headlines</Text>
+                  <Text style={styles.seeMore}>See more {'>'}</Text>
+                </View>
                 <ScrollView
                   horizontal
                   pagingEnabled
@@ -287,6 +320,13 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: SPACING.lg,
   },
+  sourcesContainer: {
+    marginTop: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  sourcesContent: {
+    paddingHorizontal: SPACING.xs,
+  },
   categoriesContainer: {
     marginVertical: SPACING.md,
   },
@@ -296,11 +336,21 @@ const styles = StyleSheet.create({
   breakingSection: {
     marginBottom: SPACING.lg,
   },
+  headlineHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
   sectionTitle: {
     fontSize: FONT_SIZES.xl,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.md,
+  },
+  seeMore: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    color: COLORS.primary,
   },
   breakingContent: {
     paddingRight: SPACING.lg,

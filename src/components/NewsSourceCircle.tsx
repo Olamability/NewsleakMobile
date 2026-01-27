@@ -18,10 +18,8 @@ export const NewsSourceCircle: React.FC<NewsSourceCircleProps> = ({
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.circle, isActive && styles.circleActive]}>
-        {logoUrl ? (
+        {logoUrl && (
           <Image source={{ uri: logoUrl }} style={styles.logo} resizeMode="cover" />
-        ) : (
-          <Text style={styles.placeholder}>📰</Text>
         )}
       </View>
       <Text style={styles.name} numberOfLines={1}>
@@ -54,9 +52,6 @@ const styles = StyleSheet.create({
   logo: {
     width: '100%',
     height: '100%',
-  },
-  placeholder: {
-    fontSize: 32,
   },
   name: {
     marginTop: SPACING.xs,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { NewsArticle } from '../types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
@@ -14,21 +14,14 @@ interface FeaturedArticleCardProps {
 }
 
 export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({ article, onPress }) => {
-  const [imageError, setImageError] = useState(false);
-
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
-      {!imageError && article.image_url ? (
+      {article.image_url && (
         <Image
           source={{ uri: article.image_url }}
           style={styles.image}
           resizeMode="cover"
-          onError={() => setImageError(true)}
         />
-      ) : (
-        <View style={[styles.image, styles.imagePlaceholder]}>
-          <Text style={styles.placeholderText}>📰</Text>
-        </View>
       )}
       <View style={styles.overlay} />
       <View style={styles.content}>
@@ -60,15 +53,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
-  },
-  imagePlaceholder: {
     backgroundColor: COLORS.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    fontSize: 64,
-    opacity: 0.3,
   },
   overlay: {
     position: 'absolute',
