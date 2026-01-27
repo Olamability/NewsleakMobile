@@ -52,9 +52,12 @@ create policy "public_delete_own_like" on article_likes for delete using (true);
 
 -- Insert policies for comments (anyone can comment)
 create policy "public_insert_comment" on article_comments for insert with check (true);
-create policy "users_update_own_comment" on article_comments for update using (
-  user_id = auth.uid() or (user_id is null and device_id is not null)
+-- Authenticated users can only update/delete their own comments
+create policy "auth_users_update_own_comment" on article_comments for update using (
+  user_id is not null and user_id = auth.uid()
 );
-create policy "users_delete_own_comment" on article_comments for delete using (
-  user_id = auth.uid() or (user_id is null and device_id is not null)
+create policy "auth_users_delete_own_comment" on article_comments for delete using (
+  user_id is not null and user_id = auth.uid()
 );
+-- Note: Anonymous comments (device_id only) cannot be edited or deleted
+-- This is a security tradeoff to prevent unauthorized modifications without proper authentication

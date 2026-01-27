@@ -1,20 +1,41 @@
 import { supabase } from './supabase';
 import { ArticleComment } from '../types/news';
 import * as Device from 'expo-device';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const DEVICE_ID_KEY = 'app_device_id';
 
 /**
  * Service for managing article engagement (likes and comments)
  */
 export class EngagementService {
   /**
-   * Get a unique device identifier
+   * Get or generate a unique device identifier
    */
   private static async getDeviceId(): Promise<string> {
-    // Use a combination of device properties to create a pseudo-unique ID
-    const deviceName = Device.deviceName || 'unknown';
-    const modelName = Device.modelName || 'unknown';
-    const osVersion = Device.osVersion || 'unknown';
-    return `${deviceName}-${modelName}-${osVersion}`;
+    try {
+      // Try to get stored device ID
+      let deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY);
+
+      if (!deviceId) {
+        // Generate a unique device ID combining timestamp and random string
+        const timestamp = Date.now().toString(36);
+        const random = Math.random().toString(36).substring(2, 15);
+        const deviceName = Device.deviceName || 'unknown';
+        const modelName = Device.modelName || 'unknown';
+
+        deviceId = `${deviceName}-${modelName}-${timestamp}-${random}`;
+
+        // Store for future use
+        await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId);
+      }
+
+      return deviceId;
+    } catch (error) {
+      console.error('Error getting device ID:', error);
+      // Fallback to a temporary ID
+      return `temp-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+    }
   }
 
   /**
@@ -33,7 +54,7 @@ export class EngagementService {
         query = query.eq('device_id', deviceId);
       }
 
-      const { data: existingLike } = await query.single();
+      const { data: existingLike } = await query.maybeSingle();
 
       if (existingLike) {
         // Unlike - delete the like
@@ -98,7 +119,7 @@ export class EngagementService {
         query = query.eq('device_id', deviceId);
       }
 
-      const { data } = await query.single();
+      const { data } = await query.maybeSingle();
       return !!data;
     } catch (error) {
       return false;
