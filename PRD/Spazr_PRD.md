@@ -1,256 +1,341 @@
-1. PRODUCT VISION (CLARIFIED)
+NEWSHUB – FULL PRODUCT REQUIREMENTS DOCUMENT (PRD v1.0)
 
-NewsArena is a mobile-first news distribution platform that aggregates headlines and summaries from multiple publishers and actively drives traffic back to original news websites, following the same operational, legal, and UX principles as Opera News Mobile.
+This PRD completely replaces all previous versions.
+No assumptions outside this document are allowed.
 
-The app must never function as a content replacement for publishers.
+1. PRODUCT OVERVIEW
+Product Name
 
-2. CORE BUSINESS GUARANTEE (NEW – CRITICAL)
-Traffic Distribution Guarantee
+NewsHub (working name)
 
-Every publisher added to NewsArena must receive measurable outbound traffic to their original website.
+Product Type
 
-This is a first-class product requirement, not a side effect.
+Mobile-first news aggregation platform
 
-3. NON-NEGOTIABLE CONTENT & TRAFFIC RULES (NEW)
+Platforms
 
-These rules apply to all articles, all screens, and all future features.
+Android (primary)
 
-Mandatory
+iOS (secondary)
 
-❌ Full articles must NEVER be displayed
+Tech Stack (Fixed)
 
-✅ Only summaries / excerpts (max 300–400 chars)
+Frontend: React Native (Expo)
 
-✅ Publisher name must always be visible
+Backend: Supabase (Postgres, Auth, Edge Functions)
 
-✅ A clear outbound CTA must exist on every article:
+Content Source: RSS feeds
 
-“Read Full Article”
+Analytics: Supabase tables + Edge Functions
 
-“Continue on {Publisher Name}”
+2. PRODUCT GOAL
 
-✅ Clicking the CTA must:
+To build a news aggregation app that behaves exactly like Opera News Mobile, aggregating headlines and summaries while actively driving traffic to original publisher websites.
 
-Open the publisher’s original URL
+The app must never function as a content replacement.
 
-Generate a real page view for the publisher
+3. CORE BUSINESS PRINCIPLE (NON-NEGOTIABLE)
 
-✅ Every outbound click MUST be tracked
+Publisher traffic generation is a first-class feature.
 
-Prohibited
+The platform exists to:
 
-No content rewriting
+Discover content
 
-No paywall bypass
+Preview content
 
-No ad injection into publisher pages
+Redirect users to publishers
 
-No hiding the source
+Any feature that reduces outbound traffic is considered incorrect.
 
-No in-app full reading mode
+4. USER ROLES
+4.1 Guest User (Default)
 
-Violation = Critical defect
+Browse all categories
 
-4. USER ROLES (UNCHANGED + CLARIFIED)
-Guest User (Default)
-
-Read all summaries
-
-Browse categories
+Read summaries
 
 Open full articles externally
 
-No login required
+No authentication required
 
-Logged-In User (Optional)
+4.2 Authenticated User (Optional)
 
-Bookmarks
+Bookmark articles
 
-Reading history
+View reading history
 
-Notification preferences
+Receive notifications
 
-Login must never block traffic flow
+Customize feed preferences
 
-5. UX FLOW (OPERA-ACCURATE)
-Home → Article → Publisher (MANDATORY FLOW)
+Authentication must never block article access or outbound traffic.
+
+5. CONTENT RULES (STRICT)
+Allowed
+
+Article title
+
+Featured image
+
+Source name/logo
+
+Publish timestamp
+
+Short summary (max 300–400 characters)
+
+Forbidden
+
+Full article bodies
+
+Long-form reading inside app
+
+Rewritten articles
+
+Paywall bypass
+
+Attribution removal
+
+6. MANDATORY TRAFFIC & ATTRIBUTION RULES
+
+These rules apply to every article:
+
+A visible outbound CTA must exist:
+
+“Read Full Article”
+
+“Continue on {Publisher}”
+
+Clicking the CTA must:
+
+Open the original publisher URL
+
+Use WebView or external browser
+
+Publisher branding must be visible on:
+
+Feed cards
+
+Article preview screens
+
+Every outbound click must be tracked
+
+Users must never consume full content without leaving the app
+
+Failure = Critical product defect
+
+7. USER EXPERIENCE FLOW (OPERA-STYLE)
 Home Feed
   ↓
 Article Preview (summary only)
   ↓
-Read Full Article (external)
+Read Full Article (mandatory CTA)
   ↓
 Publisher Website
 
 
-There must be no alternative path that avoids the publisher site.
+No alternate reading flow is allowed.
 
-6. ARTICLE PREVIEW SCREEN (UPDATED REQUIREMENTS)
-Display
+8. APP SCREENS & BEHAVIOR
+8.1 Splash Screen
+
+2–4 seconds
+
+App branding only
+
+Auto-redirect to Home
+
+8.2 Home Feed
+
+Mixed categories
+
+Infinite scroll
+
+Cards include:
 
 Title
 
-Featured image
+Image
 
-Publisher logo/name
+Source
 
-Publish time
+Timestamp
 
-Short summary
+Summary snippet
+
+8.3 Categories Screen
+
+Politics
+
+Business
+
+Sports
+
+Entertainment
+
+Tech
+
+Lifestyle
+
+Health
+
+8.4 Article Preview Screen
+
+Displays summary only
+
+Shows publisher branding
 
 Primary CTA: Read Full Article
 
-CTA Behavior
+CTA must be visually dominant
 
-Opens original_url
+8.5 In-App Browser
 
-In-app browser OR external browser
+Loads publisher URL
 
-Logs outbound click event
+No modification
 
-7. ANALYTICS & TRAFFIC TRACKING (ENHANCED)
-Existing Table (EXTENDED, NOT REPLACED)
+No ad injection
 
+No content manipulation
+
+8.6 Bookmarks (Auth Only)
+
+Save article reference only
+
+No content duplication
+
+9. CONTENT INGESTION (RSS)
+RSS Processing Rules
+
+Fetch feeds periodically
+
+Strip HTML
+
+Extract title, image, publish date
+
+Generate short summary
+
+Store original URL exactly
+
+Reject feeds without outbound URLs
+
+10. BACKEND DATA MODEL (SUPABASE)
+Required Tables
+
+news_sources
+
+news_articles
+
+categories
+
+bookmarks
+
+users
+
+Analytics Tables
 analytics_events
 
-New Standardized Event Types
-view_article
-click_outbound
-bookmark
-notification_open
+Tracks:
 
-Outbound Click Logging (MANDATORY)
+Article views
 
-Each outbound click must store:
+Outbound clicks
+
+Notification opens
+
+outbound_clicks
+
+Stores:
 
 article_id
 
 source_id
 
-publisher name
-
 timestamp
 
-(optional) user_id
+11. ANALYTICS REQUIREMENTS
+Track Events
 
-This enables:
+view_article
 
-Publisher performance reports
+click_outbound
 
-Future publisher dashboards
+bookmark
 
-Trust & transparency
+app_open
 
-8. DATABASE EXTENSIONS (MINIMAL & SAFE)
-8.1 Extend news_articles
-alter table news_articles
-add column excerpt_length int default 300;
+Purpose
 
-8.2 Add outbound_clicks (OPTIONAL BUT RECOMMENDED)
+Measure publisher traffic
 
-This does NOT break analytics_events; it complements it.
+Enable future publisher dashboards
 
-create table outbound_clicks (
-  id uuid primary key default uuid_generate_v4(),
-  article_id uuid references news_articles(id) on delete cascade,
-  source_id uuid references news_sources(id),
-  clicked_at timestamp with time zone default now()
-);
+Platform performance analysis
 
-9. RSS INGESTION RULES (CLARIFIED)
+12. NOTIFICATIONS
 
-During ingestion:
+Breaking news
 
-Strip all HTML
+Category-based alerts
 
-Never store body content
+Deep-link into article preview (not full article)
 
-Limit summaries automatically
+13. SEARCH
 
-Preserve original_url exactly
+Keyword-based
 
-Reject feeds without valid outbound URLs
+Title & summary search only
 
-10. PUBLISHER TRUST MODEL (NEW SECTION)
-Publisher Value Proposition
+No full-text article indexing
 
-Free distribution
+14. PERFORMANCE REQUIREMENTS
 
-Real human traffic
+Feed load < 2 seconds
 
-Brand visibility
+Cached images
 
-No content theft
+Graceful offline handling
 
-Optional paid boosting (future)
+Pagination for feeds
 
-Publisher Expectations
+15. SECURITY & COMPLIANCE
 
-RSS must be owned or licensed
+Respect RSS licenses
 
-Original URLs must remain intact
+GDPR-compliant analytics
 
-No spam or fake news
+Privacy policy mandatory
 
-11. FUTURE: PUBLISHER PERFORMANCE DASHBOARD (SUPPORTED BY PRD)
+Google Play & App Store compliant
 
-Because traffic is tracked, the platform can later show:
+16. MONETIZATION (FUTURE-READY)
 
-Impressions
+Native ads between cards
 
-Click-through rate (CTR)
+Sponsored articles (clearly labeled)
 
-Daily outbound clicks
+Premium ad-free tier
 
-Top-performing articles
+Ads must never block outbound traffic.
 
-This is impossible without the traffic rules above — now it’s guaranteed.
+17. DEFINITION OF DONE (FINAL)
 
-12. GOOGLE PLAY COMPLIANCE (RECONFIRMED)
+The app is complete only if:
 
-Attribution always visible
+No full article is readable in-app
 
-No deceptive redirection
+All articles have outbound CTAs
 
-Sponsored content labeled
+Publisher branding is always visible
 
-Privacy policy required
+Outbound clicks are tracked
 
-External links allowed (policy-safe)
+Traffic reaches original publishers
 
-13. SUCCESS METRICS (UPDATED)
-Reader Metrics
+18. HARD CONSTRAINTS
 
-DAU / MAU
-
-Session length
-
-Notification CTR
-
-Publisher Metrics (NEW)
-
-Outbound clicks per publisher
-
-Article CTR
-
-Click growth rate
-
-14. AI CODING AGENT – FINAL HARD CONSTRAINTS (UPDATED)
-
-Add this to your MASTER PROMPT:
-
-The app is a traffic distribution platform.
-Never optimize for in-app reading.
-Always push users to the original publisher.
-Outbound clicks are mandatory and tracked.
-Any design that reduces publisher traffic is incorrect.
-
-15. DEFINITION OF DONE (UPDATED)
-
-The app is NOT complete unless:
-
-✅ Publisher name is visible everywhere
-✅ No full article is readable in-app
-✅ Every article has an outbound link
-✅ Outbound clicks are logged
-✅ Traffic reaches original sites
+This app is a traffic-distribution platform, not a reader.
+Always push users to publishers.
+Never optimize for in-app consumption.
+Any feature that reduces outbound clicks is invalid.
