@@ -152,7 +152,7 @@ export class ContentService {
 
     // Check for media:content or media:thumbnail
     const item = rawArticle as unknown as Record<string, unknown>;
-    
+
     // Handle media:content (can be array or object)
     if (item['media:content']) {
       const mediaContent = item['media:content'];
