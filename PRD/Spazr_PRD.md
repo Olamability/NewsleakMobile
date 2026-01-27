@@ -6,7 +6,7 @@ No assumptions outside this document are allowed.
 1. PRODUCT OVERVIEW
 Product Name
 
-NewsHub (working name)
+Spazr News
 
 Product Type
 
