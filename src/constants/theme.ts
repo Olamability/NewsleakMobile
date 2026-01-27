@@ -1,6 +1,7 @@
 // Theme constants for consistent UI across the app - Based on UI Reference Designs
 
-export const COLORS = {
+// Light theme colors
+const LIGHT_COLORS = {
   primary: '#1E40AF', // Spazr Blue
   primaryDark: '#1E3A8A',
   primaryLight: '#3B82F6',
@@ -54,6 +55,72 @@ export const COLORS = {
   // Icon colors
   iconGray: '#9CA3AF',
   iconActive: '#1E40AF',
+};
+
+// Dark theme colors
+const DARK_COLORS = {
+  primary: '#3B82F6', // Lighter blue for dark mode
+  primaryDark: '#2563EB',
+  primaryLight: '#60A5FA',
+  secondary: '#FBBF24',
+  accent: '#A78BFA',
+
+  // Button colors
+  buttonGray: '#9CA3AF',
+  buttonGrayDark: '#6B7280',
+
+  // Text colors
+  text: '#F9FAFB',
+  textSecondary: '#D1D5DB',
+  textLight: '#9CA3AF',
+  textPlaceholder: '#6B7280',
+
+  // Background colors
+  background: '#111827',
+  backgroundSecondary: '#1F2937',
+  backgroundDark: '#030712',
+  searchBackground: '#1F2937',
+  filterActive: '#1E3A8A',
+
+  // UI colors
+  border: '#374151',
+  borderDark: '#4B5563',
+  borderLight: '#1F2937',
+  card: '#1F2937',
+  shadow: '#000000',
+
+  // Status colors
+  success: '#34D399',
+  error: '#F87171',
+  warning: '#FBBF24',
+  info: '#60A5FA',
+
+  // Category colors (slightly brighter for dark mode)
+  politics: '#EF4444',
+  sports: '#22C55E',
+  business: '#FB923C',
+  technology: '#22D3EE',
+  entertainment: '#A78BFA',
+  health: '#10B981',
+  lifestyle: '#F472B6',
+  breaking: '#EF4444',
+  environment: '#22D3EE',
+
+  // Sponsored color
+  sponsored: '#A78BFA',
+
+  // Icon colors
+  iconGray: '#9CA3AF',
+  iconActive: '#60A5FA',
+};
+
+// Default to light theme for backwards compatibility
+export const COLORS = LIGHT_COLORS;
+
+// Export both themes
+export const THEMES = {
+  light: LIGHT_COLORS,
+  dark: DARK_COLORS,
 };
 
 export const FONTS = {
