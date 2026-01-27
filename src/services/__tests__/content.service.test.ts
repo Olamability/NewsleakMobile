@@ -194,14 +194,14 @@ describe('ContentService', () => {
       expect(processed.language).toBe('en-NG');
     });
 
-    it('should use default image if none found', async () => {
+    it('should return empty string if no image found', async () => {
       const processed = await contentService.processArticle(
         mockRawArticle,
         'Test Source',
         'https://example.com'
       );
 
-      expect(processed.image_url).toBeTruthy();
+      expect(processed.image_url).toBe('');
     });
 
     it('should extract image from enclosure', async () => {

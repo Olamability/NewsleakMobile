@@ -10,8 +10,6 @@ interface ContentProcessingOptions {
 }
 
 export class ContentService {
-  private readonly DEFAULT_IMAGE_URL =
-    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80';
   private readonly MAX_SUMMARY_LENGTH = 300;
   private readonly CATEGORY_KEYWORDS = {
     politics: ['election', 'government', 'president', 'parliament', 'minister', 'political'],
@@ -37,8 +35,8 @@ export class ContentService {
     const slug = this.generateSlug(title);
     const summary = this.extractSummary(rawArticle, options?.maxSummaryLength);
     const content_snippet = this.extractContentSnippet(rawArticle);
-    const image_url =
-      this.extractImageUrl(rawArticle) || options?.defaultImageUrl || this.DEFAULT_IMAGE_URL;
+    // Extract image from RSS feed data, don't use fallback
+    const image_url = this.extractImageUrl(rawArticle) || options?.defaultImageUrl || '';
     const article_url = this.cleanUrl(rawArticle.link);
     const canonical_url = this.createCanonicalUrl(article_url);
     const category = this.inferCategory(rawArticle, options?.defaultCategory);
@@ -154,9 +152,21 @@ export class ContentService {
 
     // Check for media:content or media:thumbnail
     const item = rawArticle as unknown as Record<string, unknown>;
+
+    // Handle media:content (can be array or object)
     if (item['media:content']) {
       const mediaContent = item['media:content'];
-      if (typeof mediaContent === 'object' && mediaContent !== null) {
+      if (Array.isArray(mediaContent)) {
+        // Find first image in array
+        for (const media of mediaContent) {
+          if (typeof media === 'object' && media !== null) {
+            const mediaUrl = (media as Record<string, unknown>).url;
+            if (typeof mediaUrl === 'string' && this.isImageUrl(mediaUrl)) {
+              return mediaUrl;
+            }
+          }
+        }
+      } else if (typeof mediaContent === 'object' && mediaContent !== null) {
         const mediaUrl = (mediaContent as Record<string, unknown>).url;
         if (typeof mediaUrl === 'string' && this.isImageUrl(mediaUrl)) {
           return mediaUrl;
@@ -164,9 +174,20 @@ export class ContentService {
       }
     }
 
+    // Handle media:thumbnail (can be array or object)
     if (item['media:thumbnail']) {
       const mediaThumbnail = item['media:thumbnail'];
-      if (typeof mediaThumbnail === 'object' && mediaThumbnail !== null) {
+      if (Array.isArray(mediaThumbnail)) {
+        // Find first image in array
+        for (const thumb of mediaThumbnail) {
+          if (typeof thumb === 'object' && thumb !== null) {
+            const thumbUrl = (thumb as Record<string, unknown>).url;
+            if (typeof thumbUrl === 'string' && this.isImageUrl(thumbUrl)) {
+              return thumbUrl;
+            }
+          }
+        }
+      } else if (typeof mediaThumbnail === 'object' && mediaThumbnail !== null) {
         const thumbUrl = (mediaThumbnail as Record<string, unknown>).url;
         if (typeof thumbUrl === 'string' && this.isImageUrl(thumbUrl)) {
           return thumbUrl;
@@ -186,7 +207,7 @@ export class ContentService {
 
       // Fall back to img tags
       const imageMatch = rawArticle.content.match(/<img[^>]+src="([^">]+)"/i);
-      if (imageMatch && imageMatch[1]) {
+      if (imageMatch && imageMatch[1] && this.isImageUrl(imageMatch[1])) {
         return imageMatch[1];
       }
     }
@@ -194,7 +215,7 @@ export class ContentService {
     // Check description for images
     if (rawArticle.description) {
       const imageMatch = rawArticle.description.match(/<img[^>]+src="([^">]+)"/i);
-      if (imageMatch && imageMatch[1]) {
+      if (imageMatch && imageMatch[1] && this.isImageUrl(imageMatch[1])) {
         return imageMatch[1];
       }
     }
@@ -206,6 +227,7 @@ export class ContentService {
    * Check if URL is an image
    */
   private isImageUrl(url: string): boolean {
+    if (!url) return false;
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
     const lowerUrl = url.toLowerCase();
     return imageExtensions.some((ext) => lowerUrl.includes(ext));
