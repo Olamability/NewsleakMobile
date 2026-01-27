@@ -1,5 +1,27 @@
 # Database Setup Guide
 
+## 🚨 Quick Fix for "relation does not exist" Error
+
+If you're seeing this error:
+```
+Error: Failed to run sql query: ERROR: 42P01: relation "news_articles" does not exist
+```
+
+**QUICK SOLUTION:**
+
+1. Run this command in your project:
+   ```bash
+   npm run setup:db
+   ```
+
+2. Follow the on-screen instructions to apply migrations in your Supabase dashboard
+
+3. Your database will be set up and the error will be fixed!
+
+**Need more details?** Continue reading below.
+
+---
+
 This guide will help you set up the database for the NewsleakMobile app using Supabase.
 
 ## Problem
@@ -29,6 +51,17 @@ npm run setup:db
 ```
 
 This will guide you through applying all necessary migrations.
+
+### One-File Quick Setup (Alternative)
+
+If you prefer to apply everything at once:
+
+1. Log in to your [Supabase Dashboard](https://app.supabase.com)
+2. Select your project
+3. Go to the **SQL Editor** (left sidebar)
+4. Copy and paste the entire content of `supabase/init.sql`
+5. Click **Run**
+6. Done! All tables, indexes, and seed data will be created.
 
 ### Manual Migration Application
 
