@@ -145,10 +145,13 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
     }
   };
 
-  const handleRelatedArticlePress = (relatedArticle: NewsArticle) => {
-    trackEvent({ eventType: 'article_view', articleId: relatedArticle.id });
-    navigation.push('ArticleDetail', { articleId: relatedArticle.id });
-  };
+  const handleRelatedArticlePress = useCallback(
+    (relatedArticle: NewsArticle) => {
+      trackEvent({ eventType: 'article_view', articleId: relatedArticle.id });
+      navigation.push('ArticleDetail', { articleId: relatedArticle.id });
+    },
+    [trackEvent, navigation]
+  );
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {

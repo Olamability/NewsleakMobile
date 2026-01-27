@@ -168,9 +168,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
       <FlatList
         data={feedItems}
-        keyExtractor={(item, index) => {
+        keyExtractor={(item) => {
           if (item.type === 'sponsored') {
-            return `sponsored-${(item.data as SponsoredContent).id}-${index}`;
+            return `sponsored-${(item.data as SponsoredContent).id}`;
           }
           return `article-${(item.data as NewsArticle).id}`;
         }}
