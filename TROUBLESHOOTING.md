@@ -3,7 +3,8 @@
 Common issues and their solutions for Spazr News Aggregator.
 
 ## Table of Contents
-- [🩹 Database Schema & RSS Feed Errors](#database-schema--rss-feed-errors) - **NEW!**
+- [🔥 Expo CLI Fetch Errors](#expo-cli-fetch-errors) - **NEW!**
+- [🩹 Database Schema & RSS Feed Errors](#database-schema--rss-feed-errors)
 - [Data & Content Issues](#data--content-issues)
 - [Installation Issues](#installation-issues)
 - [Development Issues](#development-issues)
@@ -12,6 +13,73 @@ Common issues and their solutions for Spazr News Aggregator.
 - [Navigation Issues](#navigation-issues)
 - [Performance Issues](#performance-issues)
 - [Build Issues](#build-issues)
+
+---
+
+## Expo CLI Fetch Errors
+
+### TypeError: fetch failed
+
+**Error Message:**
+```
+TypeError: fetch failed
+    at node:internal/deps/undici/undici:15845:13
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at fetchWithCredentials (...@expo/cli/src/api/rest/client.ts:98:24)
+    at getVersionsAsync (...@expo/cli/src/api/getVersions.ts:52:19)
+```
+
+**Cause:** This error occurs when Expo CLI attempts to fetch version information from the Expo API servers during startup. This can fail due to:
+- Network connectivity issues
+- Firewall or proxy restrictions blocking outbound connections
+- Expo server outages or issues
+- DNS resolution problems
+- Antivirus software blocking network requests
+
+**Solution:** Use Expo's offline mode to skip version checks
+
+The app has been configured to run in offline mode by default, which prevents Expo from making unnecessary network requests to version APIs.
+
+**Quick Fix:**
+All npm scripts now include the `--offline` flag by default:
+```bash
+npm start              # Already uses --offline
+npm run start:clear    # Already uses --offline
+npm run android        # Already uses --offline
+npm run ios            # Already uses --offline
+```
+
+**Manual Override (if needed):**
+If you need to run with version checks enabled:
+```bash
+npx expo start         # Without --offline flag
+```
+
+**Alternative Solutions:**
+1. **Clear Expo cache:**
+   ```bash
+   rm -rf .expo
+   npm start
+   ```
+
+2. **Check network/firewall:**
+   - Ensure Node.js is allowed through your firewall
+   - Check if you're behind a corporate proxy
+   - Try disabling antivirus temporarily
+
+3. **Clear node_modules and reinstall:**
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+4. **Update Expo CLI:**
+   ```bash
+   npm install expo@latest
+   ```
+
+**Technical Details:**
+The `--offline` flag tells Expo CLI to skip remote version checks and API calls that are not essential for local development. This makes the development experience more reliable and faster, especially in environments with restricted network access.
 
 ---
 
