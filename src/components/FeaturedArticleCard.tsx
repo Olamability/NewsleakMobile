@@ -22,7 +22,9 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({ articl
       <View style={styles.overlay} />
       <View style={styles.content}>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{article.source_name}</Text>
+          <Text style={styles.badgeText}>
+            {article.news_sources?.name || 'Unknown Source'}
+          </Text>
           <Text style={styles.badgeText}> LIVE</Text>
         </View>
         <View style={styles.timeContainer}>

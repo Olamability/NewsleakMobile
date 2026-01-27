@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -41,6 +41,14 @@ interface ArticleDetailScreenProps {
   route: ArticleDetailScreenRouteProp;
 }
 
+// Memoized component for rendering related news items to improve performance
+const RelatedNewsItem = React.memo<{
+  item: NewsArticle;
+  onPress: (article: NewsArticle) => void;
+}>(({ item, onPress }) => {
+  return <NewsCard article={item} onPress={() => onPress(item)} />;
+});
+
 export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ navigation, route }) => {
   const { articleId } = route.params;
   const { data: article, isLoading, error } = useArticle(articleId);
@@ -61,11 +69,15 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
   } = useNewsFeed('all');
 
   // Filter out the current article from related news and optimize performance
-  const relatedNews = React.useMemo(() => {
+  const relatedNews = useMemo(() => {
     if (!relatedNewsData) return [];
     const allArticles = relatedNewsData.pages.flatMap((page) => page);
-    // Limit to first 50 articles, then filter out current article, then take 20
-    return allArticles
+    // Remove duplicates based on ID, then limit to first 50 articles,
+    // filter out current article, then take 20
+    const uniqueArticles = Array.from(
+      new Map(allArticles.map((article) => [article.id, article])).values()
+    );
+    return uniqueArticles
       .slice(0, 50)
       .filter((item) => item.id !== articleId)
       .slice(0, 20);
@@ -293,7 +305,7 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
           </>
         }
         renderItem={({ item }) => (
-          <NewsCard article={item} onPress={() => handleRelatedArticlePress(item)} />
+          <RelatedNewsItem item={item} onPress={handleRelatedArticlePress} />
         )}
         contentContainerStyle={styles.listContent}
         onEndReached={handleLoadMore}
@@ -347,7 +359,8 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
+    paddingTop: SPACING.lg, // Added top padding to prevent overlap
+    paddingBottom: SPACING.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

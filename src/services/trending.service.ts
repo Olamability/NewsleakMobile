@@ -150,7 +150,16 @@ export class TrendingService {
 
       const { data: articles, error } = await supabase
         .from('news_articles')
-        .select('*')
+        .select(
+          `
+          *,
+          news_sources (
+            id,
+            name,
+            logo_url
+          )
+        `
+        )
         .gte('published_at', cutoffDate.toISOString())
         .order('view_count', { ascending: false })
         .limit(limit);

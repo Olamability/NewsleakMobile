@@ -20,7 +20,7 @@ interface NewsCardProps {
   isBookmarked?: boolean;
 }
 
-export const NewsCard: React.FC<NewsCardProps> = ({
+export const NewsCard: React.FC<NewsCardProps> = React.memo(({
   article,
   onPress,
   onBookmarkPress,
@@ -117,7 +117,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {
