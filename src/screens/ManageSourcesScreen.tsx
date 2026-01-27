@@ -80,6 +80,36 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = () => {
     }
   };
 
+  const handleDeleteSource = (sourceId: string, sourceName: string) => {
+    Alert.alert(
+      'Delete Source',
+      `Are you sure you want to delete "${sourceName}"? This will also delete all articles from this source. This action cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await AdminService.deleteSource(sourceId);
+
+              if (response.error) {
+                Alert.alert('Error', response.error);
+                return;
+              }
+
+              setSources((prevSources) => prevSources.filter((source) => source.id !== sourceId));
+              Alert.alert('Success', 'News source deleted successfully');
+            } catch (error) {
+              console.error('Error deleting source:', error);
+              Alert.alert('Error', 'Failed to delete source. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleRefresh = () => {
     setIsRefreshing(true);
     loadSources(true);
@@ -103,6 +133,12 @@ export const ManageSourcesScreen: React.FC<ManageSourcesScreenProps> = () => {
             thumbColor={COLORS.background}
           />
         </View>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteSource(item.id, item.name)}
+        >
+          <Text style={styles.deleteButtonText}>🗑️</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -216,6 +252,8 @@ const styles = StyleSheet.create({
   },
   sourceActions: {
     marginLeft: SPACING.md,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statusContainer: {
     alignItems: 'flex-end',
@@ -228,5 +266,14 @@ const styles = StyleSheet.create({
   activeText: {
     color: COLORS.primary,
     fontWeight: '600',
+  },
+  deleteButton: {
+    padding: SPACING.sm,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: BORDER_RADIUS.sm,
+    marginLeft: SPACING.md,
+  },
+  deleteButtonText: {
+    fontSize: 20,
   },
 });

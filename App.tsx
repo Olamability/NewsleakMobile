@@ -25,7 +25,11 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    registerForPushNotificationsAsync();
+    // Register for push notifications (gracefully handles Expo Go)
+    registerForPushNotificationsAsync().catch((error) => {
+      // Silently handle notification registration errors
+      // The function already logs appropriate warnings
+    });
 
     const cleanup = setupNotificationListeners(
       (notification) => {

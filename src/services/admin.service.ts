@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { NewsArticle, NewsSource, ApiResponse, PaginatedResponse, User } from '../types';
+import { SourceService } from './source.service';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -97,6 +98,13 @@ export class AdminService {
       const message = error instanceof Error ? error.message : 'Failed to toggle source status';
       return { error: message };
     }
+  }
+
+  /**
+   * Delete a news source (delegates to SourceService)
+   */
+  static async deleteSource(sourceId: string): Promise<ApiResponse<void>> {
+    return SourceService.deleteSource(sourceId);
   }
 
   /**

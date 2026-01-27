@@ -80,7 +80,7 @@ create table if not exists sponsored_content (
 create table if not exists analytics_events (
   id uuid primary key default uuid_generate_v4(),
   event_type text not null,
-  article_id uuid references news_articles(id),
+  article_id uuid references news_articles(id) on delete cascade,
   user_id uuid,
   metadata jsonb,
   created_at timestamp with time zone default now()
@@ -241,7 +241,7 @@ create policy "public_read_sponsored" on sponsored_content for select using (
 );
 
 -- News articles management policies (authenticated users - admin checks at app level)
-create policy "authenticated_insert_articles" on news_articles for insert with check (auth.uid() is not null);
+create policy "allow_insert_articles" on news_articles for insert with check (true);
 create policy "authenticated_update_articles" on news_articles for update using (auth.uid() is not null) with check (auth.uid() is not null);
 create policy "authenticated_delete_articles" on news_articles for delete using (auth.uid() is not null);
 

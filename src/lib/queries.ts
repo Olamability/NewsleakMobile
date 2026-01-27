@@ -43,7 +43,9 @@ export const useNewsFeed = (categoryId?: string) => {
         .range(pageParam * ITEMS_PER_PAGE, (pageParam + 1) * ITEMS_PER_PAGE - 1);
 
       if (categoryId && categoryId !== 'all' && categoryId !== 'for-you') {
-        query = query.eq('category_id', categoryId);
+        // Filter by category slug (text field) instead of category_id (uuid field)
+        // The categoryId parameter is actually a category slug
+        query = query.eq('category', categoryId);
       }
 
       const { data, error } = await query;
