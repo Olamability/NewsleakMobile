@@ -9,7 +9,9 @@ function safeResolve(moduleName) {
   try {
     return require.resolve(moduleName);
   } catch (error) {
-    console.warn(`Warning: Could not resolve module '${moduleName}'. Please run 'npm install' to install dependencies.`);
+    console.warn(
+      `Warning: Could not resolve module '${moduleName}'. Please run 'npm install' to install dependencies.`
+    );
     return undefined;
   }
 }

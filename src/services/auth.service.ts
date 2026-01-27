@@ -308,7 +308,7 @@ export class AuthService {
   static async handleOAuthCallback(url: string): Promise<ApiResponse<User>> {
     try {
       // Validate URL has required OAuth parameters
-      if (!url || !url.includes('code=') && !url.includes('access_token=')) {
+      if (!url || (!url.includes('code=') && !url.includes('access_token='))) {
         return { error: 'Invalid OAuth callback URL - missing required parameters' };
       }
 

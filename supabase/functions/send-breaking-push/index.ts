@@ -31,15 +31,17 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data: article, error: articleError } = await supabase
       .from('news_articles')
-      .select(`
+      .select(
+        `
         *,
         news_sources (name)
-      `)
+      `
+      )
       .eq('id', articleId)
       .single();
 
@@ -65,8 +67,8 @@ serve(async (req) => {
       );
     }
 
-    const pushTokens = devices.map(d => d.expo_push_token).filter(Boolean);
-    
+    const pushTokens = devices.map((d) => d.expo_push_token).filter(Boolean);
+
     const chunks = chunkArray(pushTokens, 100);
     let totalSent = 0;
 
@@ -96,16 +98,14 @@ serve(async (req) => {
       }
     }
 
-    await supabase
-      .from('analytics_events')
-      .insert({
-        event_type: 'push_notification_sent',
-        article_id: articleId,
-        metadata: {
-          recipients: totalSent,
-          timestamp: new Date().toISOString(),
-        },
-      });
+    await supabase.from('analytics_events').insert({
+      event_type: 'push_notification_sent',
+      article_id: articleId,
+      metadata: {
+        recipients: totalSent,
+        timestamp: new Date().toISOString(),
+      },
+    });
 
     return new Response(
       JSON.stringify({
@@ -119,13 +119,10 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    });
   }
 });
 

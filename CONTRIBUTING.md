@@ -65,6 +65,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 ```
 
 **Types:**
+
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
@@ -75,6 +76,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 - `chore`: Changes to build process or auxiliary tools
 
 **Examples:**
+
 ```
 feat(auth): add password reset functionality
 
@@ -98,6 +100,7 @@ refactor(api): improve error handling in news service
 - Use **meaningful variable names**
 
 Example:
+
 ```typescript
 /**
  * Fetch paginated news articles from the API
@@ -126,6 +129,7 @@ const fetchArticles = async (
   4. Styles
 
 Example:
+
 ```typescript
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
@@ -195,18 +199,22 @@ src/
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 How has this been tested?
 
 ## Checklist
+
 - [ ] My code follows the style guidelines
 - [ ] I have performed a self-review
 - [ ] I have commented my code where necessary
@@ -219,17 +227,20 @@ How has this been tested?
 ## Style Guide
 
 ### Component Naming
+
 - PascalCase for component names
 - Descriptive names that indicate purpose
 - Add "Screen" suffix for screen components
 - Add "Context" suffix for context providers
 
 ### File Naming
+
 - PascalCase for component files
 - camelCase for utility files
 - Match file name with main export
 
 ### Styling
+
 - Use StyleSheet.create() for styles
 - Follow consistent spacing (theme.ts)
 - Group related styles together
@@ -246,6 +257,7 @@ How has this been tested?
 ## Recognition
 
 Contributors will be recognized in:
+
 - README.md contributors section
 - Release notes
 - Project documentation

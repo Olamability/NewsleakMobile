@@ -49,6 +49,8 @@ const RelatedNewsItem = React.memo<{
   return <NewsCard article={item} onPress={() => onPress(item)} />;
 });
 
+RelatedNewsItem.displayName = 'RelatedNewsItem';
+
 export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ navigation, route }) => {
   const { articleId } = route.params;
   const { data: article, isLoading, error } = useArticle(articleId);

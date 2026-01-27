@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { NewsArticle } from '../types';
+import { NewsArticle } from '../types/news';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { formatRelativeTime } from '../utils';
 
@@ -22,9 +22,7 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({ articl
       <View style={styles.overlay} />
       <View style={styles.content}>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            {article.news_sources?.name || 'Unknown Source'}
-          </Text>
+          <Text style={styles.badgeText}>{article.news_sources?.name || 'Unknown Source'}</Text>
           <Text style={styles.badgeText}> LIVE</Text>
         </View>
         <View style={styles.timeContainer}>

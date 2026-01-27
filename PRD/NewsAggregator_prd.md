@@ -1,15 +1,19 @@
 # Product Requirements Document (PRD)
 
 ## Product Name
+
 News Aggregator Mobile App (Opera News–style)
 
 ## Version
+
 v1.0
 
 ## Author
+
 Ability
 
 ## Date
+
 January 2026
 
 ---
@@ -25,6 +29,7 @@ The product is inspired by platforms like **Opera News** and **Google News**, bu
 ## 2. Goals & Objectives
 
 ### Primary Goals
+
 - Aggregate news from multiple sources in real time
 - Deliver categorized and searchable news content
 - Provide personalized reading experience
@@ -32,6 +37,7 @@ The product is inspired by platforms like **Opera News** and **Google News**, bu
 - Ensure scalability and performance
 
 ### Success Metrics (KPIs)
+
 - Daily Active Users (DAU)
 - Average session duration
 - Articles read per user
@@ -43,6 +49,7 @@ The product is inspired by platforms like **Opera News** and **Google News**, bu
 ## 3. Target Users
 
 ### User Types
+
 1. **Anonymous Users**
    - Can read news
    - Can browse categories
@@ -68,11 +75,13 @@ The product is inspired by platforms like **Opera News** and **Google News**, bu
 Automatically fetch news from external sources.
 
 **Sources:**
+
 - RSS Feeds (BBC, Punch, CNN, Blogs)
 - Public News APIs
 - Manual Admin Posts (optional)
 
 **Ingestion Process:**
+
 - Scheduled Edge Functions (cron)
 - Fetch feeds periodically
 - Deduplicate articles
@@ -102,11 +111,13 @@ All articles must conform to a unified schema:
 ### 4.3 Categorization & Tagging
 
 **Methods:**
+
 - RSS category mapping
 - Keyword-based classification
 - Optional AI-based tagging (future)
 
 **Default Categories:**
+
 - Breaking News
 - Politics
 - Sports
@@ -131,11 +142,13 @@ All articles must conform to a unified schema:
 ### 4.5 Search
 
 **Capabilities:**
+
 - Search by title
 - Search by keywords
 - Filter by category
 
 **Implementation Options:**
+
 - PostgreSQL Full-Text Search (MVP)
 - External search engine (future)
 
@@ -177,6 +190,7 @@ All articles must conform to a unified schema:
 ## 5. Admin Dashboard
 
 ### Admin Capabilities
+
 - Manage news sources (enable/disable)
 - Edit categories and tags
 - Review and remove articles
@@ -190,11 +204,13 @@ All articles must conform to a unified schema:
 ### Technology Stack
 
 **Frontend:**
+
 - React Native Expo
 - TypeScript
 - TanStack Query
 
 **Backend:**
+
 - Supabase (Postgres)
 - Supabase Auth
 - Supabase Edge Functions
@@ -205,6 +221,7 @@ All articles must conform to a unified schema:
 ## 7. Database Design (High-Level)
 
 ### Core Tables
+
 - news_articles
 - news_sources
 - categories
@@ -215,6 +232,7 @@ All articles must conform to a unified schema:
 - reading_history
 
 ### Advanced Tables
+
 - user_preferences
 - user_interactions
 - trending_articles
@@ -269,11 +287,11 @@ All articles must conform to a unified schema:
 
 ## 13. Risks & Mitigation
 
-| Risk | Mitigation |
-|-----|-----------|
-| Duplicate content | Deduplication logic |
-| Scaling issues | Pagination & caching |
-| Legal issues | Source compliance |
+| Risk                 | Mitigation                    |
+| -------------------- | ----------------------------- |
+| Duplicate content    | Deduplication logic           |
+| Scaling issues       | Pagination & caching          |
+| Legal issues         | Source compliance             |
 | Poor personalization | Analytics-driven improvements |
 
 ---
@@ -281,6 +299,7 @@ All articles must conform to a unified schema:
 ## 14. MVP Scope
 
 ### Included
+
 - News ingestion via RSS
 - Categorized feed
 - Search
@@ -288,6 +307,7 @@ All articles must conform to a unified schema:
 - Push notifications
 
 ### Excluded
+
 - Ads
 - AI summaries
 - Advanced analytics
@@ -299,4 +319,3 @@ All articles must conform to a unified schema:
 This PRD outlines a scalable, production-ready news aggregation platform built with React Native Expo and Supabase. The architecture supports real-time content delivery, personalization, and future growth while remaining cost-effective and secure.
 
 ---
-

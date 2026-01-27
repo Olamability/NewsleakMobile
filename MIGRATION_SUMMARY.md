@@ -3,6 +3,7 @@
 ## What Was Fixed
 
 This PR resolves the database setup issue where users encountered:
+
 ```
 Error: Failed to run sql query: ERROR: 42P01: relation "news_articles" does not exist
 ```
@@ -10,6 +11,7 @@ Error: Failed to run sql query: ERROR: 42P01: relation "news_articles" does not 
 ## Root Cause
 
 The repository had schema files but no structured migration system:
+
 - Schema files existed in `/supabase/` directory
 - No standardized way to apply migrations
 - Users had to manually copy/paste SQL into Supabase dashboard
@@ -45,18 +47,23 @@ We've created a complete database migration system with multiple setup options.
 ## How Users Can Fix the Error
 
 ### Option 1: Quick Automated Setup (Recommended)
+
 ```bash
 npm run setup:db
 ```
+
 Follow the on-screen instructions.
 
 ### Option 2: One-File Setup
+
 1. Open Supabase SQL Editor
 2. Copy/paste entire `supabase/init.sql`
 3. Click Run
 
 ### Option 3: Step-by-Step Migrations
+
 Apply each file from `supabase/migrations/` in order:
+
 1. `20240101000000_initial_schema.sql`
 2. `20240102000000_add_missing_columns.sql`
 3. `20240103000000_fix_foreign_keys_and_rls.sql`
@@ -70,6 +77,7 @@ Apply each file from `supabase/migrations/` in order:
 The migrations set up a complete database with:
 
 ### Tables (17 total)
+
 - `categories` - News categories
 - `news_sources` - RSS feed sources
 - `news_articles` - Main articles table
@@ -88,17 +96,20 @@ The migrations set up a complete database with:
 - `ingestion_logs` - RSS fetch logs
 
 ### Security
+
 - Row Level Security (RLS) policies on all tables
 - Public read access where appropriate
 - Authenticated user policies for writes
 - Anonymous engagement support
 
 ### Performance
+
 - 12+ indexes for fast queries
 - Proper foreign key constraints
 - Unique constraints for data integrity
 
 ### Seed Data
+
 - 8 default categories
 - 5 sample news sources (BBC, CNN, The Guardian, etc.)
 - 4 trending topics
@@ -106,6 +117,7 @@ The migrations set up a complete database with:
 ## Files Changed
 
 ### New Files
+
 - `supabase/migrations/` - Directory with 7 migration files
 - `supabase/migrations/README.md` - Migration documentation
 - `supabase/init.sql` - Consolidated migration
@@ -114,12 +126,14 @@ The migrations set up a complete database with:
 - `MIGRATION_SUMMARY.md` - This file
 
 ### Modified Files
+
 - `package.json` - Added `setup:db` script
 - `README.md` - Added database setup link
 
 ## Verification
 
 After setup, verify in Supabase Table Editor:
+
 - All 17 tables exist
 - `categories` has 8 rows
 - `news_sources` has 5 rows
@@ -142,6 +156,7 @@ After setup, verify in Supabase Table Editor:
 ## Need Help?
 
 See:
+
 - [DATABASE_SETUP.md](./DATABASE_SETUP.md) - Detailed setup guide
 - [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - Common issues
 - Repository issues - Report problems
@@ -149,19 +164,25 @@ See:
 ## Technical Notes
 
 ### Migration Order Matters
+
 Migrations must be applied in timestamp order because:
+
 - Later migrations depend on tables from earlier ones
 - Foreign keys require referenced tables to exist
 - RLS policies need tables to be created first
 
 ### Idempotency
+
 All migrations use `IF NOT EXISTS` or similar checks:
+
 - Safe to run multiple times
 - Won't fail if tables already exist
 - Won't duplicate seed data
 
 ### Schema Cache
+
 The `NOTIFY pgrst, 'reload schema'` command:
+
 - Tells PostgREST to reload schema
 - Optional - may not work on all instances
 - Can be safely ignored if it fails

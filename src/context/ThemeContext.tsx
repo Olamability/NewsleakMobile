@@ -20,7 +20,7 @@ const THEME_STORAGE_KEY = '@spazr_theme_mode';
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [themeMode, setThemeModeState] = useState<ThemeMode>('light');
   const [systemColorScheme, setSystemColorScheme] = useState<ColorSchemeName>(
-    Appearance.getColorScheme(),
+    Appearance.getColorScheme()
   );
 
   // Load saved theme preference on mount

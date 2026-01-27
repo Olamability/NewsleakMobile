@@ -23,15 +23,15 @@ Apply each migration file in order using the Supabase SQL Editor:
 
 ## Migration Files
 
-| File | Description |
-|------|-------------|
-| `20240101000000_initial_schema.sql` | Creates all base tables, indexes, and RLS policies |
-| `20240102000000_add_missing_columns.sql` | Adds missing columns to news_articles table |
-| `20240103000000_fix_foreign_keys_and_rls.sql` | Fixes foreign key constraints and RLS policies |
-| `20240104000000_fix_news_articles_rls.sql` | Fixes news_articles RLS policies |
-| `20240105000000_fix_news_sources_rls.sql` | Fixes news_sources RLS policies |
-| `20240106000000_fix_schema_cache.sql` | Fixes schema cache issues |
-| `20240107000000_add_likes_comments.sql` | Adds likes and comments functionality |
+| File                                          | Description                                        |
+| --------------------------------------------- | -------------------------------------------------- |
+| `20240101000000_initial_schema.sql`           | Creates all base tables, indexes, and RLS policies |
+| `20240102000000_add_missing_columns.sql`      | Adds missing columns to news_articles table        |
+| `20240103000000_fix_foreign_keys_and_rls.sql` | Fixes foreign key constraints and RLS policies     |
+| `20240104000000_fix_news_articles_rls.sql`    | Fixes news_articles RLS policies                   |
+| `20240105000000_fix_news_sources_rls.sql`     | Fixes news_sources RLS policies                    |
+| `20240106000000_fix_schema_cache.sql`         | Fixes schema cache issues                          |
+| `20240107000000_add_likes_comments.sql`       | Adds likes and comments functionality              |
 
 ## Important Notes
 
@@ -53,6 +53,7 @@ When adding a new migration:
 ## Legacy Files
 
 The parent `supabase/` directory contains legacy migration files for backwards compatibility:
+
 - `schema.sql` - Original schema file
 - `migration-*.sql` - Individual migration files
 

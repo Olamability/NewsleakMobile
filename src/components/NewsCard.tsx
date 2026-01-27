@@ -20,104 +20,103 @@ interface NewsCardProps {
   isBookmarked?: boolean;
 }
 
-export const NewsCard: React.FC<NewsCardProps> = React.memo(({
-  article,
-  onPress,
-  onBookmarkPress,
-  isBookmarked = false,
-}) => {
-  const { data: engagement } = useArticleEngagement(article.id);
-  const { mutate: toggleLike } = useToggleLike();
+export const NewsCard: React.FC<NewsCardProps> = React.memo(
+  ({ article, onPress, onBookmarkPress, isBookmarked = false }) => {
+    const { data: engagement } = useArticleEngagement(article.id);
+    const { mutate: toggleLike } = useToggleLike();
 
-  const handleLikePress = (e: GestureResponderEvent) => {
-    e.stopPropagation();
-    toggleLike({ articleId: article.id });
-  };
+    const handleLikePress = (e: GestureResponderEvent) => {
+      e.stopPropagation();
+      toggleLike({ articleId: article.id });
+    };
 
-  return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
-      <View style={styles.content}>
-        <View style={styles.textContainer}>
-          {/* Source Name - now more prominent */}
-          {article.news_sources && (
-            <View style={styles.sourceContainer}>
-              <Text style={styles.source} numberOfLines={1}>
-                {article.news_sources.name}
-              </Text>
-            </View>
-          )}
+    return (
+      <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
+        <View style={styles.content}>
+          <View style={styles.textContainer}>
+            {/* Source Name - now more prominent */}
+            {article.news_sources && (
+              <View style={styles.sourceContainer}>
+                <Text style={styles.source} numberOfLines={1}>
+                  {article.news_sources.name}
+                </Text>
+              </View>
+            )}
 
-          {/* Title */}
-          <Text style={styles.title} numberOfLines={3}>
-            {article.title}
-          </Text>
+            {/* Title */}
+            <Text style={styles.title} numberOfLines={3}>
+              {article.title}
+            </Text>
 
-          {/* Footer with time and engagement */}
-          <View style={styles.footer}>
-            <Text style={styles.time}>{formatRelativeTime(article.published_at)}</Text>
+            {/* Footer with time and engagement */}
+            <View style={styles.footer}>
+              <Text style={styles.time}>{formatRelativeTime(article.published_at)}</Text>
 
-            {/* Engagement buttons */}
-            <View style={styles.engagementContainer}>
-              {/* Like button */}
-              <TouchableOpacity
-                onPress={handleLikePress}
-                style={styles.engagementButton}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Ionicons
-                  name={engagement?.isLiked ? 'heart' : 'heart-outline'}
-                  size={16}
-                  color={engagement?.isLiked ? COLORS.error : COLORS.iconGray}
-                />
-                {(engagement?.likeCount ?? 0) > 0 && (
-                  <Text style={styles.engagementCount}>{engagement?.likeCount}</Text>
-                )}
-              </TouchableOpacity>
-
-              {/* Comment button */}
-              <TouchableOpacity
-                style={styles.engagementButton}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                onPress={(e) => {
-                  e.stopPropagation();
-                  onPress(); // Navigate to detail to see comments
-                }}
-              >
-                <Ionicons name="chatbubble-outline" size={16} color={COLORS.iconGray} />
-                {(engagement?.commentCount ?? 0) > 0 && (
-                  <Text style={styles.engagementCount}>{engagement?.commentCount}</Text>
-                )}
-              </TouchableOpacity>
-
-              {/* Bookmark button */}
-              {onBookmarkPress && (
+              {/* Engagement buttons */}
+              <View style={styles.engagementContainer}>
+                {/* Like button */}
                 <TouchableOpacity
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    onBookmarkPress();
-                  }}
+                  onPress={handleLikePress}
                   style={styles.engagementButton}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <Ionicons
-                    name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                    name={engagement?.isLiked ? 'heart' : 'heart-outline'}
                     size={16}
-                    color={isBookmarked ? COLORS.primary : COLORS.iconGray}
+                    color={engagement?.isLiked ? COLORS.error : COLORS.iconGray}
                   />
+                  {(engagement?.likeCount ?? 0) > 0 && (
+                    <Text style={styles.engagementCount}>{engagement?.likeCount}</Text>
+                  )}
                 </TouchableOpacity>
-              )}
+
+                {/* Comment button */}
+                <TouchableOpacity
+                  style={styles.engagementButton}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    onPress(); // Navigate to detail to see comments
+                  }}
+                >
+                  <Ionicons name="chatbubble-outline" size={16} color={COLORS.iconGray} />
+                  {(engagement?.commentCount ?? 0) > 0 && (
+                    <Text style={styles.engagementCount}>{engagement?.commentCount}</Text>
+                  )}
+                </TouchableOpacity>
+
+                {/* Bookmark button */}
+                {onBookmarkPress && (
+                  <TouchableOpacity
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      onBookmarkPress();
+                    }}
+                    style={styles.engagementButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons
+                      name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                      size={16}
+                      color={isBookmarked ? COLORS.primary : COLORS.iconGray}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Image */}
-        {article.image_url && (
-          <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-});
+          {/* Image */}
+          {article.image_url && (
+            <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }
+);
+
+NewsCard.displayName = 'NewsCard';
 
 const styles = StyleSheet.create({
   card: {

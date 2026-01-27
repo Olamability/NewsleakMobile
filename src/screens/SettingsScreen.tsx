@@ -170,10 +170,7 @@ export const SettingsScreen: React.FC = () => {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.settingItem}
-            onPress={() => setFontSize('extra-large')}
-          >
+          <TouchableOpacity style={styles.settingItem} onPress={() => setFontSize('extra-large')}>
             <View style={styles.settingLeft}>
               <Ionicons name="text-outline" size={32} color={COLORS.text} />
               <View style={styles.settingText}>
