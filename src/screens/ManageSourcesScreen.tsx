@@ -254,7 +254,6 @@ const styles = StyleSheet.create({
     marginLeft: SPACING.md,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.md,
   },
   statusContainer: {
     alignItems: 'flex-end',
@@ -272,7 +271,7 @@ const styles = StyleSheet.create({
     padding: SPACING.sm,
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
     borderRadius: BORDER_RADIUS.sm,
-    marginLeft: SPACING.sm,
+    marginLeft: SPACING.md,
   },
   deleteButtonText: {
     fontSize: 20,

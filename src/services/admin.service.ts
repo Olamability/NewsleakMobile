@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { NewsArticle, NewsSource, ApiResponse, PaginatedResponse, User } from '../types';
+import { SourceService } from './source.service';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -100,21 +101,10 @@ export class AdminService {
   }
 
   /**
-   * Delete a news source
+   * Delete a news source (delegates to SourceService)
    */
   static async deleteSource(sourceId: string): Promise<ApiResponse<void>> {
-    try {
-      const { error } = await supabase.from('news_sources').delete().eq('id', sourceId);
-
-      if (error) {
-        return { error: error.message };
-      }
-
-      return { message: 'Source deleted successfully' };
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to delete source';
-      return { error: message };
-    }
+    return SourceService.deleteSource(sourceId);
   }
 
   /**
