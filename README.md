@@ -2,6 +2,19 @@
 
 A modern, production-ready React Native Expo news aggregator app with Supabase backend integration. This app curates real-time news from trusted sources and provides a sleek, mobile-first reading experience.
 
+## 🚨 Database Setup Required
+
+**If you see: `ERROR: 42P01: relation "news_articles" does not exist`**
+
+Run this command to fix it:
+```bash
+npm run setup:db
+```
+
+See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for details.
+
+---
+
 ## 📚 Quick Links
 
 - **🗄️ [DATABASE SETUP](./DATABASE_SETUP.md)** - **IMPORTANT!** Fix "relation does not exist" errors
