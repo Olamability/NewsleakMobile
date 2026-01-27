@@ -46,7 +46,7 @@ export const isValidUrl = (urlString: string): boolean => {
  * @returns true if URL contains common RSS patterns
  */
 export const isLikelyRssFeed = (url: string): boolean => {
-  if (!url) return false;
+  if (!url || typeof url !== 'string') return false;
   const RSS_PATTERNS = ['/rss', '/feed', '.xml', '.rss', 'rss.xml', 'feed.xml'];
   const urlLower = url.toLowerCase();
   return RSS_PATTERNS.some((pattern) => urlLower.includes(pattern));

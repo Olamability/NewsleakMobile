@@ -236,6 +236,71 @@ describe('ContentService', () => {
 
       expect(processed.image_url).toBe('https://example.com/image.png');
     });
+
+    it('should handle undefined enclosure url gracefully', async () => {
+      const article: RawArticle = {
+        ...mockRawArticle,
+        enclosure: {
+          url: undefined as unknown as string,
+          type: 'image/jpeg',
+        },
+      };
+
+      const processed = await contentService.processArticle(
+        article,
+        'Test Source',
+        'https://example.com'
+      );
+
+      expect(processed.image_url).toBe('');
+    });
+
+    it('should handle null enclosure url gracefully', async () => {
+      const article: RawArticle = {
+        ...mockRawArticle,
+        enclosure: {
+          url: null as unknown as string,
+          type: 'image/jpeg',
+        },
+      };
+
+      const processed = await contentService.processArticle(
+        article,
+        'Test Source',
+        'https://example.com'
+      );
+
+      expect(processed.image_url).toBe('');
+    });
+
+    it('should handle non-image enclosure url gracefully', async () => {
+      const article: RawArticle = {
+        ...mockRawArticle,
+        enclosure: {
+          url: 'https://example.com/video.mp4',
+          type: 'video/mp4',
+        },
+      };
+
+      const processed = await contentService.processArticle(
+        article,
+        'Test Source',
+        'https://example.com'
+      );
+
+      expect(processed.image_url).toBe('');
+    });
+
+    it('should not use fallback image when no image found', async () => {
+      const processed = await contentService.processArticle(
+        mockRawArticle,
+        'Test Source',
+        'https://example.com'
+      );
+
+      // Should return empty string, not any fallback
+      expect(processed.image_url).toBe('');
+    });
   });
 
   describe('validateArticle', () => {
