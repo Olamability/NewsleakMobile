@@ -240,7 +240,12 @@ create policy "public_read_sponsored" on sponsored_content for select using (
   and (end_date is null or end_date >= current_date)
 );
 
--- News sources management policies (admin)
+-- News articles management policies (authenticated users - admin checks at app level)
+create policy "authenticated_insert_articles" on news_articles for insert with check (auth.uid() is not null);
+create policy "authenticated_update_articles" on news_articles for update using (auth.uid() is not null) with check (auth.uid() is not null);
+create policy "authenticated_delete_articles" on news_articles for delete using (auth.uid() is not null);
+
+-- News sources management policies (authenticated users - admin checks at app level)
 create policy "authenticated_insert_sources" on news_sources for insert with check (auth.uid() is not null);
 create policy "authenticated_update_sources" on news_sources for update using (auth.uid() is not null) with check (auth.uid() is not null);
 create policy "authenticated_delete_sources" on news_sources for delete using (auth.uid() is not null);
