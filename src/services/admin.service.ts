@@ -100,6 +100,24 @@ export class AdminService {
   }
 
   /**
+   * Delete a news source
+   */
+  static async deleteSource(sourceId: string): Promise<ApiResponse<void>> {
+    try {
+      const { error } = await supabase.from('news_sources').delete().eq('id', sourceId);
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { message: 'Source deleted successfully' };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to delete source';
+      return { error: message };
+    }
+  }
+
+  /**
    * Get all articles for admin management with pagination
    */
   static async getAllArticles(
