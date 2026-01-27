@@ -23,7 +23,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   const { data: engagement } = useArticleEngagement(article.id);
   const { mutate: toggleLike } = useToggleLike();
 
-  const handleLikePress = (e: any) => {
+  const handleLikePress = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     toggleLike({ articleId: article.id });
   };
@@ -40,20 +40,20 @@ export const NewsCard: React.FC<NewsCardProps> = ({
               </Text>
             </View>
           )}
-          
+
           {/* Title */}
           <Text style={styles.title} numberOfLines={3}>
             {article.title}
           </Text>
-          
+
           {/* Footer with time and engagement */}
           <View style={styles.footer}>
             <Text style={styles.time}>{formatRelativeTime(article.published_at)}</Text>
-            
+
             {/* Engagement buttons */}
             <View style={styles.engagementContainer}>
               {/* Like button */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={handleLikePress}
                 style={styles.engagementButton}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -69,7 +69,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
               </TouchableOpacity>
 
               {/* Comment button */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.engagementButton}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 onPress={(e) => {
@@ -77,11 +77,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
                   onPress(); // Navigate to detail to see comments
                 }}
               >
-                <Ionicons
-                  name="chatbubble-outline"
-                  size={16}
-                  color={COLORS.iconGray}
-                />
+                <Ionicons name="chatbubble-outline" size={16} color={COLORS.iconGray} />
                 {(engagement?.commentCount ?? 0) > 0 && (
                   <Text style={styles.engagementCount}>{engagement?.commentCount}</Text>
                 )}
@@ -107,7 +103,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             </View>
           </View>
         </View>
-        
+
         {/* Image */}
         {!imageError && article.image_url ? (
           <Image

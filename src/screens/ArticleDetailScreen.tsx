@@ -7,10 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
-  ScrollView,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -276,10 +273,16 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
                       {comments.map((comment) => (
                         <View key={comment.id} style={styles.commentItem}>
                           <View style={styles.commentHeader}>
-                            <Ionicons name="person-circle-outline" size={32} color={COLORS.textSecondary} />
+                            <Ionicons
+                              name="person-circle-outline"
+                              size={32}
+                              color={COLORS.textSecondary}
+                            />
                             <View style={styles.commentContent}>
                               <Text style={styles.commentAuthor}>Anonymous</Text>
-                              <Text style={styles.commentTime}>{timeAgo(comment.created_at)} ago</Text>
+                              <Text style={styles.commentTime}>
+                                {timeAgo(comment.created_at)} ago
+                              </Text>
                             </View>
                           </View>
                           <Text style={styles.commentText}>{comment.content}</Text>

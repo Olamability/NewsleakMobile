@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { ArticleLike, ArticleComment } from '../types/news';
+import { ArticleComment } from '../types/news';
 import * as Device from 'expo-device';
 
 /**
@@ -25,10 +25,7 @@ export class EngagementService {
       const deviceId = await this.getDeviceId();
 
       // Check if already liked
-      let query = supabase
-        .from('article_likes')
-        .select('id')
-        .eq('article_id', articleId);
+      let query = supabase.from('article_likes').select('id').eq('article_id', articleId);
 
       if (userId) {
         query = query.eq('user_id', userId);
@@ -40,10 +37,7 @@ export class EngagementService {
 
       if (existingLike) {
         // Unlike - delete the like
-        const deleteQuery = supabase
-          .from('article_likes')
-          .delete()
-          .eq('article_id', articleId);
+        const deleteQuery = supabase.from('article_likes').delete().eq('article_id', articleId);
 
         if (userId) {
           deleteQuery.eq('user_id', userId);
@@ -96,10 +90,7 @@ export class EngagementService {
     try {
       const deviceId = await this.getDeviceId();
 
-      let query = supabase
-        .from('article_likes')
-        .select('id')
-        .eq('article_id', articleId);
+      let query = supabase.from('article_likes').select('id').eq('article_id', articleId);
 
       if (userId) {
         query = query.eq('user_id', userId);
