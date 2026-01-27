@@ -1,5 +1,5 @@
 -- Migration: Fix Missing RLS Policies for news_articles Table
--- 
+--
 -- Issue: The news_articles table has RLS enabled but only has a SELECT policy.
 -- This blocks:
 --   1. RSS ingestion from inserting new articles
