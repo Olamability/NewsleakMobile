@@ -230,9 +230,9 @@ export class IngestionService {
           content_snippet: article.content_snippet,
           image_url: article.image_url,
           article_url: article.article_url,
-          // Use canonical_url as original_url for better duplicate detection
-          // canonical_url is a normalized version of the article URL
-          original_url: article.canonical_url,
+          // Use article_url as original_url for linking to source
+          // This is the cleaned URL with tracking parameters removed
+          original_url: article.article_url,
           source_name: article.source_name,
           source_url: article.source_url,
           category: article.category,
