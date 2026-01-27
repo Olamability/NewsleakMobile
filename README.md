@@ -2,8 +2,22 @@
 
 A modern, production-ready React Native Expo news aggregator app with Supabase backend integration. This app curates real-time news from trusted sources and provides a sleek, mobile-first reading experience.
 
+## 🚨 Database Setup Required
+
+**If you see: `ERROR: 42P01: relation "news_articles" does not exist`**
+
+Run this command to fix it:
+```bash
+npm run setup:db
+```
+
+See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for details.
+
+---
+
 ## 📚 Quick Links
 
+- **🗄️ [DATABASE SETUP](./DATABASE_SETUP.md)** - **IMPORTANT!** Fix "relation does not exist" errors
 - **👤 [USER GUIDE](./USER_GUIDE.md)** - **Start here!** Learn how to access admin features and add RSS feeds
 - **⚡ [Quick Start](./QUICKSTART.md)** - Get the app running in 5 minutes
 - **🚀 [Getting Started](./GETTING_STARTED.md)** - Complete setup with sample data (10 minutes)
@@ -150,7 +164,25 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### Supabase Setup
 
-#### 1. Create Tables
+**Important:** If you see an error like `ERROR: 42P01: relation "news_articles" does not exist`, follow the [DATABASE_SETUP.md](./DATABASE_SETUP.md) guide.
+
+#### Quick Setup
+
+Run the database setup helper:
+
+```bash
+npm run setup:db
+```
+
+This will guide you through applying all necessary migrations.
+
+#### Manual Setup
+
+For detailed instructions and troubleshooting, see [DATABASE_SETUP.md](./DATABASE_SETUP.md).
+
+#### Quick Reference
+
+1. Create Tables
 
 Run the SQL file in your Supabase SQL editor:
 - Copy contents of `/supabase/schema.sql` and run it
