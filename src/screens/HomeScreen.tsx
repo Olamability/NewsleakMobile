@@ -82,7 +82,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useNewsFeed(selectedCategory);
+  } = useNewsFeed(selectedCategory, selectedSource || undefined);
 
   const allArticles = useMemo(() => {
     if (!data) return [];
@@ -116,6 +116,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const handleSourcePress = useCallback((sourceId: string) => {
+    // Toggle source selection - if already selected, deselect it
+    setSelectedSource((prev) => (prev === sourceId ? null : sourceId));
+  }, []);
 
   const handleArticlePress = useCallback(
     (article: NewsArticle) => {
@@ -200,7 +205,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                       key={source.id}
                       name={source.name}
                       logoUrl={source.logo_url}
-                      onPress={() => setSelectedSource(source.id)}
+                      onPress={() => handleSourcePress(source.id)}
                       isActive={selectedSource === source.id}
                     />
                   ))}

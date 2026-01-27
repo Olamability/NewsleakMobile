@@ -41,9 +41,9 @@ export const useCategories = () => {
   });
 };
 
-export const useNewsFeed = (categoryId?: string) => {
+export const useNewsFeed = (categoryId?: string, sourceId?: string) => {
   return useInfiniteQuery({
-    queryKey: ['news-feed', categoryId],
+    queryKey: ['news-feed', categoryId, sourceId],
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabase
         .from('news_articles')
@@ -64,6 +64,10 @@ export const useNewsFeed = (categoryId?: string) => {
         // Filter by category slug (text field) instead of category_id (uuid field)
         // The categoryId parameter is actually a category slug
         query = query.eq('category', categoryId);
+      }
+
+      if (sourceId) {
+        query = query.eq('source_id', sourceId);
       }
 
       const { data, error } = await query;
