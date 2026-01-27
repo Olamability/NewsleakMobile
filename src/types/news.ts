@@ -32,6 +32,9 @@ export interface NewsArticle {
   created_at: string;
   news_sources?: NewsSource;
   categories?: Category;
+  like_count?: number;
+  comment_count?: number;
+  is_liked?: boolean;
 }
 
 export interface SponsoredContent {
@@ -78,6 +81,24 @@ export interface RecentSearch {
   user_id?: string;
   query: string;
   created_at: string;
+}
+
+export interface ArticleLike {
+  id: string;
+  article_id: string;
+  user_id?: string;
+  device_id?: string;
+  created_at: string;
+}
+
+export interface ArticleComment {
+  id: string;
+  article_id: string;
+  user_id?: string;
+  device_id?: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export type FeedItem = NewsArticle | SponsoredContent;

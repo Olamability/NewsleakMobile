@@ -259,3 +259,70 @@ export const useDeleteSearch = () => {
     },
   });
 };
+
+// =============================================
+// ENGAGEMENT HOOKS (Likes & Comments)
+// =============================================
+
+import { EngagementService } from '../services/engagement.service';
+
+export const useToggleLike = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ articleId, userId }: { articleId: string; userId?: string }) => {
+      return await EngagementService.toggleLike(articleId, userId);
+    },
+    onSuccess: (_, variables) => {
+      // Invalidate article engagement queries
+      queryClient.invalidateQueries({ queryKey: ['article-engagement', variables.articleId] });
+      queryClient.invalidateQueries({ queryKey: ['news-feed'] });
+    },
+  });
+};
+
+export const useArticleEngagement = (articleId: string, userId?: string) => {
+  return useQuery({
+    queryKey: ['article-engagement', articleId, userId],
+    queryFn: async () => {
+      const [likeCount, commentCount, isLiked] = await Promise.all([
+        EngagementService.getLikeCount(articleId),
+        EngagementService.getCommentCount(articleId),
+        EngagementService.isLiked(articleId, userId),
+      ]);
+
+      return { likeCount, commentCount, isLiked };
+    },
+  });
+};
+
+export const useArticleComments = (articleId: string) => {
+  return useQuery({
+    queryKey: ['article-comments', articleId],
+    queryFn: async () => {
+      return await EngagementService.getComments(articleId);
+    },
+  });
+};
+
+export const useAddComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      articleId,
+      content,
+      userId,
+    }: {
+      articleId: string;
+      content: string;
+      userId?: string;
+    }) => {
+      return await EngagementService.addComment(articleId, content, userId);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['article-comments', variables.articleId] });
+      queryClient.invalidateQueries({ queryKey: ['article-engagement', variables.articleId] });
+    },
+  });
+};
