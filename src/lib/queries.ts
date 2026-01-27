@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from './supabase';
+import { TrendingService } from '../services/trending.service';
 import {
   NewsArticle,
   Category,
@@ -83,29 +84,13 @@ export const useNewsFeed = (categoryId?: string, sourceId?: string) => {
   });
 };
 
-export const useBreakingNews = () => {
+export const useBreakingNews = (limit: number = 5) => {
   return useQuery({
-    queryKey: ['breaking-news'],
+    queryKey: ['breaking-news', limit],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('news_articles')
-        .select(
-          `
-          *,
-          news_sources (
-            id,
-            name,
-            logo_url
-          )
-        `
-        )
-        .eq('is_breaking', true)
-        .order('published_at', { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      return data as NewsArticle[];
+      return await TrendingService.detectBreakingNews(limit);
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
     refetchInterval: 1000 * 60 * 5,
   });
 };
@@ -200,6 +185,37 @@ export const useTrendingTopics = () => {
 
       if (error) throw error;
       return data as TrendingTopic[];
+    },
+    staleTime: 1000 * 60 * 15,
+  });
+};
+
+export const useTrendingArticles = (limit: number = 10) => {
+  return useQuery({
+    queryKey: ['trending-articles', limit],
+    queryFn: async () => {
+      return await TrendingService.getTrendingArticles(limit);
+    },
+    staleTime: 1000 * 60 * 10, // 10 minutes cache
+  });
+};
+
+export const useCategoryTrendingArticles = (category: string, limit: number = 5) => {
+  return useQuery({
+    queryKey: ['category-trending', category, limit],
+    queryFn: async () => {
+      return await TrendingService.getCategoryTrendingArticles(category, limit);
+    },
+    staleTime: 1000 * 60 * 10,
+    enabled: !!category,
+  });
+};
+
+export const useTrendingTopicsFromService = (limit: number = 10) => {
+  return useQuery({
+    queryKey: ['trending-topics-service', limit],
+    queryFn: async () => {
+      return await TrendingService.getTrendingTopics(limit);
     },
     staleTime: 1000 * 60 * 15,
   });

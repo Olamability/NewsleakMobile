@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -10,12 +10,50 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../context/ThemeContext';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 
+type FontSizeMode = 'small' | 'medium' | 'large' | 'extra-large';
+
+const FONT_SIZE_STORAGE_KEY = '@spazr_font_size';
+
 export const SettingsScreen: React.FC = () => {
+  const { isDark, themeMode, setThemeMode, colors } = useTheme();
   const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(true);
+  const [fontSize, setFontSizeState] = useState<FontSizeMode>('medium');
 
   const appVersion = '1.0.0';
+
+  // Load font size preference on mount
+  useEffect(() => {
+    loadFontSizePreference();
+  }, []);
+
+  const loadFontSizePreference = async () => {
+    try {
+      const savedFontSize = await AsyncStorage.getItem(FONT_SIZE_STORAGE_KEY);
+      if (
+        savedFontSize === 'small' ||
+        savedFontSize === 'medium' ||
+        savedFontSize === 'large' ||
+        savedFontSize === 'extra-large'
+      ) {
+        setFontSizeState(savedFontSize);
+      }
+    } catch (error) {
+      console.error('Failed to load font size preference:', error);
+    }
+  };
+
+  const setFontSize = async (size: FontSizeMode) => {
+    try {
+      await AsyncStorage.setItem(FONT_SIZE_STORAGE_KEY, size);
+      setFontSizeState(size);
+    } catch (error) {
+      console.error('Failed to save font size preference:', error);
+    }
+  };
 
   const handlePrivacyPolicy = () => {
     Linking.openURL('https://spazr.com/privacy');
@@ -30,6 +68,10 @@ export const SettingsScreen: React.FC = () => {
     // TODO: Implement push notification settings
   };
 
+  const handleThemeModeChange = (mode: 'light' | 'dark' | 'auto') => {
+    setThemeMode(mode);
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
@@ -37,6 +79,113 @@ export const SettingsScreen: React.FC = () => {
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Appearance Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Appearance</Text>
+
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleThemeModeChange('light')}
+          >
+            <View style={styles.settingLeft}>
+              <Ionicons name="sunny-outline" size={24} color={COLORS.text} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>Light Mode</Text>
+              </View>
+            </View>
+            {themeMode === 'light' && (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleThemeModeChange('dark')}
+          >
+            <View style={styles.settingLeft}>
+              <Ionicons name="moon-outline" size={24} color={COLORS.text} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>Dark Mode</Text>
+              </View>
+            </View>
+            {themeMode === 'dark' && (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleThemeModeChange('auto')}
+          >
+            <View style={styles.settingLeft}>
+              <Ionicons name="phone-portrait-outline" size={24} color={COLORS.text} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>Auto (System)</Text>
+                <Text style={styles.settingDescription}>Match system theme</Text>
+              </View>
+            </View>
+            {themeMode === 'auto' && (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Readability Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Readability</Text>
+
+          <TouchableOpacity style={styles.settingItem} onPress={() => setFontSize('small')}>
+            <View style={styles.settingLeft}>
+              <Ionicons name="text-outline" size={20} color={COLORS.text} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>Small Text</Text>
+              </View>
+            </View>
+            {fontSize === 'small' && (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.settingItem} onPress={() => setFontSize('medium')}>
+            <View style={styles.settingLeft}>
+              <Ionicons name="text-outline" size={24} color={COLORS.text} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>Medium Text (Default)</Text>
+              </View>
+            </View>
+            {fontSize === 'medium' && (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.settingItem} onPress={() => setFontSize('large')}>
+            <View style={styles.settingLeft}>
+              <Ionicons name="text-outline" size={28} color={COLORS.text} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>Large Text</Text>
+              </View>
+            </View>
+            {fontSize === 'large' && (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => setFontSize('extra-large')}
+          >
+            <View style={styles.settingLeft}>
+              <Ionicons name="text-outline" size={32} color={COLORS.text} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingTitle}>Extra Large Text</Text>
+              </View>
+            </View>
+            {fontSize === 'extra-large' && (
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+        </View>
+
         {/* Notifications Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notifications</Text>

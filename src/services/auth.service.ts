@@ -255,4 +255,87 @@ export class AuthService {
       return { error: err.message || 'Failed to update profile' };
     }
   }
+
+  /**
+   * Sign in with Google OAuth
+   */
+  static async signInWithGoogle(): Promise<ApiResponse<{ url: string }>> {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'spazrnews://auth/callback',
+        },
+      });
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { data: { url: data.url }, message: 'Google sign-in initiated' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Google sign-in failed' };
+    }
+  }
+
+  /**
+   * Sign in with Apple OAuth
+   */
+  static async signInWithApple(): Promise<ApiResponse<{ url: string }>> {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: 'spazrnews://auth/callback',
+        },
+      });
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { data: { url: data.url }, message: 'Apple sign-in initiated' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'Apple sign-in failed' };
+    }
+  }
+
+  /**
+   * Handle OAuth callback
+   */
+  static async handleOAuthCallback(url: string): Promise<ApiResponse<User>> {
+    try {
+      // Validate URL has required OAuth parameters
+      if (!url || !url.includes('code=') && !url.includes('access_token=')) {
+        return { error: 'Invalid OAuth callback URL - missing required parameters' };
+      }
+
+      // Extract the session from the URL hash/query
+      const { data, error } = await supabase.auth.exchangeCodeForSession(url);
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      if (!data?.user) {
+        return { error: 'No user found in OAuth response' };
+      }
+
+      const user: User = {
+        id: data.user.id,
+        email: data.user.email || '',
+        full_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || '',
+        avatar_url: data.user.user_metadata?.avatar_url || data.user.user_metadata?.picture || '',
+        is_admin: data.user.user_metadata?.is_admin || false,
+        created_at: data.user.created_at,
+      };
+
+      return { data: user, message: 'OAuth sign-in successful' };
+    } catch (error) {
+      const err = error as Error;
+      return { error: err.message || 'OAuth callback failed' };
+    }
+  }
 }

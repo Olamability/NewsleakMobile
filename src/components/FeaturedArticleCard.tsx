@@ -17,11 +17,7 @@ export const FeaturedArticleCard: React.FC<FeaturedArticleCardProps> = ({ articl
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
       {article.image_url && (
-        <Image
-          source={{ uri: article.image_url }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
       )}
       <View style={styles.overlay} />
       <View style={styles.content}>

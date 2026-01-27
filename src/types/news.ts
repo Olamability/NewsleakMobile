@@ -29,6 +29,7 @@ export interface NewsArticle {
   is_breaking: boolean;
   is_sponsored: boolean;
   quality_score?: number;
+  view_count?: number;
   created_at: string;
   news_sources?: NewsSource;
   categories?: Category;

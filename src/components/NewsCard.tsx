@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, GestureResponderEvent } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  GestureResponderEvent,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NewsArticle } from '../types/news';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
@@ -105,11 +112,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
         {/* Image */}
         {article.image_url && (
-          <Image
-            source={{ uri: article.image_url }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
         )}
       </View>
     </TouchableOpacity>
