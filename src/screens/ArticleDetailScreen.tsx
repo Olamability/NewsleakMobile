@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,7 +16,15 @@ import * as WebBrowser from 'expo-web-browser';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { timeAgo } from '../lib/helpers';
-import { useArticle, useTrackEvent, useNewsFeed } from '../lib/queries';
+import {
+  useArticle,
+  useTrackEvent,
+  useNewsFeed,
+  useArticleEngagement,
+  useToggleLike,
+  useArticleComments,
+  useAddComment,
+} from '../lib/queries';
 import { RootStackParamList } from '../navigation/types';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -36,7 +45,13 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
   const { articleId } = route.params;
   const { data: article, isLoading, error } = useArticle(articleId);
   const [imageError, setImageError] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [showComments, setShowComments] = useState(false);
   const { mutate: trackEvent } = useTrackEvent();
+  const { data: engagement } = useArticleEngagement(articleId);
+  const { mutate: toggleLike } = useToggleLike();
+  const { data: comments } = useArticleComments(articleId);
+  const { mutate: addComment } = useAddComment();
 
   // Get related news - using 'all' category to get general news feed
   const {
@@ -70,6 +85,17 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
   useEffect(() => {
     trackArticleView();
   }, [trackArticleView]);
+
+  const handleLikePress = () => {
+    toggleLike({ articleId });
+  };
+
+  const handleCommentSubmit = () => {
+    if (commentText.trim()) {
+      addComment({ articleId, content: commentText.trim() });
+      setCommentText('');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -124,11 +150,19 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <>
-            {/* Header with back button */}
+            {/* Enhanced Header with back, bookmark, and share buttons */}
             <View style={styles.header}>
-              <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+              <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
                 <Ionicons name="arrow-back" size={24} color={COLORS.text} />
               </TouchableOpacity>
+              <View style={styles.headerActions}>
+                <TouchableOpacity style={styles.headerButton}>
+                  <Ionicons name="bookmark-outline" size={24} color={COLORS.text} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.headerButton}>
+                  <Ionicons name="share-outline" size={24} color={COLORS.text} />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Article Image */}
@@ -147,6 +181,9 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
 
             {/* Article Content */}
             <View style={styles.content}>
+              {/* Title */}
+              <Text style={styles.title}>{article.title}</Text>
+
               {/* Source & Time */}
               <View style={styles.metaContainer}>
                 {article.news_sources && (
@@ -158,8 +195,30 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
                 )}
               </View>
 
-              {/* Title */}
-              <Text style={styles.title}>{article.title}</Text>
+              {/* Engagement Bar */}
+              <View style={styles.engagementBar}>
+                <TouchableOpacity style={styles.engagementAction} onPress={handleLikePress}>
+                  <Ionicons
+                    name={engagement?.isLiked ? 'heart' : 'heart-outline'}
+                    size={24}
+                    color={engagement?.isLiked ? COLORS.error : COLORS.textSecondary}
+                  />
+                  <Text style={styles.engagementText}>
+                    {engagement?.likeCount ?? 0} {engagement?.likeCount === 1 ? 'Like' : 'Likes'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.engagementAction}
+                  onPress={() => setShowComments(!showComments)}
+                >
+                  <Ionicons name="chatbubble-outline" size={24} color={COLORS.textSecondary} />
+                  <Text style={styles.engagementText}>
+                    {engagement?.commentCount ?? 0}{' '}
+                    {engagement?.commentCount === 1 ? 'Comment' : 'Comments'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
               {/* Summary */}
               {article.summary && <Text style={styles.summary}>{article.summary}</Text>}
@@ -171,9 +230,7 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
                   onPress={handleReadFullStory}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.readButtonText}>
-                    Read Full Story at {article.news_sources?.name || 'Source'}
-                  </Text>
+                  <Text style={styles.readButtonText}>Read full story at source</Text>
                   <Ionicons
                     name="open-outline"
                     size={20}
@@ -182,6 +239,61 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
                   />
                 </TouchableOpacity>
               </View>
+
+              {/* Comments Section */}
+              {showComments && (
+                <View style={styles.commentsSection}>
+                  <Text style={styles.commentsSectionTitle}>Comments</Text>
+
+                  {/* Comment Input */}
+                  <View style={styles.commentInputContainer}>
+                    <TextInput
+                      style={styles.commentInput}
+                      placeholder="Add a comment..."
+                      placeholderTextColor={COLORS.textLight}
+                      value={commentText}
+                      onChangeText={setCommentText}
+                      multiline
+                    />
+                    <TouchableOpacity
+                      style={[
+                        styles.commentSubmitButton,
+                        !commentText.trim() && styles.commentSubmitButtonDisabled,
+                      ]}
+                      onPress={handleCommentSubmit}
+                      disabled={!commentText.trim()}
+                    >
+                      <Ionicons name="send" size={20} color={COLORS.background} />
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Comments List */}
+                  {comments && comments.length > 0 ? (
+                    <View style={styles.commentsList}>
+                      {comments.map((comment) => (
+                        <View key={comment.id} style={styles.commentItem}>
+                          <View style={styles.commentHeader}>
+                            <Ionicons
+                              name="person-circle-outline"
+                              size={32}
+                              color={COLORS.textSecondary}
+                            />
+                            <View style={styles.commentContent}>
+                              <Text style={styles.commentAuthor}>Anonymous</Text>
+                              <Text style={styles.commentTime}>
+                                {timeAgo(comment.created_at)} ago
+                              </Text>
+                            </View>
+                          </View>
+                          <Text style={styles.commentText}>{comment.content}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : (
+                    <Text style={styles.noComments}>No comments yet. Be the first to comment!</Text>
+                  )}
+                </View>
+              )}
             </View>
 
             {/* Related News Section Header */}
@@ -246,8 +358,11 @@ const styles = StyleSheet.create({
     zIndex: 10,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  backButton: {
+  headerButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -259,6 +374,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
   },
   image: {
     width: '100%',
@@ -300,6 +419,25 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     marginBottom: SPACING.md,
   },
+  engagementBar: {
+    flexDirection: 'row',
+    paddingVertical: SPACING.md,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: SPACING.md,
+    gap: SPACING.xl,
+  },
+  engagementAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  engagementText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+  },
   summary: {
     fontSize: FONT_SIZES.lg,
     color: COLORS.textSecondary,
@@ -310,7 +448,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.lg,
   },
   readButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.error,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -322,6 +460,82 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.md,
     fontWeight: '600',
     color: COLORS.background,
+  },
+  commentsSection: {
+    marginTop: SPACING.xl,
+    paddingTop: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  commentsSectionTitle: {
+    fontSize: FONT_SIZES.xl,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: SPACING.md,
+  },
+  commentInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginBottom: SPACING.lg,
+    gap: SPACING.sm,
+  },
+  commentInput: {
+    flex: 1,
+    backgroundColor: COLORS.backgroundSecondary,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+    fontSize: FONT_SIZES.md,
+    color: COLORS.text,
+    maxHeight: 100,
+  },
+  commentSubmitButton: {
+    backgroundColor: COLORS.primary,
+    width: 44,
+    height: 44,
+    borderRadius: BORDER_RADIUS.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  commentSubmitButtonDisabled: {
+    opacity: 0.5,
+  },
+  commentsList: {
+    gap: SPACING.md,
+  },
+  commentItem: {
+    backgroundColor: COLORS.backgroundSecondary,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+  },
+  commentHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  commentContent: {
+    flex: 1,
+  },
+  commentAuthor: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  commentTime: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.textSecondary,
+  },
+  commentText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.text,
+    lineHeight: 20,
+    marginLeft: 40,
+  },
+  noComments: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    paddingVertical: SPACING.xl,
   },
   relatedNewsHeader: {
     paddingHorizontal: SPACING.lg,

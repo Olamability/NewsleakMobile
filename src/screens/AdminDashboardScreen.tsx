@@ -50,10 +50,10 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ navi
               setIsIngesting(true);
               const scheduler = getGlobalScheduler();
               await scheduler.triggerManual();
-              
+
               // Refresh stats after ingestion
               await loadDashboardStats();
-              
+
               Alert.alert(
                 'Success',
                 'Manual ingestion completed! Check the Ingestion Logs for details.'

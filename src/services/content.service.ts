@@ -144,7 +144,7 @@ export class ContentService {
    * Extract image URL from various sources
    */
   private extractImageUrl(rawArticle: RawArticle): string | null {
-    // Check enclosure first
+    // Check enclosure first (most reliable for RSS feeds)
     if (rawArticle.enclosure?.url) {
       const url = rawArticle.enclosure.url;
       if (this.isImageUrl(url)) {
@@ -152,8 +152,39 @@ export class ContentService {
       }
     }
 
-    // Check content for images
+    // Check for media:content or media:thumbnail
+    const item = rawArticle as unknown as Record<string, unknown>;
+    if (item['media:content']) {
+      const mediaContent = item['media:content'];
+      if (typeof mediaContent === 'object' && mediaContent !== null) {
+        const mediaUrl = (mediaContent as Record<string, unknown>).url;
+        if (typeof mediaUrl === 'string' && this.isImageUrl(mediaUrl)) {
+          return mediaUrl;
+        }
+      }
+    }
+
+    if (item['media:thumbnail']) {
+      const mediaThumbnail = item['media:thumbnail'];
+      if (typeof mediaThumbnail === 'object' && mediaThumbnail !== null) {
+        const thumbUrl = (mediaThumbnail as Record<string, unknown>).url;
+        if (typeof thumbUrl === 'string' && this.isImageUrl(thumbUrl)) {
+          return thumbUrl;
+        }
+      }
+    }
+
+    // Check content for images (look for og:image meta tags and img tags)
     if (rawArticle.content) {
+      // Try to find Open Graph image first
+      const ogImageMatch = rawArticle.content.match(
+        /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i
+      );
+      if (ogImageMatch && ogImageMatch[1]) {
+        return ogImageMatch[1];
+      }
+
+      // Fall back to img tags
       const imageMatch = rawArticle.content.match(/<img[^>]+src="([^">]+)"/i);
       if (imageMatch && imageMatch[1]) {
         return imageMatch[1];

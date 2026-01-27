@@ -23,6 +23,9 @@ export class RSSService {
           ['media:thumbnail', 'media:thumbnail'],
           ['content:encoded', 'content:encoded'],
           ['dc:creator', 'creator'],
+          ['enclosure', 'enclosure'],
+          ['media:group', 'media:group'],
+          ['itunes:image', 'itunes:image'],
         ],
       },
     });
