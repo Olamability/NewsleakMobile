@@ -5,7 +5,6 @@ import { RawArticle, ProcessedArticle, ArticleStatus } from '../types';
 interface ContentProcessingOptions {
   defaultCategory?: string;
   defaultLanguage?: string;
-  defaultImageUrl?: string;
   maxSummaryLength?: number;
 }
 
@@ -35,8 +34,8 @@ export class ContentService {
     const slug = this.generateSlug(title);
     const summary = this.extractSummary(rawArticle, options?.maxSummaryLength);
     const content_snippet = this.extractContentSnippet(rawArticle);
-    // Extract image from RSS feed data, don't use fallback
-    const image_url = this.extractImageUrl(rawArticle) || options?.defaultImageUrl || '';
+    // Extract image from RSS feed data only - no fallback images
+    const image_url = this.extractImageUrl(rawArticle) || '';
     const article_url = this.cleanUrl(rawArticle.link);
     const canonical_url = this.createCanonicalUrl(article_url);
     const category = this.inferCategory(rawArticle, options?.defaultCategory);
@@ -226,8 +225,8 @@ export class ContentService {
   /**
    * Check if URL is an image
    */
-  private isImageUrl(url: string): boolean {
-    if (!url) return false;
+  private isImageUrl(url: string | undefined | null): boolean {
+    if (!url || typeof url !== 'string') return false;
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
     const lowerUrl = url.toLowerCase();
     return imageExtensions.some((ext) => lowerUrl.includes(ext));
