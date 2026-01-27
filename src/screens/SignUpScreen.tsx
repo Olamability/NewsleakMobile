@@ -11,12 +11,17 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as WebBrowser from 'expo-web-browser';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
+import { AuthService } from '../services/auth.service';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import { validateEmail, validatePassword, validateName } from '../utils/validation';
 import { RootStackParamList } from '../navigation/types';
+
+// Required for OAuth redirect
+WebBrowser.maybeCompleteAuthSession();
 
 interface SignUpScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -85,8 +90,76 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       Alert.alert(
         'Success',
         'Account created successfully! Please check your email to verify your account.',
-        [{ text: 'OK', onPress: () => navigation.navigate('Main') }]
+        [{ text: 'OK', onPress: () => navigation.navigate('Main') }],
       );
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      const result = await AuthService.signInWithGoogle();
+
+      if (result.error) {
+        Alert.alert('Google Sign In Failed', result.error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.data?.url) {
+        const authResult = await WebBrowser.openAuthSessionAsync(
+          result.data.url,
+          'spazrnews://auth/callback',
+        );
+
+        if (authResult.type === 'success' && authResult.url) {
+          const callbackResult = await AuthService.handleOAuthCallback(authResult.url);
+
+          if (callbackResult.error) {
+            Alert.alert('Sign In Failed', callbackResult.error);
+          } else {
+            navigation.navigate('Main');
+          }
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      Alert.alert('Error', 'Failed to sign in with Google');
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      const result = await AuthService.signInWithApple();
+
+      if (result.error) {
+        Alert.alert('Apple Sign In Failed', result.error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.data?.url) {
+        const authResult = await WebBrowser.openAuthSessionAsync(
+          result.data.url,
+          'spazrnews://auth/callback',
+        );
+
+        if (authResult.type === 'success' && authResult.url) {
+          const callbackResult = await AuthService.handleOAuthCallback(authResult.url);
+
+          if (callbackResult.error) {
+            Alert.alert('Sign In Failed', callbackResult.error);
+          } else {
+            navigation.navigate('Main');
+          }
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      Alert.alert('Error', 'Failed to sign in with Apple');
     }
   };
 
@@ -165,21 +238,23 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
 
             <Button
               title="Sign up with Google"
-              onPress={() => Alert.alert('Google Sign Up', 'Coming soon')}
+              onPress={handleGoogleSignIn}
               variant="social"
               fullWidth
               size="large"
               icon={<Text style={styles.socialIcon}>🔍</Text>}
+              disabled={isLoading}
             />
 
             <Button
-              title="Sign up with Facebook"
-              onPress={() => Alert.alert('Facebook Sign Up', 'Coming soon')}
+              title="Sign up with Apple"
+              onPress={handleAppleSignIn}
               variant="social"
               fullWidth
               size="large"
-              icon={<Text style={styles.socialIcon}>📘</Text>}
+              icon={<Text style={styles.socialIcon}>🍎</Text>}
               style={styles.socialButtonSpacing}
+              disabled={isLoading}
             />
 
             <View style={styles.footer}>

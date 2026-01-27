@@ -7,6 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "spazrnews",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -22,19 +23,27 @@
         "backgroundColor": "#1E40AF"
       },
       "package": "com.spazr.news",
-      "permissions": [
-        "INTERNET",
-        "NOTIFICATIONS"
-      ],
+      "permissions": ["INTERNET", "NOTIFICATIONS"],
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "spazrnews",
+              "host": "auth"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-notifications"
-    ],
+    "plugins": ["expo-notifications"],
     "extra": {
       "eas": {
         "projectId": "your-project-id"
