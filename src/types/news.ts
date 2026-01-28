@@ -31,6 +31,7 @@ export interface NewsArticle {
   quality_score?: number;
   view_count?: number;
   created_at: string;
+  source_name?: string; // Denormalized source name for fallback when news_sources join fails
   news_sources?: NewsSource;
   categories?: Category;
   like_count?: number;

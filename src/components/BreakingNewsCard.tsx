@@ -29,7 +29,9 @@ export const BreakingNewsCard: React.FC<BreakingNewsCardProps> = ({ article, onP
         </Text>
 
         <View style={styles.meta}>
-          <Text style={styles.source}>{source?.name || 'Unknown Source'}</Text>
+          <Text style={styles.source}>
+            {source?.name || article.source_name || 'Unknown Source'}
+          </Text>
           <Text style={styles.dot}>•</Text>
           <Text style={styles.time}>{publishedTime} ago</Text>
         </View>
