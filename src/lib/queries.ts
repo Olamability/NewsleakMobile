@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from './supabase';
 import { TrendingService } from '../services/trending.service';
+import { EngagementService } from '../services/engagement.service';
+import { AdminService } from '../services/admin.service';
 import {
   NewsArticle,
   Category,
@@ -302,8 +304,6 @@ export const useDeleteSearch = () => {
 // ENGAGEMENT HOOKS (Likes & Comments)
 // =============================================
 
-import { EngagementService } from '../services/engagement.service';
-
 export const useToggleLike = () => {
   const queryClient = useQueryClient();
 
@@ -361,6 +361,35 @@ export const useAddComment = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['article-comments', variables.articleId] });
       queryClient.invalidateQueries({ queryKey: ['article-engagement', variables.articleId] });
+    },
+  });
+};
+
+// =============================================
+// ADMIN HOOKS (Article Management)
+// =============================================
+
+export const useDeleteArticle = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (articleId: string) => {
+      const response = await AdminService.deleteArticle(articleId);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      return response;
+    },
+    onSuccess: (_, articleId) => {
+      // Remove the specific article from cache
+      queryClient.removeQueries({ queryKey: ['article', articleId] });
+      // Invalidate all news feed queries to refresh the lists
+      queryClient.invalidateQueries({ queryKey: ['news-feed'] });
+      queryClient.invalidateQueries({ queryKey: ['breaking-news'] });
+      queryClient.invalidateQueries({ queryKey: ['trending-articles'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['article-engagement'] });
+      queryClient.invalidateQueries({ queryKey: ['article-comments'] });
     },
   });
 };

@@ -298,8 +298,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         ListEmptyComponent={
           !isLoading ? (
             <EmptyState
-              title="No Articles Found"
-              message="Check back later for the latest news"
+              title="No Articles Yet"
+              message="New stories are on the way! Pull down to refresh and check for the latest news."
               actionLabel="Refresh"
               onAction={handleRefresh}
             />

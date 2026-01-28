@@ -15,7 +15,7 @@ export const BreakingNewsCard: React.FC<BreakingNewsCardProps> = ({ article, onP
 
   return (
     <TouchableOpacity style={styles.container} onPress={() => onPress(article)} activeOpacity={0.7}>
-      {article.image_url && (
+      {article.image_url && article.image_url.trim() !== '' && (
         <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
       )}
 
