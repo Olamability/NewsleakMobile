@@ -192,7 +192,9 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
               <View style={styles.metaContainer}>
                 {(article.news_sources || article.source_name) && (
                   <View style={styles.sourceRow}>
-                    <Text style={styles.sourceName}>{article.news_sources?.name || article.source_name}</Text>
+                    <Text style={styles.sourceName}>
+                      {article.news_sources?.name || article.source_name}
+                    </Text>
                     <Text style={styles.dot}>•</Text>
                     <Text style={styles.publishedTime}>{timeAgo(article.published_at)} ago</Text>
                   </View>
