@@ -364,3 +364,30 @@ export const useAddComment = () => {
     },
   });
 };
+
+// =============================================
+// ADMIN HOOKS (Article Management)
+// =============================================
+
+import { AdminService } from '../services/admin.service';
+
+export const useDeleteArticle = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (articleId: string) => {
+      const response = await AdminService.deleteArticle(articleId);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      return response;
+    },
+    onSuccess: () => {
+      // Invalidate all news feed queries to refresh the lists
+      queryClient.invalidateQueries({ queryKey: ['news-feed'] });
+      queryClient.invalidateQueries({ queryKey: ['breaking-news'] });
+      queryClient.invalidateQueries({ queryKey: ['trending-articles'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+    },
+  });
+};

@@ -14,6 +14,7 @@ import { EmptyState } from '../components/EmptyState';
 import { AdminService } from '../services/admin.service';
 import { NewsArticle } from '../types';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
+import { useDeleteArticle } from '../lib/queries';
 
 interface ManageArticlesScreenProps {
   navigation: unknown;
@@ -25,6 +26,8 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [_hasMore, setHasMore] = useState(true);
+
+  const { mutate: deleteArticle } = useDeleteArticle();
 
   const loadArticles = useCallback(
     async (isRefresh: boolean = false) => {
@@ -107,24 +110,21 @@ export const ManageArticlesScreen: React.FC<ManageArticlesScreenProps> = () => {
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: async () => {
-            try {
-              const response = await AdminService.deleteArticle(articleId);
-
-              if (response.error) {
-                Alert.alert('Error', response.error);
-                return;
-              }
-
-              setArticles((prevArticles) =>
-                prevArticles.filter((article) => article.id !== articleId)
-              );
-
-              Alert.alert('Success', 'Article removed successfully');
-            } catch (error) {
-              console.error('Error removing article:', error);
-              Alert.alert('Error', 'Failed to remove article. Please try again.');
-            }
+          onPress: () => {
+            // Use the mutation hook which handles cache invalidation
+            deleteArticle(articleId, {
+              onSuccess: () => {
+                // Update local state immediately for instant feedback
+                setArticles((prevArticles) =>
+                  prevArticles.filter((article) => article.id !== articleId)
+                );
+                Alert.alert('Success', 'Article removed successfully');
+              },
+              onError: (error) => {
+                console.error('Error removing article:', error);
+                Alert.alert('Error', 'Failed to remove article. Please try again.');
+              },
+            });
           },
         },
       ]
