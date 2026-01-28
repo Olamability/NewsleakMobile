@@ -86,7 +86,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   const allArticles = useMemo(() => {
     if (!data) return [];
-    return data.pages.flatMap((page) => page);
+    // Flatten all pages and deduplicate by article ID
+    const articles = data.pages.flatMap((page) => page);
+    const uniqueArticles = Array.from(
+      new Map(articles.map((article) => [article.id, article])).values()
+    );
+    return uniqueArticles;
   }, [data]);
 
   const feedItems = useMemo(() => {
