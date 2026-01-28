@@ -35,13 +35,11 @@ export const NewsCard: React.FC<NewsCardProps> = React.memo(
         <View style={styles.content}>
           <View style={styles.textContainer}>
             {/* Source Name - now more prominent */}
-            {article.news_sources && (
-              <View style={styles.sourceContainer}>
-                <Text style={styles.source} numberOfLines={1}>
-                  {article.news_sources.name}
-                </Text>
-              </View>
-            )}
+            <View style={styles.sourceContainer}>
+              <Text style={styles.source} numberOfLines={1}>
+                {article.news_sources?.name || 'Unknown Source'}
+              </Text>
+            </View>
 
             {/* Title */}
             <Text style={styles.title} numberOfLines={3}>
@@ -107,7 +105,7 @@ export const NewsCard: React.FC<NewsCardProps> = React.memo(
           </View>
 
           {/* Image */}
-          {article.image_url && (
+          {article.image_url && article.image_url.trim() !== '' && (
             <Image source={{ uri: article.image_url }} style={styles.image} resizeMode="cover" />
           )}
         </View>
