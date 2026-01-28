@@ -9,7 +9,7 @@ interface ContentProcessingOptions {
 }
 
 export class ContentService {
-  private readonly MAX_SUMMARY_LENGTH = 300;
+  private readonly MAX_SUMMARY_LENGTH = 600; // Increased from 300 to 600 for longer snippets
   private readonly CATEGORY_KEYWORDS = {
     politics: ['election', 'government', 'president', 'parliament', 'minister', 'political'],
     technology: ['tech', 'ai', 'software', 'startup', 'crypto', 'blockchain', 'digital'],

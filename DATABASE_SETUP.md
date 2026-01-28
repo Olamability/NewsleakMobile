@@ -3,6 +3,7 @@
 ## 🚨 Quick Fix for "relation does not exist" Error
 
 If you're seeing this error:
+
 ```
 Error: Failed to run sql query: ERROR: 42P01: relation "news_articles" does not exist
 ```
@@ -10,6 +11,7 @@ Error: Failed to run sql query: ERROR: 42P01: relation "news_articles" does not 
 **QUICK SOLUTION:**
 
 1. Run this command in your project:
+
    ```bash
    npm run setup:db
    ```
@@ -27,6 +29,7 @@ This guide will help you set up the database for the NewsleakMobile app using Su
 ## Problem
 
 If you're seeing this error:
+
 ```
 Error: Failed to run sql query: ERROR: 42P01: relation "news_articles" does not exist
 ```
@@ -73,7 +76,6 @@ If you prefer to do it manually, follow these steps:
 4. Apply each migration file in order by copying and pasting the content:
 
    **Important: Run these in the exact order listed below!**
-
    1. `supabase/migrations/20240101000000_initial_schema.sql` - Creates all base tables
    2. `supabase/migrations/20240102000000_add_missing_columns.sql` - Adds missing columns
    3. `supabase/migrations/20240103000000_fix_foreign_keys_and_rls.sql` - Fixes foreign keys and RLS
@@ -126,6 +128,7 @@ After setup, verify the database is working:
 ### "relation already exists" errors
 
 This means the table was already created. You can either:
+
 - Skip that migration and continue with the next one
 - Or drop the existing tables and start fresh (⚠️ this will delete all data)
 

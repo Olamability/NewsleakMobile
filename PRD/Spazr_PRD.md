@@ -4,7 +4,7 @@ This PRD completely replaces all previous versions.
 No assumptions outside this document are allowed.
 
 1. PRODUCT OVERVIEW
-Product Name
+   Product Name
 
 Spazr News
 
@@ -49,7 +49,7 @@ Redirect users to publishers
 Any feature that reduces outbound traffic is considered incorrect.
 
 4. USER ROLES
-4.1 Guest User (Default)
+   4.1 Guest User (Default)
 
 Browse all categories
 
@@ -72,7 +72,7 @@ Customize feed preferences
 Authentication must never block article access or outbound traffic.
 
 5. CONTENT RULES (STRICT)
-Allowed
+   Allowed
 
 Article title
 
@@ -125,19 +125,18 @@ Users must never consume full content without leaving the app
 Failure = Critical product defect
 
 7. USER EXPERIENCE FLOW (OPERA-STYLE)
-Home Feed
-  ↓
-Article Preview (summary only)
-  ↓
-Read Full Article (mandatory CTA)
-  ↓
-Publisher Website
-
+   Home Feed
+   ↓
+   Article Preview (summary only)
+   ↓
+   Read Full Article (mandatory CTA)
+   ↓
+   Publisher Website
 
 No alternate reading flow is allowed.
 
 8. APP SCREENS & BEHAVIOR
-8.1 Splash Screen
+   8.1 Splash Screen
 
 2–4 seconds
 
@@ -206,7 +205,7 @@ Save article reference only
 No content duplication
 
 9. CONTENT INGESTION (RSS)
-RSS Processing Rules
+   RSS Processing Rules
 
 Fetch feeds periodically
 
@@ -221,7 +220,7 @@ Store original URL exactly
 Reject feeds without outbound URLs
 
 10. BACKEND DATA MODEL (SUPABASE)
-Required Tables
+    Required Tables
 
 news_sources
 
@@ -255,7 +254,7 @@ source_id
 timestamp
 
 11. ANALYTICS REQUIREMENTS
-Track Events
+    Track Events
 
 view_article
 

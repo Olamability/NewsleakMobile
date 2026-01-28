@@ -49,4 +49,3 @@ jest.mock('./src/services/supabase', () => ({
     })),
   },
 }));
-

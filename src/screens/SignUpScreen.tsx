@@ -90,7 +90,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       Alert.alert(
         'Success',
         'Account created successfully! Please check your email to verify your account.',
-        [{ text: 'OK', onPress: () => navigation.navigate('Main') }],
+        [{ text: 'OK', onPress: () => navigation.navigate('Main') }]
       );
     }
   };
@@ -109,7 +109,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       if (result.data?.url) {
         const authResult = await WebBrowser.openAuthSessionAsync(
           result.data.url,
-          'spazrnews://auth/callback',
+          'spazrnews://auth/callback'
         );
 
         if (authResult.type === 'success' && authResult.url) {
@@ -143,7 +143,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       if (result.data?.url) {
         const authResult = await WebBrowser.openAuthSessionAsync(
           result.data.url,
-          'spazrnews://auth/callback',
+          'spazrnews://auth/callback'
         );
 
         if (authResult.type === 'success' && authResult.url) {

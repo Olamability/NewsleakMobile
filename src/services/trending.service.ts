@@ -33,7 +33,7 @@ export class TrendingService {
     views: number,
     likes: number,
     comments: number,
-    publishedAt: string,
+    publishedAt: string
   ): number {
     const now = new Date().getTime();
     const published = new Date(publishedAt).getTime();
@@ -114,7 +114,7 @@ export class TrendingService {
           article.view_count || 0,
           likesCount.get(article.id) || 0,
           commentsCount.get(article.id) || 0,
-          article.published_at,
+          article.published_at
         ),
         views: article.view_count || 0,
         likes: likesCount.get(article.id) || 0,
@@ -128,9 +128,7 @@ export class TrendingService {
 
       // Return articles in order of trending score
       const trendingArticles = articles.filter((a) => topArticleIds.includes(a.id));
-      trendingArticles.sort(
-        (a, b) => topArticleIds.indexOf(a.id) - topArticleIds.indexOf(b.id),
-      );
+      trendingArticles.sort((a, b) => topArticleIds.indexOf(a.id) - topArticleIds.indexOf(b.id));
 
       return trendingArticles;
     } catch (error) {
@@ -150,7 +148,16 @@ export class TrendingService {
 
       const { data: articles, error } = await supabase
         .from('news_articles')
-        .select('*')
+        .select(
+          `
+          *,
+          news_sources (
+            id,
+            name,
+            logo_url
+          )
+        `
+        )
         .gte('published_at', cutoffDate.toISOString())
         .order('view_count', { ascending: false })
         .limit(limit);
@@ -172,7 +179,7 @@ export class TrendingService {
    */
   static async getCategoryTrendingArticles(
     category: string,
-    limit: number = 5,
+    limit: number = 5
   ): Promise<NewsArticle[]> {
     try {
       const cutoffDate = new Date();

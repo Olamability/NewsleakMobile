@@ -1,9 +1,11 @@
 # Product Requirements Document (PRD)
 
 ## Product Name
+
 **Spazr News Aggregator** (working name)
 
 ## Product Vision
+
 To build a mobile-first news aggregator app that curates real-time news from trusted news websites and blogs, while **driving measurable traffic back to the original publishers**. The app should feel similar to Opera News / Google News but with clear source attribution and outbound links that benefit partner news sites.
 
 This product directly supports your existing platforms (e.g. **spazr.com.ng**, **abilitydigitalz.com.ng**) and other Nigerian & global news publishers.
@@ -13,12 +15,14 @@ This product directly supports your existing platforms (e.g. **spazr.com.ng**, *
 ## Goals & Objectives
 
 ### Primary Goals
+
 - Aggregate **real news content** from verified news websites (via RSS & scraping where allowed)
 - Display news in a clean, fast, mobile-friendly app
 - Redirect users to **original news sources** to read full articles
 - Increase traffic, impressions, and SEO value for partner sites
 
 ### Secondary Goals
+
 - Build a scalable backend that supports live updates
 - Support multiple categories (Politics, Sports, Business, Entertainment, etc.)
 - Prepare the app for monetization (ads, promoted stories, partnerships)
@@ -52,10 +56,12 @@ This product directly supports your existing platforms (e.g. **spazr.com.ng**, *
 ### 1. News Aggregation (Real Data Only)
 
 **Sources**:
+
 - RSS feeds (Punch, Vanguard, BBC, CNN, etc.)
 - Custom blogs (spazr.com.ng, abilitydigitalz.com.ng)
 
-Ingestion Process:**
+Ingestion Process:\*\*
+
 - Scheduled Edge Functions (cron)
 - Fetch feeds periodically
 - Deduplicate articles
@@ -63,6 +69,7 @@ Ingestion Process:**
 - Store in database
 
 **Ingestion Rules**:
+
 - Fetch title, excerpt, featured image, source, publish date
 - Store clean text only (no embedded ads)
 - Respect robots.txt & publisher policies
@@ -82,14 +89,16 @@ Ingestion Process:**
 
 ---
 
-Admin Users**
-   - Manage news sources
-   - Moderate content
-   - Feature or remove articles
+Admin Users\*\*
+
+- Manage news sources
+- Moderate content
+- Feature or remove articles
 
 ### 3. Article Preview Screen
 
 Each article card shows:
+
 - Headline
 - Featured image
 - Source logo/name
@@ -97,6 +106,7 @@ Each article card shows:
 - Time published
 
 **CTA Button:**
+
 > "Read Full Article" → Opens original publisher website
 
 ---
@@ -110,6 +120,7 @@ Each article card shows:
 - Add UTM tracking parameters for analytics
 
 Example:
+
 ```
 https://publisher.com/article-title?utm_source=spazr_app&utm_medium=referral
 ```
@@ -128,7 +139,7 @@ https://publisher.com/article-title?utm_source=spazr_app&utm_medium=referral
 
 - Breaking news alerts
 - Category-based subscriptions
-Push notifications via Expo
+  Push notifications via Expo
 - Category-based alerts
 
 ---
@@ -138,7 +149,7 @@ Push notifications via Expo
 - Bookmark articles
 - Follow sources
 - Save reading history
-Save articles for later
+  Save articles for later
 - View bookmarks list
 - Remove bookmarks
 
@@ -159,11 +170,13 @@ Save articles for later
 ### Frontend (Mobile App)
 
 **Stack**:
+
 - React Native (Expo)
 - TypeScript
 - React Navigation
 
 **Screens**:
+
 - Splash Screen
 - Home (Top Stories)
 - Category Screen
@@ -177,6 +190,7 @@ Save articles for later
 ### Backend (Production-Grade)
 
 **Stack**:
+
 - Supabase (PostgreSQL + Auth + Storage)
 - Node.js / TypeScript
 - Cron jobs / scheduled functions
@@ -186,6 +200,7 @@ Save articles for later
 ### Database Schema (Simplified)
 
 **news_articles**
+
 - id (uuid)
 - title
 - summary
@@ -199,6 +214,7 @@ Save articles for later
 - created_at
 
 **news_sources**
+
 - id
 - name
 - rss_url
@@ -248,6 +264,7 @@ Save articles for later
 - Referral traffic stats for publishers
 
 Tools:
+
 - Firebase Analytics
 - Supabase logs
 - Google Analytics (UTM)
@@ -266,17 +283,20 @@ Tools:
 ## Development Phases
 
 ### Phase 1 – MVP (4–6 weeks)
+
 - Backend setup
 - RSS ingestion
 - Mobile app core screens
 - Article redirection
 
 ### Phase 2 – Growth
+
 - Notifications
 - Search improvements
 - User bookmarks
 
 ### Phase 3 – Scale
+
 - Publisher dashboard
 - Advanced analytics
 - iOS release
@@ -294,11 +314,11 @@ Tools:
 
 ## Risks & Mitigation
 
-| Risk | Mitigation |
-|----|----|
+| Risk                 | Mitigation                     |
+| -------------------- | ------------------------------ |
 | Publisher complaints | Strict attribution & redirects |
-| Duplicate content | Hash-based detection |
-| Performance | Caching + pagination |
+| Duplicate content    | Hash-based detection           |
+| Performance          | Caching + pagination           |
 
 ---
 
@@ -326,15 +346,17 @@ Mobile App (React Native / Expo)
 API Layer (Node.js / TypeScript)
 ↓
 Supabase Backend
+
 - PostgreSQL (news_articles, news_sources)
 - Auth (optional users)
 - Storage (logos, images if cached)
-↓
-RSS Ingestion Service (Cron Jobs)
-↓
-External News Sources (RSS Feeds)
+  ↓
+  RSS Ingestion Service (Cron Jobs)
+  ↓
+  External News Sources (RSS Feeds)
 
 ### Detailed Flow
+
 1. Cron job triggers RSS ingestion every 15–30 minutes
 2. RSS feeds are fetched from verified news sources
 3. Articles are parsed, cleaned, deduplicated
@@ -377,6 +399,7 @@ backend/
 - Insert into `news_articles`
 
 Key rules:
+
 - Store only title, summary, image, source, link
 - Never store full article body
 
@@ -451,9 +474,11 @@ All external links append:
 ```
 
 ---
+
 Admin Dashboard
 
 ### Admin Capabilities
+
 - Manage news sources (enable/disable)
 - Edit categories and tags
 - Review and remove articles
@@ -500,11 +525,13 @@ All articles must conform to a unified schema:
 Categorization & Tagging
 
 **Methods:**
+
 - RSS category mapping
 - Keyword-based classification
 - Optional AI-based tagging (future)
 
 **Default Categories:**
+
 - Breaking News
 - Politics
 - Sports
@@ -515,4 +542,3 @@ Categorization & Tagging
 - Lifestyle
 
 **Status:** Ready for Development 🚀
-

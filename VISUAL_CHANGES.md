@@ -3,11 +3,13 @@
 ## Home Screen (NewsCard Component)
 
 ### Before
+
 - Source name was small and less prominent
 - No engagement indicators (likes/comments)
 - Simple card layout with minimal interactivity
 
 ### After
+
 - **Source name**: Displayed in UPPERCASE, primary color (#1E40AF blue), bold (700 weight)
 - **Like button**: Heart icon that fills when liked (red #DC2626), shows count when > 0
 - **Comment button**: Chat bubble icon, shows count when > 0, taps to navigate to details
@@ -16,6 +18,7 @@
 - **Engagement row**: Icons aligned horizontally in footer with proper spacing
 
 ### UI Elements Added
+
 ```
 ┌─────────────────────────────────────┐
 │ BBC NEWS                            │  ← Source (uppercase, blue, bold)
@@ -32,6 +35,7 @@
 ## Article Detail Screen
 
 ### Before
+
 - Simple header with only back button
 - Basic layout with source -> title -> summary
 - No engagement features
@@ -41,17 +45,20 @@
 ### After
 
 #### Enhanced Header
+
 ```
 ┌─────────────────────────────────────┐
 │  ← Back     Bookmark 🔖  Share 📤   │  ← Floating buttons with shadows
 └─────────────────────────────────────┘
 ```
+
 - Back button: Circular, white background, shadow
 - Bookmark button: Positioned top-right, circular
 - Share button: Next to bookmark, circular
 - All buttons float over the hero image
 
 #### Improved Article Layout
+
 ```
 ┌─────────────────────────────────────┐
 │                                     │
@@ -150,6 +157,7 @@
 ## Color Scheme Alignment
 
 ### Primary Colors Used
+
 - **Primary Blue**: #2563EB (buttons, links, source names)
 - **Error Red**: #DC2626 (CTA button, liked hearts)
 - **Text Primary**: #1F2937 (headings, titles)
@@ -159,6 +167,7 @@
 - **Border**: #E5E7EB (separators)
 
 ### Typography
+
 - **Headlines**: 700 weight, uppercase for sources
 - **Body**: 400-600 weight
 - **Sizes**: xs(12), sm(14), md(16), lg(18), xl(20), xxxl(28)
@@ -168,18 +177,21 @@
 ## Responsive Behavior
 
 ### Images
+
 - Full width on all screen sizes
 - Aspect ratio maintained
 - Graceful fallback to placeholder
 - Error state handled with icon
 
 ### Cards
+
 - Horizontal layout: Image on right (100x100px)
 - Text fills remaining space
 - Proper margins prevent text overflow
 - Touch targets: 44x44px minimum
 
 ### Engagement Icons
+
 - Spacing adjusts based on content
 - Counts hidden when 0
 - Icons always visible
@@ -212,12 +224,14 @@
 ## Reference Alignment
 
 ### Spazr Home Reference
+
 ✅ Source names prominent and bold
 ✅ Engagement icons on cards
 ✅ Clean, modern card design
 ✅ Proper spacing and hierarchy
 
-### Article Detail Reference  
+### Article Detail Reference
+
 ✅ Enhanced header with multiple actions
 ✅ Full-width hero image
 ✅ Engagement metrics visible

@@ -82,7 +82,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
         // Open browser for OAuth flow
         const authResult = await WebBrowser.openAuthSessionAsync(
           result.data.url,
-          'spazrnews://auth/callback',
+          'spazrnews://auth/callback'
         );
 
         if (authResult.type === 'success' && authResult.url) {
@@ -118,7 +118,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
         // Open browser for OAuth flow
         const authResult = await WebBrowser.openAuthSessionAsync(
           result.data.url,
-          'spazrnews://auth/callback',
+          'spazrnews://auth/callback'
         );
 
         if (authResult.type === 'success' && authResult.url) {

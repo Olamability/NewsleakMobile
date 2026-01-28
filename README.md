@@ -7,6 +7,7 @@ A modern, production-ready React Native Expo news aggregator app with Supabase b
 **If you see: `ERROR: 42P01: relation "news_articles" does not exist`**
 
 Run this command to fix it:
+
 ```bash
 npm run setup:db
 ```
@@ -30,6 +31,7 @@ See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for details.
 ## 🎯 Features
 
 ### Core Features
+
 - **News Aggregation**: Real-time news from multiple trusted sources (fetched every 15 minutes)
 - **Automatic Ingestion**: Background scheduler fetches latest articles automatically
 - **Manual Trigger**: Admins can trigger immediate ingestion from admin panel
@@ -42,12 +44,14 @@ See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for details.
 - **Infinite Scroll**: Pagination for improved performance
 
 ### Authentication
+
 - **User Registration**: Sign up with email and password
 - **Secure Sign In**: JWT-based authentication
 - **Profile Management**: View and manage user profile
 - **Secure Storage**: Authentication tokens stored securely using Expo SecureStore
 
 ### UI/UX
+
 - **Sleek Design**: Modern, consistent design system
 - **Responsive Layout**: Optimized for various screen sizes
 - **Loading States**: Skeleton screens and loading indicators
@@ -55,6 +59,7 @@ See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for details.
 - **Error Handling**: Graceful error handling with retry options
 
 ### Admin Features
+
 - **Article Management**: Delete unwanted articles from admin panel
 - **Featured Articles**: Toggle featured status for articles
 - **Source Management**: Add/remove/toggle RSS news sources
@@ -69,6 +74,7 @@ See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for details.
 ## 🏗️ Architecture
 
 ### Project Structure
+
 ```
 src/
 ├── components/          # Reusable UI components
@@ -111,17 +117,20 @@ src/
 ### Tech Stack
 
 **Frontend:**
+
 - React Native (Expo)
 - TypeScript
 - React Navigation (Stack & Bottom Tabs)
 - React Context API (State Management)
 
 **Backend:**
+
 - Supabase (PostgreSQL)
 - Supabase Auth
 - Supabase Storage
 
 **Key Libraries:**
+
 - `@supabase/supabase-js` - Supabase client
 - `@react-navigation/native` - Navigation
 - `expo-secure-store` - Secure token storage
@@ -133,6 +142,7 @@ src/
 **⚡ Quick Start:** See [GETTING_STARTED.md](./GETTING_STARTED.md) for a detailed step-by-step guide to get the app running with sample data in under 10 minutes.
 
 ### Prerequisites
+
 - Node.js 16+ and npm
 - Expo CLI (`npm install -g expo-cli`)
 - iOS Simulator (Mac only) or Android Studio
@@ -141,22 +151,26 @@ src/
 ### Installation
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/Olamability/NewsleakMobile.git
 cd NewsleakMobile  # Project root (repository name unchanged)
 ```
 
 2. **Install dependencies**
+
 ```bash
 npm install
 ```
 
 3. **Configure environment variables**
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` and add your Supabase credentials:
+
 ```
 EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -185,6 +199,7 @@ For detailed instructions and troubleshooting, see [DATABASE_SETUP.md](./DATABAS
 1. Create Tables
 
 Run the SQL file in your Supabase SQL editor:
+
 - Copy contents of `/supabase/schema.sql` and run it
 
 This creates all tables and seeds categories and news sources.
@@ -192,6 +207,7 @@ This creates all tables and seeds categories and news sources.
 #### 2. Add Sample Articles (Important!)
 
 To see articles immediately without waiting for RSS ingestion:
+
 - Copy contents of `/supabase/sample-articles.sql` and run it
 
 This adds 20+ sample articles across all categories for testing.
@@ -276,11 +292,13 @@ CREATE POLICY "Users can delete own bookmarks" ON bookmarks
 ### Running the App
 
 **Start the development server:**
+
 ```bash
 npm start
 ```
 
 **Run on specific platforms:**
+
 ```bash
 npm run android    # Android
 npm run ios        # iOS (Mac only)
@@ -298,6 +316,7 @@ npm run web        # Web
 ## 📊 Database Schema
 
 ### news_articles
+
 - `id` (UUID, Primary Key)
 - `title` (Text, Required)
 - `summary` (Text, Required)
@@ -309,6 +328,7 @@ npm run web        # Web
 - `view_count` (Integer, Default: 0)
 
 ### bookmarks
+
 - `id` (UUID, Primary Key)
 - `user_id` (UUID, Foreign Key → auth.users)
 - `article_id` (UUID, Foreign Key → news_articles)
@@ -327,6 +347,7 @@ The app uses a consistent design system defined in `src/constants/theme.ts`:
 ## 🔄 State Management
 
 Global state is managed using React Context API:
+
 - **AuthContext**: Manages authentication state and user information
 
 ## 📱 Navigation Structure
@@ -350,6 +371,7 @@ Root Stack
 ## 🚦 API Endpoints (Supabase)
 
 All API calls are handled through Supabase client:
+
 - `GET /news_articles` - Fetch paginated articles
 - `GET /news_articles?category=politics` - Filter by category
 - `GET /news_articles (search)` - Search articles
@@ -367,6 +389,7 @@ All API calls are handled through Supabase client:
 ## 🧪 Testing
 
 Run tests with:
+
 ```bash
 npm test                  # Run all tests
 npm run test:watch        # Run tests in watch mode
@@ -376,22 +399,26 @@ npm run test:coverage     # Run tests with coverage
 ## 🐛 Troubleshooting
 
 For common issues and solutions, see:
+
 - [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - General troubleshooting guide
 - [WINDOWS_ESM_FIX.md](./WINDOWS_ESM_FIX.md) - Windows-specific Metro ESM URL scheme error fix
 
 ## 📦 Build & Deployment
 
 ### Build for Android
+
 ```bash
 eas build --platform android
 ```
 
 ### Build for iOS
+
 ```bash
 eas build --platform ios
 ```
 
 ### Submit to Stores
+
 ```bash
 eas submit --platform android
 eas submit --platform ios
