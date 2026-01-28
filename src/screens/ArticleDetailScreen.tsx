@@ -74,15 +74,12 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
   const relatedNews = useMemo(() => {
     if (!relatedNewsData) return [];
     const allArticles = relatedNewsData.pages.flatMap((page) => page);
-    // Remove duplicates based on ID, then limit to first 50 articles,
-    // filter out current article, then take 20
+    // Remove duplicates based on ID using a Map
     const uniqueArticles = Array.from(
       new Map(allArticles.map((article) => [article.id, article])).values()
     );
-    return uniqueArticles
-      .slice(0, 50)
-      .filter((item) => item.id !== articleId)
-      .slice(0, 20);
+    // Filter out current article, then limit to 20 items
+    return uniqueArticles.filter((item) => item.id !== articleId).slice(0, 20);
   }, [relatedNewsData, articleId]);
 
   const trackArticleView = useCallback(() => {
