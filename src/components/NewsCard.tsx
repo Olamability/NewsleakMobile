@@ -37,7 +37,7 @@ export const NewsCard: React.FC<NewsCardProps> = React.memo(
             {/* Source Name - now more prominent */}
             <View style={styles.sourceContainer}>
               <Text style={styles.source} numberOfLines={1}>
-                {article.news_sources?.name || 'Unknown Source'}
+                {article.news_sources?.name || article.source_name || 'Unknown Source'}
               </Text>
             </View>
 

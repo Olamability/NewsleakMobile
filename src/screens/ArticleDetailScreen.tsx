@@ -87,7 +87,7 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
       trackEvent({
         eventType: 'article_view',
         articleId: article.id,
-        metadata: { source: article.news_sources?.name },
+        metadata: { source: article.news_sources?.name || article.source_name },
       });
     }
   }, [article, trackEvent]);
@@ -190,9 +190,9 @@ export const ArticleDetailScreen: React.FC<ArticleDetailScreenProps> = ({ naviga
 
               {/* Source & Time */}
               <View style={styles.metaContainer}>
-                {article.news_sources && (
+                {(article.news_sources || article.source_name) && (
                   <View style={styles.sourceRow}>
-                    <Text style={styles.sourceName}>{article.news_sources.name}</Text>
+                    <Text style={styles.sourceName}>{article.news_sources?.name || article.source_name}</Text>
                     <Text style={styles.dot}>•</Text>
                     <Text style={styles.publishedTime}>{timeAgo(article.published_at)} ago</Text>
                   </View>

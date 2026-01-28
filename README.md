@@ -398,7 +398,38 @@ npm run test:coverage     # Run tests with coverage
 
 ## 🐛 Troubleshooting
 
-For common issues and solutions, see:
+### Common Issues
+
+#### TypeError: fetch failed (Expo CLI)
+
+If you encounter `TypeError: fetch failed` when starting the development server, this is typically due to:
+
+**Cause**: Expo CLI cannot reach its version checking servers (network connectivity issue).
+
+**Solutions**:
+1. **Skip version checks** (recommended for offline development):
+   ```bash
+   npm run start -- --offline
+   ```
+
+2. **Check network connectivity**: Ensure your network allows HTTPS connections to Expo's servers.
+
+3. **Clear Expo cache**:
+   ```bash
+   npm run start:clear
+   ```
+
+This error does NOT affect the app's functionality - it's only a development environment issue.
+
+#### "Unknown Source" displayed for articles
+
+This issue has been fixed by adding fallback to the denormalized `source_name` field when the related `news_sources` table join fails.
+
+If you still see "Unknown Source":
+- Check that your news articles have the `source_name` field populated
+- Ensure RLS policies allow reading from `news_sources` table (see `supabase/migrations/20240105000000_fix_news_sources_rls.sql`)
+
+For more common issues and solutions, see:
 
 - [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - General troubleshooting guide
 - [WINDOWS_ESM_FIX.md](./WINDOWS_ESM_FIX.md) - Windows-specific Metro ESM URL scheme error fix
