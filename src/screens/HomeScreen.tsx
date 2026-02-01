@@ -11,9 +11,11 @@ import {
   NativeScrollEvent,
   Image,
   ImageSourcePropType,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import { NewsCard } from '../components/NewsCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { EmptyState } from '../components/EmptyState';
@@ -41,19 +43,13 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - SPACING.lg * 2;
 const SPONSORED_INTERVAL = 6;
 
-// Fixed categories for the homepage
-// Note: 'for-you' and 'all' are special categories that show all articles (unfiltered)
-// Numeric IDs (1-8) correspond to database category IDs for filtered views
+// Fixed categories for the homepage matching the design
 const FIXED_CATEGORIES = [
+  { id: 'trending', name: 'Trending' },
   { id: 'for-you', name: 'For you' },
-  { id: 'all', name: 'Following' },
-  { id: '1', name: 'Top Stories' },
-  { id: '4', name: 'Business' },
-  { id: '6', name: 'Technology' },
-  { id: '7', name: 'Entertainment' },
-  { id: '8', name: 'Health' },
-  { id: '5', name: 'Sports' },
   { id: '3', name: 'Politics' },
+  { id: '5', name: 'Sports' },
+  { id: '7', name: 'Entertainment' },
 ];
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Main'>;
@@ -146,6 +142,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     navigation.navigate('Search');
   }, [navigation]);
 
+  const handleCityPress = useCallback(() => {
+    // TODO: Implement city selection functionality
+    // For now, this is a placeholder that could show a city picker modal
+    console.warn('City selector pressed - feature to be implemented');
+  }, []);
+
+  const handleViewMoreHeadlines = useCallback(() => {
+    // TODO: Navigate to full headlines view or filter by breaking news
+    // For now, set category to show breaking/trending news
+    setSelectedCategory('trending');
+  }, []);
+
   if (isLoading && !allArticles.length) {
     return <LoadingSpinner fullScreen />;
   }
@@ -158,16 +166,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header with Logo and Search Bar */}
+      {/* Header with Logo, City Selector, Search and Notification Icons */}
       <View style={styles.header}>
         <Image source={logoImage} style={styles.logo} resizeMode="contain" />
-        <View style={styles.searchBarContainer}>
-          <SearchBar
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search news..."
-            onFocus={handleSearchPress}
-          />
+        
+        {/* City Selector */}
+        <TouchableOpacity style={styles.citySelector} onPress={handleCityPress}>
+          <Text style={styles.cityText}>Choose Your City</Text>
+          <Ionicons name="chevron-down" size={16} color={COLORS.headerText} />
+        </TouchableOpacity>
+        
+        {/* Search and Notification Icons */}
+        <View style={styles.headerIcons}>
+          <TouchableOpacity onPress={handleSearchPress} style={styles.iconButton}>
+            <Ionicons name="search" size={24} color={COLORS.headerText} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('Notifications')} 
+            style={styles.iconButton}
+          >
+            <Ionicons name="notifications-outline" size={24} color={COLORS.headerText} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -241,12 +260,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               </ScrollView>
             </View>
 
-            {/* Headlines (Breaking News) */}
+            {/* Featured Headlines (Breaking News) */}
             {!breakingLoading && breakingNews && breakingNews.length > 0 && (
               <View style={styles.breakingSection}>
                 <View style={styles.headlineHeader}>
-                  <Text style={styles.sectionTitle}>Headlines</Text>
-                  <Text style={styles.seeMore}>See more {'>'}</Text>
+                  <Text style={styles.sectionTitle}>Featured Headlines</Text>
+                  <TouchableOpacity onPress={handleViewMoreHeadlines}>
+                    <Text style={styles.seeMore}>View more {'>'}</Text>
+                  </TouchableOpacity>
                 </View>
                 <ScrollView
                   horizontal
@@ -276,10 +297,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 </View>
               </View>
             )}
-
-            <View style={styles.feedHeader}>
-              <Text style={styles.feedTitle}>Latest News</Text>
-            </View>
           </>
         }
         contentContainerStyle={styles.listContent}
@@ -320,17 +337,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    backgroundColor: COLORS.background,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.headerBackground,
+    gap: SPACING.sm,
   },
   logo: {
-    width: 40,
-    height: 40,
-    marginRight: SPACING.sm,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
-  searchBarContainer: {
-    flex: 1,
+  citySelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: SPACING.md,
+    gap: SPACING.xs,
+  },
+  cityText: {
+    color: COLORS.headerText,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '500',
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    marginLeft: 'auto',
+    gap: SPACING.md,
+  },
+  iconButton: {
+    padding: SPACING.xs,
   },
   listContent: {
     paddingHorizontal: SPACING.lg,
@@ -358,14 +393,14 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   sectionTitle: {
-    fontSize: FONT_SIZES.xl,
+    fontSize: FONT_SIZES.lg,
     fontWeight: '700',
     color: COLORS.text,
   },
   seeMore: {
     fontSize: FONT_SIZES.sm,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: COLORS.textSecondary,
   },
   breakingContent: {
     paddingRight: SPACING.lg,
@@ -378,25 +413,16 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.border,
-  },
-  dotActive: {
-    backgroundColor: COLORS.primary,
     width: 8,
     height: 8,
     borderRadius: 4,
+    backgroundColor: COLORS.border,
   },
-  feedHeader: {
-    marginTop: SPACING.lg,
-    marginBottom: SPACING.md,
-  },
-  feedTitle: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: '700',
-    color: COLORS.text,
+  dotActive: {
+    backgroundColor: COLORS.text,
+    width: 24,
+    height: 8,
+    borderRadius: 4,
   },
   footer: {
     paddingVertical: SPACING.lg,
