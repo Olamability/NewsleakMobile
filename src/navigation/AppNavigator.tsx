@@ -28,10 +28,10 @@ const MainTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: COLORS.primary,
+        tabBarActiveTintColor: COLORS.text,
         tabBarInactiveTintColor: COLORS.iconGray,
         tabBarStyle: {
-          backgroundColor: COLORS.background,
+          backgroundColor: COLORS.card,
           borderTopColor: COLORS.border,
           borderTopWidth: 1,
           height: 60 + insets.bottom,
@@ -58,25 +58,25 @@ const MainTabNavigator = () => {
         component={NotificationsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications" size={size} color={color} />
+            <Ionicons name="videocam" size={size} color={color} />
           ),
-          tabBarLabel: 'Notifications',
+          tabBarLabel: 'Video',
         }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
-          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <Ionicons name="briefcase" size={size} color={color} />,
+          tabBarLabel: 'Jobs',
         }}
       />
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} />,
-          tabBarLabel: 'Settings',
+          tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
+          tabBarLabel: 'Me',
         }}
       />
     </Tab.Navigator>

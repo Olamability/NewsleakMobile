@@ -7,6 +7,10 @@ const LIGHT_COLORS = {
   primaryLight: '#3B82F6',
   secondary: '#F59E0B',
   accent: '#8B5CF6',
+  
+  // Header colors (dark navy blue)
+  headerBackground: '#2C3E5C',
+  headerText: '#FFFFFF',
 
   // Button colors
   buttonGray: '#6B7280',
@@ -19,7 +23,7 @@ const LIGHT_COLORS = {
   textPlaceholder: '#D1D5DB',
 
   // Background colors
-  background: '#FFFFFF',
+  background: '#F5F5F5',
   backgroundSecondary: '#F3F4F6',
   backgroundDark: '#111827',
   searchBackground: '#F3F4F6',

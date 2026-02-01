@@ -33,74 +33,67 @@ export const NewsCard: React.FC<NewsCardProps> = React.memo(
     return (
       <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.9}>
         <View style={styles.content}>
+          {/* Source Logo Circle */}
+          <View style={styles.sourceLogoContainer}>
+            {article.news_sources?.logo_url ? (
+              <Image 
+                source={{ uri: article.news_sources.logo_url }} 
+                style={styles.sourceLogo} 
+                resizeMode="cover" 
+              />
+            ) : (
+              <View style={[styles.sourceLogo, styles.sourceLogoPlaceholder]}>
+                <Text style={styles.sourceLogoText}>
+                  {(article.news_sources?.name || article.source_name || 'N')[0].toUpperCase()}
+                </Text>
+              </View>
+            )}
+          </View>
+
           <View style={styles.textContainer}>
-            {/* Source Name - now more prominent */}
-            <View style={styles.sourceContainer}>
+            {/* Source Name and Time */}
+            <View style={styles.sourceRow}>
               <Text style={styles.source} numberOfLines={1}>
                 {article.news_sources?.name || article.source_name || 'Unknown Source'}
               </Text>
+              <Text style={styles.time}>{formatRelativeTime(article.published_at)}</Text>
             </View>
 
             {/* Title */}
-            <Text style={styles.title} numberOfLines={3}>
+            <Text style={styles.title} numberOfLines={2}>
               {article.title}
             </Text>
 
-            {/* Footer with time and engagement */}
-            <View style={styles.footer}>
-              <Text style={styles.time}>{formatRelativeTime(article.published_at)}</Text>
+            {/* Engagement Row */}
+            <View style={styles.engagementContainer}>
+              {/* Like button */}
+              <TouchableOpacity
+                onPress={handleLikePress}
+                style={styles.engagementButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons
+                  name={engagement?.isLiked ? 'heart' : 'heart-outline'}
+                  size={16}
+                  color={engagement?.isLiked ? COLORS.error : COLORS.iconGray}
+                />
+                <Text style={styles.engagementCount}>
+                  {engagement?.likeCount || 0}
+                </Text>
+              </TouchableOpacity>
 
-              {/* Engagement buttons */}
-              <View style={styles.engagementContainer}>
-                {/* Like button */}
-                <TouchableOpacity
-                  onPress={handleLikePress}
-                  style={styles.engagementButton}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <Ionicons
-                    name={engagement?.isLiked ? 'heart' : 'heart-outline'}
-                    size={16}
-                    color={engagement?.isLiked ? COLORS.error : COLORS.iconGray}
-                  />
-                  {(engagement?.likeCount ?? 0) > 0 && (
-                    <Text style={styles.engagementCount}>{engagement?.likeCount}</Text>
-                  )}
-                </TouchableOpacity>
-
-                {/* Comment button */}
-                <TouchableOpacity
-                  style={styles.engagementButton}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    onPress(); // Navigate to detail to see comments
-                  }}
-                >
-                  <Ionicons name="chatbubble-outline" size={16} color={COLORS.iconGray} />
-                  {(engagement?.commentCount ?? 0) > 0 && (
-                    <Text style={styles.engagementCount}>{engagement?.commentCount}</Text>
-                  )}
-                </TouchableOpacity>
-
-                {/* Bookmark button */}
-                {onBookmarkPress && (
-                  <TouchableOpacity
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      onBookmarkPress();
-                    }}
-                    style={styles.engagementButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Ionicons
-                      name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-                      size={16}
-                      color={isBookmarked ? COLORS.primary : COLORS.iconGray}
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
+              {/* Comment button */}
+              <TouchableOpacity
+                style={styles.engagementButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onPress(); // Navigate to detail to see comments
+                }}
+              >
+                <Ionicons name="chatbubble-outline" size={16} color={COLORS.iconGray} />
+                <Text style={styles.engagementCount}>Comment</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -127,19 +120,46 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     padding: SPACING.md,
+    gap: SPACING.md,
+  },
+  sourceLogoContainer: {
+    marginTop: 2,
+  },
+  sourceLogo: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.backgroundSecondary,
+  },
+  sourceLogoPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+  },
+  sourceLogoText: {
+    color: COLORS.headerText,
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '700',
   },
   textContainer: {
     flex: 1,
-    marginRight: SPACING.md,
   },
-  sourceContainer: {
+  sourceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: SPACING.xs,
   },
   source: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.primary,
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.text,
     fontWeight: '700',
-    textTransform: 'uppercase',
+    flex: 1,
+  },
+  time: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.sm,
   },
   title: {
     fontSize: FONT_SIZES.md,
@@ -148,20 +168,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: SPACING.sm,
   },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  time: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.textSecondary,
-  },
   engagementContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.sm,
+    gap: SPACING.md,
   },
   engagementButton: {
     flexDirection: 'row',
@@ -174,8 +184,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: BORDER_RADIUS.md,
     backgroundColor: COLORS.backgroundSecondary,
   },
