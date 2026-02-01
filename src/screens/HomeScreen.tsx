@@ -142,6 +142,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     navigation.navigate('Search');
   }, [navigation]);
 
+  const handleCityPress = useCallback(() => {
+    // TODO: Implement city selection functionality
+    // For now, this is a placeholder that could show a city picker modal
+    console.warn('City selector pressed - feature to be implemented');
+  }, []);
+
+  const handleViewMoreHeadlines = useCallback(() => {
+    // TODO: Navigate to full headlines view or filter by breaking news
+    // For now, set category to show breaking/trending news
+    setSelectedCategory('trending');
+  }, []);
+
   if (isLoading && !allArticles.length) {
     return <LoadingSpinner fullScreen />;
   }
@@ -159,7 +171,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Image source={logoImage} style={styles.logo} resizeMode="contain" />
         
         {/* City Selector */}
-        <TouchableOpacity style={styles.citySelector}>
+        <TouchableOpacity style={styles.citySelector} onPress={handleCityPress}>
           <Text style={styles.cityText}>Choose Your City</Text>
           <Ionicons name="chevron-down" size={16} color={COLORS.headerText} />
         </TouchableOpacity>
@@ -253,7 +265,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               <View style={styles.breakingSection}>
                 <View style={styles.headlineHeader}>
                   <Text style={styles.sectionTitle}>Featured Headlines</Text>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={handleViewMoreHeadlines}>
                     <Text style={styles.seeMore}>View more {'>'}</Text>
                   </TouchableOpacity>
                 </View>

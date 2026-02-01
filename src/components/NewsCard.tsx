@@ -77,9 +77,11 @@ export const NewsCard: React.FC<NewsCardProps> = React.memo(
                   size={16}
                   color={engagement?.isLiked ? COLORS.error : COLORS.iconGray}
                 />
-                <Text style={styles.engagementCount}>
-                  {engagement?.likeCount || 0}
-                </Text>
+                {(engagement?.likeCount ?? 0) > 0 && (
+                  <Text style={styles.engagementCount}>
+                    {engagement?.likeCount}
+                  </Text>
+                )}
               </TouchableOpacity>
 
               {/* Comment button */}
